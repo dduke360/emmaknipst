@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | Emma Knipst</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .admin-header h1 { font-size: 1.5rem; font-weight: 400; }
+    .btn { padding: 0.5rem 1rem; border: none; cursor: pointer; font-size: 0.9rem; }
+    .btn-primary { background: #1a1a1a; color: #fff; }
+    .btn-secondary { background: #e5e5e5; color: #1a1a1a; }
+    .btn-danger { background: #dc3545; color: #fff; }
+    .btn-success { background: #28a745; color: #fff; }
+    
+    .admin-section { background: #fff; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #e5e5e5; }
+    .admin-section h2 { font-size: 1.1rem; margin-bottom: 1rem; font-weight: 500; }
+    
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; margin-bottom: 0.25rem; font-size: 0.85rem; color: #666; }
+    .form-group input, .form-group select { width: 100%; padding: 0.5rem; border: 1px solid #ddd; font-size: 0.9rem; }
+    
+    .photos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+    .photo-card { position: relative; aspect-ratio: 1; overflow: hidden; border: 1px solid #e5e5e5; }
+    .photo-card img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-card .delete-btn { position: absolute; top: 0.25rem; right: 0.25rem; background: rgba(220,53,69,0.9); color: #fff; border: none; width: 24px; height: 24px; cursor: pointer; font-size: 14px; line-height: 1; }
+    
+    .category-tag { display: inline-block; padding: 0.25rem 0.5rem; background: #f5f5f5; font-size: 0.75rem; margin: 0.25rem; }
+    
+    .json-output { width: 100%; height: 300px; font-family: monospace; font-size: 0.8rem; padding: 1rem; border: 1px solid #ddd; background: #fafafa; }
+    
+    .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .login-box { background: #fff; padding: 2rem; border: 1px solid #e5e5e5; width: 100%; max-width: 350px; }
+    .login-box h1 { font-size: 1.25rem; margin-bottom: 1.5rem; text-align: center; }
+    
+    .hidden { display: none !important; }
+    
+    .drop-zone { 
+      border: 2px dashed #ccc; 
+      padding: 2rem; 
+      text-align: center; 
+      margin-bottom: 1.5rem;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .drop-zone.dragover { border-color: #1a1a1a; background: #f5f5f5; }
+    .drop-zone p { color: #666; font-size: 0.9rem; }
+    .drop-zone input { display: none; }
+    
+    .dropped-preview {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f9f9f9;
+      display: none;
+    }
+    .dropped-preview.show { display: block; }
+    .dropped-preview img { max-width: 200px; max-height: 150px; object-fit: contain; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div id="login-screen" class="login-screen">
+    <div class="login-box">
+      <h1>Admin Login</h1>
+      <form id="login-form">
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="admin-app" class="admin-container hidden">
+    <div class="admin-header">
+      <h1>Photo Admin</h1>
+      <button id="logout-btn" class="btn btn-secondary">Logout</button>
+    </div>
+
+    <div class="admin-section">
+      <h2>Add Photo (Drag & Drop)</h2>
+      <div class="drop-zone" id="drop-zone">
+        <p>Drag and drop an image here, or click to select</p>
+        <input type="file" id="file-input" accept="image/*">
+      </div>
+      <div class="dropped-preview" id="dropped-preview">
+        <img id="preview-img" src="" alt="Preview">
+        <div class="form-group" style="margin-top: 1rem;">
+          <label>Title</label>
+          <input type="text" id="dropped-title" placeholder="Photo title">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="dropped-category"></select>
+        </div>
+        <button id="add-dropped-btn" class="btn btn-primary">Add Photo</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h2>Add Photo (URL)</h2>
+      <form id="add-photo-form">
+        <div class="form-group">
+          <label>Image URL</label>
+          <input type="url" id="photo-url" placeholder="https://..." required>
+        </div>
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="photo-title" placeholder="Photo title" required>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="photo-category" required></select>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Photo</button>
+      </form>
+    </div>
+
+    <div class="admin-section">
+      <h2>Manage Categories</h2>
+      <form id="add-category-form" style="display: flex; gap: 0.5rem; align-items: flex-end;">
+        <div class="form-group" style="margin-bottom: 0; flex: 1;">
+          <label>New Category Name</label>
+          <input type="text" id="new-category" placeholder="Category name">
+        </div>
+        <button type="submit" class="btn btn-secondary">Add</button>
+      </form>
+      <div id="category-list" style="margin-top: 1rem;"></div>
+    </div>
+
+    <div class="admin-section">
+      <h2>All Photos</h2>
+      <div id="photos-grid" class="photos-grid"></div>
+    </div>
+
+    <div class="admin-section">
+      <h2>Export JSON</h2>
+      <p style="font-size: 0.85rem; color: #666; margin-bottom: 0.5rem;">Copy this and replace data/photos.json</p>
+      <textarea id="json-output" class="json-output" readonly></textarea>
+      <button id="copy-json" class="btn btn-secondary" style="margin-top: 0.5rem;">Copy to Clipboard</button>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN_PASSWORD = 'emma2026';
+    let data = null;
+
+    const loginScreen = document.getElementById('login-screen');
+    const adminApp = document.getElementById('admin-app');
+    const loginForm = document.getElementById('login-form');
+    const logoutBtn = document.getElementById('logout-btn');
+    const addPhotoForm = document.getElementById('add-photo-form');
+    const addCategoryForm = document.getElementById('add-category-form');
+    const photosGrid = document.getElementById('photos-grid');
+    const categoryList = document.getElementById('category-list');
+    const categorySelect = document.getElementById('photo-category');
+    const jsonOutput = document.getElementById('json-output');
+    const copyJsonBtn = document.getElementById('copy-json');
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+      if (password === ADMIN_PASSWORD) {
+        loginScreen.classList.add('hidden');
+        adminApp.classList.remove('hidden');
+        loadData();
+      } else {
+        alert('Incorrect password');
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      loginScreen.classList.remove('hidden');
+      adminApp.classList.add('hidden');
+      document.getElementById('password').value = '';
+    });
+
+    async function loadData() {
+      const stored = localStorage.getItem('emma_photos');
+      if (stored) {
+        data = JSON.parse(stored);
+      } else {
+        const response = await fetch('data/photos.json');
+        data = await response.json();
+        localStorage.setItem('emma_photos', JSON.stringify(data));
+      }
+      render();
+    }
+
+    function saveData() {
+      localStorage.setItem('emma_photos', JSON.stringify(data));
+      render();
+    }
+
+    function render() {
+      renderCategories();
+      renderPhotos();
+      renderJson();
+    }
+
+    function renderCategories() {
+      categorySelect.innerHTML = '';
+      categoryList.innerHTML = '';
+      droppedCategory.innerHTML = '';
+      
+      data.categories.forEach(cat => {
+        const option1 = document.createElement('option');
+        option1.value = cat.id;
+        option1.textContent = cat.name;
+        categorySelect.appendChild(option1);
+
+        const option2 = document.createElement('option');
+        option2.value = cat.id;
+        option2.textContent = cat.name;
+        droppedCategory.appendChild(option2);
+
+        const tag = document.createElement('span');
+        tag.className = 'category-tag';
+        tag.innerHTML = `${cat.name} <button onclick="deleteCategory('${cat.id}')" style="border:none;background:none;cursor:pointer;margin-left:4px;">&times;</button>`;
+        categoryList.appendChild(tag);
+      });
+    }
+
+    function renderPhotos() {
+      photosGrid.innerHTML = '';
+      data.photos.forEach(photo => {
+        const card = document.createElement('div');
+        card.className = 'photo-card';
+        card.innerHTML = `
+          <img src="${photo.src}" alt="${photo.title}">
+          <button class="delete-btn" onclick="deletePhoto(${photo.id})">&times;</button>
+        `;
+        photosGrid.appendChild(card);
+      });
+    }
+
+    function renderJson() {
+      jsonOutput.value = JSON.stringify(data, null, 2);
+    }
+
+    addPhotoForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const newPhoto = {
+        id: Date.now(),
+        src: document.getElementById('photo-url').value,
+        title: document.getElementById('photo-title').value,
+        category: document.getElementById('photo-category').value
+      };
+      data.photos.unshift(newPhoto);
+      saveData();
+      addPhotoForm.reset();
+    });
+
+    addCategoryForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('new-category').value.trim();
+      if (name) {
+        const id = name.toLowerCase().replace(/\s+/g, '-');
+        if (!data.categories.find(c => c.id === id)) {
+          data.categories.push({ id, name });
+          saveData();
+        }
+        document.getElementById('new-category').value = '';
+      }
+    });
+
+    window.deletePhoto = (id) => {
+      if (confirm('Delete this photo?')) {
+        data.photos = data.photos.filter(p => p.id !== id);
+        saveData();
+      }
+    };
+
+    window.deleteCategory = (id) => {
+      if (confirm('Delete this category? Photos will need a new category.')) {
+        data.categories = data.categories.filter(c => c.id !== id);
+        saveData();
+      }
+    };
+
+    copyJsonBtn.addEventListener('click', () => {
+      jsonOutput.select();
+      document.execCommand('copy');
+      copyJsonBtn.textContent = 'Copied!';
+      setTimeout(() => copyJsonBtn.textContent = 'Copy to Clipboard', 2000);
+    });
+
+    // Drag and drop functionality
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const droppedPreview = document.getElementById('dropped-preview');
+    const previewImg = document.getElementById('preview-img');
+    const droppedTitle = document.getElementById('dropped-title');
+    const droppedCategory = document.getElementById('dropped-category');
+    const addDroppedBtn = document.getElementById('add-dropped-btn');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        handleFile(file);
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) handleFile(file);
+    });
+
+    function handleFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImg.src = e.target.result;
+        droppedPreview.classList.add('show');
+        updateDroppedCategorySelect();
+        droppedTitle.value = file.name.replace(/\.[^/.]+$/, '');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updateDroppedCategorySelect() {
+      droppedCategory.innerHTML = '';
+      data.categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.textContent = cat.name;
+        droppedCategory.appendChild(option);
+      });
+    }
+
+    addDroppedBtn.addEventListener('click', () => {
+      const title = droppedTitle.value.trim() || 'Untitled';
+      const category = droppedCategory.value;
+      const src = previewImg.src;
+      
+      data.photos.unshift({
+        id: Date.now(),
+        src,
+        title,
+        category
+      });
+      
+      saveData();
+      droppedPreview.classList.remove('show');
+      previewImg.src = '';
+      droppedTitle.value = '';
+    });
+  </script>
+</body>
+</html>
