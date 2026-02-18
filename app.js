@@ -71,17 +71,14 @@ function renderGallery(photos) {
 
 function renderAbout() {
   const aboutText = document.getElementById('about-text');
+  const email = document.getElementById('contact-email');
   aboutText.innerHTML = `<p>${portfolioData.photographer.about}</p>`;
+  email.href = `mailto:${portfolioData.photographer.email}`;
+  email.textContent = portfolioData.photographer.email;
 }
 
 function renderContact() {
-  const email = document.getElementById('contact-email');
-  const social = document.getElementById('social-links');
-  
-  email.href = `mailto:${portfolioData.photographer.email}`;
-  email.textContent = portfolioData.photographer.email;
-  
-  social.innerHTML = `<a href="https://instagram.com/${portfolioData.photographer.instagram.replace('@', '')}" target="_blank" rel="noopener">Instagram</a>`;
+  // Contact is rendered in renderAbout now
 }
 
 function setupLightbox() {

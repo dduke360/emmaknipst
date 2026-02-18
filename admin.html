@@ -6,53 +6,55 @@
   <title>Admin | Emma Knipst</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    body { background: #000; color: #fff; }
     .admin-container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
     .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
     .admin-header h1 { font-size: 1.5rem; font-weight: 400; }
     .btn { padding: 0.5rem 1rem; border: none; cursor: pointer; font-size: 0.9rem; }
-    .btn-primary { background: #1a1a1a; color: #fff; }
-    .btn-secondary { background: #e5e5e5; color: #1a1a1a; }
+    .btn-primary { background: #fff; color: #000; }
+    .btn-secondary { background: #262626; color: #fff; }
     .btn-danger { background: #dc3545; color: #fff; }
     .btn-success { background: #28a745; color: #fff; }
     
-    .admin-section { background: #fff; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #e5e5e5; }
+    .admin-section { background: #121212; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #363636; }
     .admin-section h2 { font-size: 1.1rem; margin-bottom: 1rem; font-weight: 500; }
     
     .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; margin-bottom: 0.25rem; font-size: 0.85rem; color: #666; }
-    .form-group input, .form-group select { width: 100%; padding: 0.5rem; border: 1px solid #ddd; font-size: 0.9rem; }
+    .form-group label { display: block; margin-bottom: 0.25rem; font-size: 0.85rem; color: #a8a8a8; }
+    .form-group input, .form-group select { width: 100%; padding: 0.5rem; border: 1px solid #363636; font-size: 0.9rem; background: #121212; color: #fff; }
     
     .photos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
-    .photo-card { position: relative; aspect-ratio: 1; overflow: hidden; border: 1px solid #e5e5e5; }
+    .photo-card { position: relative; aspect-ratio: 1; overflow: hidden; border: 1px solid #363636; }
     .photo-card img { width: 100%; height: 100%; object-fit: cover; }
     .photo-card .delete-btn { position: absolute; top: 0.25rem; right: 0.25rem; background: rgba(220,53,69,0.9); color: #fff; border: none; width: 24px; height: 24px; cursor: pointer; font-size: 14px; line-height: 1; }
     
-    .category-tag { display: inline-block; padding: 0.25rem 0.5rem; background: #f5f5f5; font-size: 0.75rem; margin: 0.25rem; }
+    .category-tag { display: inline-block; padding: 0.25rem 0.5rem; background: #262626; font-size: 0.75rem; margin: 0.25rem; }
     
-    .json-output { width: 100%; height: 300px; font-family: monospace; font-size: 0.8rem; padding: 1rem; border: 1px solid #ddd; background: #fafafa; }
+    .json-output { width: 100%; height: 300px; font-family: monospace; font-size: 0.8rem; padding: 1rem; border: 1px solid #363636; background: #121212; color: #fff; }
     
-    .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .login-box { background: #fff; padding: 2rem; border: 1px solid #e5e5e5; width: 100%; max-width: 350px; }
+    .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; }
+    .login-box { background: #121212; padding: 2rem; border: 1px solid #363636; width: 100%; max-width: 350px; color: #fff; }
     .login-box h1 { font-size: 1.25rem; margin-bottom: 1.5rem; text-align: center; }
+    .login-box input { background: #121212; color: #fff; border: 1px solid #363636; }
     
     .hidden { display: none !important; }
     
     .drop-zone { 
-      border: 2px dashed #ccc; 
+      border: 2px dashed #363636; 
       padding: 2rem; 
       text-align: center; 
       margin-bottom: 1.5rem;
       transition: all 0.2s;
-      cursor: pointer;
+      color: #a8a8a8;
     }
-    .drop-zone.dragover { border-color: #1a1a1a; background: #f5f5f5; }
-    .drop-zone p { color: #666; font-size: 0.9rem; }
+    .drop-zone.dragover { border-color: #fff; background: #262626; }
+    .drop-zone p { color: #a8a8a8; font-size: 0.9rem; }
     .drop-zone input { display: none; }
     
     .dropped-preview {
       margin-top: 1rem;
       padding: 1rem;
-      background: #f9f9f9;
+      background: #262626;
       display: none;
     }
     .dropped-preview.show { display: block; }
@@ -156,6 +158,7 @@
     const photosGrid = document.getElementById('photos-grid');
     const categoryList = document.getElementById('category-list');
     const categorySelect = document.getElementById('photo-category');
+    const droppedCategory = document.getElementById('dropped-category');
     const jsonOutput = document.getElementById('json-output');
     const copyJsonBtn = document.getElementById('copy-json');
 
@@ -293,7 +296,6 @@
     const droppedPreview = document.getElementById('dropped-preview');
     const previewImg = document.getElementById('preview-img');
     const droppedTitle = document.getElementById('dropped-title');
-    const droppedCategory = document.getElementById('dropped-category');
     const addDroppedBtn = document.getElementById('add-dropped-btn');
 
     dropZone.addEventListener('click', () => fileInput.click());
