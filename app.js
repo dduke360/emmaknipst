@@ -171,11 +171,22 @@ function setupLightbox() {
   const lightboxTitle = document.getElementById('lightbox-title');
   const closeBtn = document.querySelector('.lightbox-close');
 
-  window.openLightbox = (photo) => {
+  window.openLightbox = async (photo) => {
     lightboxImg.src = photo.src.replace('w=800', 'w=1600');
     lightboxTitle.textContent = photo.title;
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
+    
+    // Increment view count
+    const newViews = (photo.views || 0) + 1;
+    try {
+      await supabaseClient
+        .from('photos')
+        .update({ views: newViews })
+        .eq('id', photo.id);
+    } catch (e) {
+      console.error('Failed to update views:', e);
+    }
   };
 
   const closeLightbox = () => {

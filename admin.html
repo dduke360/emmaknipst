@@ -80,22 +80,17 @@
     </div>
 
     <div class="admin-section">
-      <h2>Edit About</h2>
-      <form id="about-form">
-        <div class="form-group">
-          <label>About Text</label>
-          <textarea id="about-text" rows="4" style="width: 100%; padding: 0.5rem; border: 1px solid #363636; font-size: 0.9rem; background: #121212; color: #fff;"></textarea>
+      <h2>Statistics</h2>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div>
+          <h3 style="font-size: 0.9rem; margin-bottom: 1rem; color: #a8a8a8;">Top 10 by Views</h3>
+          <div id="top-views"></div>
         </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="about-email" style="width: 100%; padding: 0.5rem; border: 1px solid #363636; font-size: 0.9rem; background: #121212; color: #fff;">
+        <div>
+          <h3 style="font-size: 0.9rem; margin-bottom: 1rem; color: #a8a8a8;">Top 10 by Likes</h3>
+          <div id="top-likes"></div>
         </div>
-        <div class="form-group">
-          <label>Instagram</label>
-          <input type="text" id="about-instagram" style="width: 100%; padding: 0.5rem; border: 1px solid #363636; font-size: 0.9rem; background: #121212; color: #fff;">
-        </div>
-        <button type="submit" class="btn btn-primary">Save About</button>
-      </form>
+      </div>
     </div>
 
     <div class="admin-section">
@@ -113,6 +108,25 @@
     <div class="admin-section">
       <h2>All Photos</h2>
       <div id="photos-grid" class="photos-grid"></div>
+    </div>
+
+    <div class="admin-section">
+      <h2>Edit About</h2>
+      <form id="about-form">
+        <div class="form-group">
+          <label>About Text</label>
+          <textarea id="about-text" rows="4" style="width: 100%; padding: 0.5rem; border: 1px solid #363636; font-size: 0.9rem; background: #121212; color: #fff;"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="about-email" style="width: 100%; padding: 0.5rem; border: 1px solid #363636; font-size: 0.9rem; background: #121212; color: #fff;">
+        </div>
+        <div class="form-group">
+          <label>Instagram</label>
+          <input type="text" id="about-instagram" style="width: 100%; padding: 0.5rem; border: 1px solid #363636; font-size: 0.9rem; background: #121212; color: #fff;">
+        </div>
+        <button type="submit" class="btn btn-primary">Save About</button>
+      </form>
     </div>
   </div>
 
@@ -253,6 +267,34 @@
       renderCategories();
       renderPhotos();
       renderAboutForm();
+      renderStats();
+    }
+
+    function renderStats() {
+      const photos = data.photos || [];
+      
+      // Sort by views
+      const byViews = [...photos].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 10);
+      // Sort by likes
+      const byLikes = [...photos].sort((a, b) => (b.likes || 0) - (a.likes || 0)).slice(0, 10);
+      
+      document.getElementById('top-views').innerHTML = byViews.map((p, i) => `
+        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid #262626; font-size: 0.85rem;">
+          <span style="color: #666; width: 20px;">${i + 1}.</span>
+          <img src="${p.src}" style="width: 40px; height: 40px; object-fit: cover;">
+          <span style="flex: 1;">${p.title}</span>
+          <span style="color: #888;">${p.views || 0} views</span>
+        </div>
+      `).join('');
+      
+      document.getElementById('top-likes').innerHTML = byLikes.map((p, i) => `
+        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid #262626; font-size: 0.85rem;">
+          <span style="color: #666; width: 20px;">${i + 1}.</span>
+          <img src="${p.src}" style="width: 40px; height: 40px; object-fit: cover;">
+          <span style="flex: 1;">${p.title}</span>
+          <span style="color: #ff4757;">♥ ${p.likes || 0}</span>
+        </div>
+      `).join('');
     }
 
     function renderCategories() {
