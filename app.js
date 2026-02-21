@@ -152,7 +152,12 @@ async function toggleLike(photoId, currentLikes) {
 function renderAbout() {
   const aboutText = document.getElementById('about-text');
   const email = document.getElementById('contact-email');
-  aboutText.innerHTML = `<p>${portfolioData.photographer.about || ''}</p>`;
+  
+  const about = portfolioData.photographer.about || '';
+  const paragraphs = about.split('\n\n').filter(p => p.trim());
+  const html = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+  
+  aboutText.innerHTML = html;
   email.href = `mailto:${portfolioData.photographer.email || ''}`;
   email.textContent = portfolioData.photographer.email || '';
 }

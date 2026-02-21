@@ -217,22 +217,34 @@ main {
 
 .about-section,
 .contact-section {
-  max-width: 500px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 3rem 1rem;
+  padding: 4rem 1.5rem;
   text-align: center;
 }
 
 .about-section h2,
 .contact-section h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 2rem;
+  color: #666;
+  text-align: center;
+}
+
+.about-text {
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  text-align: center;
 }
 
 .about-text p {
-  color: #a8a8a8;
-  font-size: 1rem;
+  color: #ccc;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
 }
 
 .contact-content p {
@@ -242,12 +254,15 @@ main {
 
 .email-link {
   display: inline-block;
-  color: #a8a8a8;
-  margin-bottom: 1.5rem;
+  color: #888;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  margin-top: 2rem;
+  transition: color 0.3s;
 }
 
 .email-link:hover {
-  color: var(--text-color);
+  color: #fff;
 }
 
 .social-links {
