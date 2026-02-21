@@ -23,8 +23,8 @@
 Open `admin.html` and replace these values:
 
 ```javascript
-const CLOUDINARY_CLOUD_NAME = 'YOUR_CLOUD_NAME';
-const CLOUDINARY_UPLOAD_PRESET = 'YOUR_UPLOAD_PRESET';
+const CLOUDINARY_CLOUD_NAME = 'djoh49z3m';
+const CLOUDINARY_UPLOAD_PRESET = 'emmaknipst';
 ```
 
 Example:

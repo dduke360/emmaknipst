@@ -113,21 +113,16 @@
       <h2>All Photos</h2>
       <div id="photos-grid" class="photos-grid"></div>
     </div>
-
-    <div class="admin-section">
-      <h2>Export JSON</h2>
-      <p style="font-size: 0.85rem; color: #28a745; margin-bottom: 0.5rem;">Photos are saved automatically and will show on the main site!</p>
-      <p style="font-size: 0.85rem; color: #666; margin-bottom: 0.5rem;">Download JSON file to commit to git (for production deployment):</p>
-      <button id="download-json" class="btn btn-primary" style="margin-bottom: 1rem;">Download JSON File</button>
-    </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
   <script>
     const ADMIN_PASSWORD = 'emma2026';
     let data = null;
     let cloudinaryUploadedUrl = null;
 
-    // Cloudinary config - UPDATE THESE with your values
+    // Cloudinary config
     const CLOUDINARY_CLOUD_NAME = 'djoh49z3m';
     const CLOUDINARY_UPLOAD_PRESET = 'emmaknipst';
 
@@ -138,7 +133,7 @@
     const addCategoryForm = document.getElementById('add-category-form');
     const photosGrid = document.getElementById('photos-grid');
     const categoryList = document.getElementById('category-list');
-    const downloadJsonBtn = document.getElementById('download-json');
+  
 
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -159,23 +154,96 @@
     });
 
     async function loadData() {
-      const stored = localStorage.getItem('emma_photos');
-      if (stored) {
-        data = JSON.parse(stored);
-        if (!data.photographer || !data.photographer.about) {
-          const response = await fetch('data/photos.json');
-          data = await response.json();
-          localStorage.setItem('emma_photos', JSON.stringify(data));
-        }
-      } else {
-        const response = await fetch('data/photos.json');
-        data = await response.json();
+      try {
+        // Load photos from Supabase
+        const { data: photos, error: photosError } = await supabaseClient
+          .from('photos')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (photosError) throw photosError;
+
+        // Load settings from Supabase
+        const { data: settings, error: settingsError } = await supabaseClient
+          .from('settings')
+          .select('*');
+
+        if (settingsError) throw settingsError;
+
+        // Convert settings to photographer object
+        const settingsObj = {};
+        settings.forEach(s => {
+          settingsObj[s.key] = s.value;
+        });
+
+        data = {
+          photographer: {
+            about: settingsObj.about || '',
+            email: settingsObj.email || '',
+            instagram: settingsObj.instagram || ''
+          },
+          categories: [
+            { id: 'portraits', name: 'Portraits' },
+            { id: 'fashion', name: 'Fashion' },
+            { id: 'lifestyle', name: 'Lifestyle' },
+            { id: 'nature', name: 'Nature' }
+          ],
+          photos: photos || []
+        };
+
+        // Also save to localStorage as backup
         localStorage.setItem('emma_photos', JSON.stringify(data));
+
+        render();
+      } catch (error) {
+        console.error('Failed to load from Supabase:', error);
+        // Fallback to localStorage
+        const stored = localStorage.getItem('emma_photos');
+        if (stored) {
+          data = JSON.parse(stored);
+          render();
+        } else {
+          alert('Failed to load data. Check console for details.');
+        }
       }
-      render();
     }
 
-    function saveData() {
+    async function savePhoto(photo, action = 'insert') {
+      try {
+        if (action === 'delete') {
+          const { error } = await supabaseClient.from('photos').delete().eq('id', photo.id);
+          if (error) throw error;
+        } else if (action === 'insert') {
+          const { error } = await supabaseClient.from('photos').insert([{
+            title: photo.title,
+            src: photo.src,
+            category: photo.category
+          }]);
+          if (error) throw error;
+        }
+        
+        // Reload data after save
+        await loadData();
+      } catch (error) {
+        console.error('Save error:', error);
+        alert('Failed to save. Check console for details.');
+      }
+    }
+
+    async function saveSetting(key, value) {
+      try {
+        const { error } = await supabaseClient
+          .from('settings')
+          .upsert({ key, value }, { onConflict: 'key' });
+        
+        if (error) throw error;
+      } catch (error) {
+        console.error('Save setting error:', error);
+      }
+    }
+
+    async function saveData() {
+      // Save to localStorage as immediate feedback
       localStorage.setItem('emma_photos', JSON.stringify(data));
       render();
     }
@@ -222,13 +290,24 @@
       document.getElementById('about-instagram').value = data.photographer.instagram || '';
     }
 
-    document.getElementById('about-form').addEventListener('submit', (e) => {
+    document.getElementById('about-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      data.photographer.about = document.getElementById('about-text').value;
-      data.photographer.email = document.getElementById('about-email').value;
-      data.photographer.instagram = document.getElementById('about-instagram').value;
-      saveData();
-      alert('About saved!');
+      const about = document.getElementById('about-text').value;
+      const email = document.getElementById('about-email').value;
+      const instagram = document.getElementById('about-instagram').value;
+      
+      // Save to Supabase
+      await saveSetting('about', about);
+      await saveSetting('email', email);
+      await saveSetting('instagram', instagram);
+      
+      // Update local data
+      data.photographer.about = about;
+      data.photographer.email = email;
+      data.photographer.instagram = instagram;
+      localStorage.setItem('emma_photos', JSON.stringify(data));
+      
+      alert('About saved to cloud!');
     });
 
     addCategoryForm.addEventListener('submit', (e) => {
@@ -244,10 +323,12 @@
       }
     });
 
-    window.deletePhoto = (id) => {
+    window.deletePhoto = async (id) => {
       if (confirm('Delete this photo?')) {
-        data.photos = data.photos.filter(p => p.id !== id);
-        saveData();
+        const photo = data.photos.find(p => p.id === id);
+        if (photo) {
+          await savePhoto(photo, 'delete');
+        }
       }
     };
 
@@ -258,17 +339,6 @@
       }
     };
 
-    downloadJsonBtn.addEventListener('click', () => {
-      const json = JSON.stringify(data, null, 2);
-      const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'photos.json';
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-
     // Cloudinary upload functionality
     const cloudinaryUploadBtn = document.getElementById('cloudinary-upload-btn');
     const cloudinaryForm = document.getElementById('cloudinary-form');
@@ -276,9 +346,6 @@
     const addCloudinaryBtn = document.getElementById('add-cloudinary-btn');
 
     function openCloudinaryWidget() {
-      console.log('Cloudinary config:', CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET);
-      console.log('Cloudinary object:', typeof cloudinary);
-      
       if (typeof cloudinary === 'undefined') {
         alert('Cloudinary widget not loaded. Check console (F12) for errors.');
         return;
@@ -320,20 +387,18 @@
 
     cloudinaryUploadBtn.addEventListener('click', openCloudinaryWidget);
 
-    addCloudinaryBtn.addEventListener('click', () => {
+    addCloudinaryBtn.addEventListener('click', async () => {
       if (!cloudinaryUploadedUrl) return;
       
       const title = cloudinaryTitle.value.trim() || 'Untitled';
       const category = document.getElementById('cloudinary-category').value;
       
-      data.photos.unshift({
-        id: Date.now(),
+      await savePhoto({
         src: cloudinaryUploadedUrl,
         title,
         category
-      });
+      }, 'insert');
       
-      saveData();
       cloudinaryUploadedUrl = null;
       cloudinaryForm.style.display = 'none';
       document.getElementById('cloudinary-uploads').innerHTML = '';

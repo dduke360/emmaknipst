@@ -1,17 +1,51 @@
-let portfolioData = {};
+let portfolioData = {
+  photographer: {},
+  categories: [
+    { id: 'portraits', name: 'Portraits' },
+    { id: 'fashion', name: 'Fashion' },
+    { id: 'lifestyle', name: 'Lifestyle' },
+    { id: 'nature', name: 'Nature' }
+  ],
+  photos: []
+};
 
 async function loadData() {
   try {
-    const stored = localStorage.getItem('emma_photos');
-    if (stored) {
-      portfolioData = JSON.parse(stored);
-    } else {
-      const response = await fetch('data/photos.json');
-      portfolioData = await response.json();
-    }
+    const { data: photos, error: photosError } = await supabaseClient
+      .from('photos')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (photosError) throw photosError;
+
+    const { data: settings, error: settingsError } = await supabaseClient
+      .from('settings')
+      .select('*');
+
+    if (settingsError) throw settingsError;
+
+    const settingsObj = {};
+    settings.forEach(s => {
+      settingsObj[s.key] = s.value;
+    });
+
+    portfolioData.photos = photos || [];
+    portfolioData.photographer = {
+      about: settingsObj.about || '',
+      email: settingsObj.email || '',
+      instagram: settingsObj.instagram || ''
+    };
+
+    localStorage.setItem('emma_photos', JSON.stringify(portfolioData));
+
     init();
   } catch (error) {
     console.error('Failed to load data:', error);
+    const stored = localStorage.getItem('emma_photos');
+    if (stored) {
+      portfolioData = JSON.parse(stored);
+      init();
+    }
   }
 }
 
@@ -72,13 +106,12 @@ function renderGallery(photos) {
 function renderAbout() {
   const aboutText = document.getElementById('about-text');
   const email = document.getElementById('contact-email');
-  aboutText.innerHTML = `<p>${portfolioData.photographer.about}</p>`;
-  email.href = `mailto:${portfolioData.photographer.email}`;
-  email.textContent = portfolioData.photographer.email;
+  aboutText.innerHTML = `<p>${portfolioData.photographer.about || ''}</p>`;
+  email.href = `mailto:${portfolioData.photographer.email || ''}`;
+  email.textContent = portfolioData.photographer.email || '';
 }
 
 function renderContact() {
-  // Contact is rendered in renderAbout now
 }
 
 function setupLightbox() {
