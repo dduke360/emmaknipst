@@ -151,9 +151,30 @@ main {
   opacity: 0;
   transition: opacity 0.2s;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 0.5rem;
+}
+
+.gallery-item:hover .overlay,
+.gallery-item .like-btn.liked ~ .overlay {
+  opacity: 1;
+}
+
+.gallery-item .like-btn {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  background: rgba(0,0,0,0.6);
+  border: none;
+  color: #fff;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s;
+  z-index: 10;
 }
 
 .gallery-item:hover .overlay {
@@ -164,6 +185,34 @@ main {
   color: var(--white);
   font-weight: 600;
   font-size: 0.9rem;
+}
+
+.gallery-item .like-btn {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  background: rgba(0,0,0,0.6);
+  border: none;
+  color: #fff;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s;
+}
+
+.gallery-item .like-btn:hover {
+  background: rgba(0,0,0,0.8);
+}
+
+.gallery-item .like-btn.liked {
+  color: #ff4757;
+  background: rgba(255,71,87,0.2);
+}
+
+.gallery-item .like-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .about-section,

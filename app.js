@@ -35,17 +35,12 @@ async function loadData() {
       email: settingsObj.email || '',
       instagram: settingsObj.instagram || ''
     };
-
+    
     localStorage.setItem('emma_photos', JSON.stringify(portfolioData));
 
     init();
   } catch (error) {
     console.error('Failed to load data:', error);
-    const stored = localStorage.getItem('emma_photos');
-    if (stored) {
-      portfolioData = JSON.parse(stored);
-      init();
-    }
   }
 }
 
@@ -60,6 +55,14 @@ function init() {
 
 function renderCategoryFilter() {
   const filterContainer = document.querySelector('.category-filter');
+  filterContainer.innerHTML = '';
+  
+  // Add "All" button
+  const allBtn = document.createElement('button');
+  allBtn.className = 'filter-btn active';
+  allBtn.dataset.category = 'all';
+  allBtn.textContent = 'All';
+  filterContainer.appendChild(allBtn);
   
   portfolioData.categories.forEach(category => {
     const btn = document.createElement('button');
@@ -75,6 +78,8 @@ function renderCategoryFilter() {
       e.target.classList.add('active');
       
       const category = e.target.dataset.category;
+      
+      // Filter the photos
       const filteredPhotos = category === 'all' 
         ? portfolioData.photos 
         : portfolioData.photos.filter(p => p.category === category);
@@ -92,15 +97,56 @@ function renderGallery(photos) {
     const item = document.createElement('div');
     item.className = 'gallery-item';
     item.style.animationDelay = `${index * 0.05}s`;
+    
+    const hasLiked = localStorage.getItem(`liked_${photo.id}`);
+    
     item.innerHTML = `
       <img src="${photo.src}" alt="${photo.title}" loading="lazy">
       <div class="overlay">
         <span>${photo.title}</span>
+        <button class="like-btn ${hasLiked ? 'liked' : ''}" data-id="${photo.id}" data-likes="${photo.likes || 0}">
+          ♥ ${photo.likes || 0}
+        </button>
       </div>
     `;
+    
+    const likeBtn = item.querySelector('.like-btn');
+    likeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleLike(photo.id, photo.likes || 0);
+    });
+    
     item.addEventListener('click', () => openLightbox(photo));
     grid.appendChild(item);
   });
+}
+
+async function toggleLike(photoId, currentLikes) {
+  const likedKey = `liked_${photoId}`;
+  
+  if (localStorage.getItem(likedKey)) {
+    return;
+  }
+  
+  localStorage.setItem(likedKey, 'true');
+  
+  const newLikes = currentLikes + 1;
+  
+  try {
+    await supabaseClient
+      .from('photos')
+      .update({ likes: newLikes })
+      .eq('id', photoId);
+    
+    document.querySelectorAll('.like-btn').forEach(btn => {
+      if (btn.dataset.id === String(photoId)) {
+        btn.classList.add('liked');
+        btn.innerHTML = `♥ ${newLikes}`;
+      }
+    });
+  } catch (error) {
+    console.error('Failed to like photo:', error);
+  }
 }
 
 function renderAbout() {
