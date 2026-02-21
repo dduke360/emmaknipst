@@ -38,27 +38,6 @@
     .login-box input { background: #121212; color: #fff; border: 1px solid #363636; }
     
     .hidden { display: none !important; }
-    
-    .drop-zone { 
-      border: 2px dashed #363636; 
-      padding: 2rem; 
-      text-align: center; 
-      margin-bottom: 1.5rem;
-      transition: all 0.2s;
-      color: #a8a8a8;
-    }
-    .drop-zone.dragover { border-color: #fff; background: #262626; }
-    .drop-zone p { color: #a8a8a8; font-size: 0.9rem; }
-    .drop-zone input { display: none; }
-    
-    .dropped-preview {
-      margin-top: 1rem;
-      padding: 1rem;
-      background: #262626;
-      display: none;
-    }
-    .dropped-preview.show { display: block; }
-    .dropped-preview img { max-width: 200px; max-height: 150px; object-fit: contain; margin-bottom: 0.5rem; }
   </style>
 </head>
 <body>
@@ -82,41 +61,39 @@
     </div>
 
     <div class="admin-section">
-      <h2>Add Photo (Drag & Drop)</h2>
-      <div class="drop-zone" id="drop-zone">
-        <p>Drag and drop an image here, or click to select</p>
-        <input type="file" id="file-input" accept="image/*">
-      </div>
-      <div class="dropped-preview" id="dropped-preview">
-        <img id="preview-img" src="" alt="Preview">
-        <div class="form-group" style="margin-top: 1rem;">
+      <h2>Upload to Cloudinary</h2>
+      <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Upload images to Cloudinary (free cloud storage). Images persist across all deployments.</p>
+      <div id="cloudinary-uploads" style="margin-bottom: 1rem;"></div>
+      <button id="cloudinary-upload-btn" class="btn btn-primary">Upload Image</button>
+      <div id="cloudinary-form" style="margin-top: 1rem; display: none;">
+        <div class="form-group">
           <label>Title</label>
-          <input type="text" id="dropped-title" placeholder="Photo title">
+          <input type="text" id="cloudinary-title" placeholder="Photo title">
         </div>
         <div class="form-group">
           <label>Category</label>
-          <select id="dropped-category"></select>
+          <select id="cloudinary-category"></select>
         </div>
-        <button id="add-dropped-btn" class="btn btn-primary">Add Photo</button>
+        <button id="add-cloudinary-btn" class="btn btn-success">Add to Gallery</button>
       </div>
     </div>
 
     <div class="admin-section">
-      <h2>Add Photo (URL)</h2>
-      <form id="add-photo-form">
+      <h2>Edit About</h2>
+      <form id="about-form">
         <div class="form-group">
-          <label>Image URL</label>
-          <input type="url" id="photo-url" placeholder="https://..." required>
+          <label>About Text</label>
+          <textarea id="about-text" rows="4" style="width: 100%; padding: 0.5rem; border: 1px solid #363636; font-size: 0.9rem; background: #121212; color: #fff;"></textarea>
         </div>
         <div class="form-group">
-          <label>Title</label>
-          <input type="text" id="photo-title" placeholder="Photo title" required>
+          <label>Email</label>
+          <input type="email" id="about-email" style="width: 100%; padding: 0.5rem; border: 1px solid #363636; font-size: 0.9rem; background: #121212; color: #fff;">
         </div>
         <div class="form-group">
-          <label>Category</label>
-          <select id="photo-category" required></select>
+          <label>Instagram</label>
+          <input type="text" id="about-instagram" style="width: 100%; padding: 0.5rem; border: 1px solid #363636; font-size: 0.9rem; background: #121212; color: #fff;">
         </div>
-        <button type="submit" class="btn btn-primary">Add Photo</button>
+        <button type="submit" class="btn btn-primary">Save About</button>
       </form>
     </div>
 
@@ -139,28 +116,29 @@
 
     <div class="admin-section">
       <h2>Export JSON</h2>
-      <p style="font-size: 0.85rem; color: #666; margin-bottom: 0.5rem;">Copy this and replace data/photos.json</p>
-      <textarea id="json-output" class="json-output" readonly></textarea>
-      <button id="copy-json" class="btn btn-secondary" style="margin-top: 0.5rem;">Copy to Clipboard</button>
+      <p style="font-size: 0.85rem; color: #28a745; margin-bottom: 0.5rem;">Photos are saved automatically and will show on the main site!</p>
+      <p style="font-size: 0.85rem; color: #666; margin-bottom: 0.5rem;">Download JSON file to commit to git (for production deployment):</p>
+      <button id="download-json" class="btn btn-primary" style="margin-bottom: 1rem;">Download JSON File</button>
     </div>
   </div>
 
   <script>
     const ADMIN_PASSWORD = 'emma2026';
     let data = null;
+    let cloudinaryUploadedUrl = null;
+
+    // Cloudinary config - UPDATE THESE with your values
+    const CLOUDINARY_CLOUD_NAME = 'djoh49z3m';
+    const CLOUDINARY_UPLOAD_PRESET = 'emmaknipst';
 
     const loginScreen = document.getElementById('login-screen');
     const adminApp = document.getElementById('admin-app');
     const loginForm = document.getElementById('login-form');
     const logoutBtn = document.getElementById('logout-btn');
-    const addPhotoForm = document.getElementById('add-photo-form');
     const addCategoryForm = document.getElementById('add-category-form');
     const photosGrid = document.getElementById('photos-grid');
     const categoryList = document.getElementById('category-list');
-    const categorySelect = document.getElementById('photo-category');
-    const droppedCategory = document.getElementById('dropped-category');
-    const jsonOutput = document.getElementById('json-output');
-    const copyJsonBtn = document.getElementById('copy-json');
+    const downloadJsonBtn = document.getElementById('download-json');
 
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -184,6 +162,11 @@
       const stored = localStorage.getItem('emma_photos');
       if (stored) {
         data = JSON.parse(stored);
+        if (!data.photographer || !data.photographer.about) {
+          const response = await fetch('data/photos.json');
+          data = await response.json();
+          localStorage.setItem('emma_photos', JSON.stringify(data));
+        }
       } else {
         const response = await fetch('data/photos.json');
         data = await response.json();
@@ -200,29 +183,23 @@
     function render() {
       renderCategories();
       renderPhotos();
-      renderJson();
+      renderAboutForm();
     }
 
     function renderCategories() {
-      categorySelect.innerHTML = '';
       categoryList.innerHTML = '';
-      droppedCategory.innerHTML = '';
+      document.getElementById('cloudinary-category').innerHTML = '';
       
       data.categories.forEach(cat => {
-        const option1 = document.createElement('option');
-        option1.value = cat.id;
-        option1.textContent = cat.name;
-        categorySelect.appendChild(option1);
-
-        const option2 = document.createElement('option');
-        option2.value = cat.id;
-        option2.textContent = cat.name;
-        droppedCategory.appendChild(option2);
-
         const tag = document.createElement('span');
         tag.className = 'category-tag';
         tag.innerHTML = `${cat.name} <button onclick="deleteCategory('${cat.id}')" style="border:none;background:none;cursor:pointer;margin-left:4px;">&times;</button>`;
         categoryList.appendChild(tag);
+
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.textContent = cat.name;
+        document.getElementById('cloudinary-category').appendChild(option);
       });
     }
 
@@ -239,21 +216,19 @@
       });
     }
 
-    function renderJson() {
-      jsonOutput.value = JSON.stringify(data, null, 2);
+    function renderAboutForm() {
+      document.getElementById('about-text').value = data.photographer.about || '';
+      document.getElementById('about-email').value = data.photographer.email || '';
+      document.getElementById('about-instagram').value = data.photographer.instagram || '';
     }
 
-    addPhotoForm.addEventListener('submit', (e) => {
+    document.getElementById('about-form').addEventListener('submit', (e) => {
       e.preventDefault();
-      const newPhoto = {
-        id: Date.now(),
-        src: document.getElementById('photo-url').value,
-        title: document.getElementById('photo-title').value,
-        category: document.getElementById('photo-category').value
-      };
-      data.photos.unshift(newPhoto);
+      data.photographer.about = document.getElementById('about-text').value;
+      data.photographer.email = document.getElementById('about-email').value;
+      data.photographer.instagram = document.getElementById('about-instagram').value;
       saveData();
-      addPhotoForm.reset();
+      alert('About saved!');
     });
 
     addCategoryForm.addEventListener('submit', (e) => {
@@ -283,84 +258,88 @@
       }
     };
 
-    copyJsonBtn.addEventListener('click', () => {
-      jsonOutput.select();
-      document.execCommand('copy');
-      copyJsonBtn.textContent = 'Copied!';
-      setTimeout(() => copyJsonBtn.textContent = 'Copy to Clipboard', 2000);
+    downloadJsonBtn.addEventListener('click', () => {
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'photos.json';
+      a.click();
+      URL.revokeObjectURL(url);
     });
 
-    // Drag and drop functionality
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('file-input');
-    const droppedPreview = document.getElementById('dropped-preview');
-    const previewImg = document.getElementById('preview-img');
-    const droppedTitle = document.getElementById('dropped-title');
-    const addDroppedBtn = document.getElementById('add-dropped-btn');
+    // Cloudinary upload functionality
+    const cloudinaryUploadBtn = document.getElementById('cloudinary-upload-btn');
+    const cloudinaryForm = document.getElementById('cloudinary-form');
+    const cloudinaryTitle = document.getElementById('cloudinary-title');
+    const addCloudinaryBtn = document.getElementById('add-cloudinary-btn');
 
-    dropZone.addEventListener('click', () => fileInput.click());
-
-    dropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropZone.classList.add('dragover');
-    });
-
-    dropZone.addEventListener('dragleave', () => {
-      dropZone.classList.remove('dragover');
-    });
-
-    dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('dragover');
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) {
-        handleFile(file);
+    function openCloudinaryWidget() {
+      console.log('Cloudinary config:', CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET);
+      console.log('Cloudinary object:', typeof cloudinary);
+      
+      if (typeof cloudinary === 'undefined') {
+        alert('Cloudinary widget not loaded. Check console (F12) for errors.');
+        return;
       }
-    });
 
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) handleFile(file);
-    });
+      if (CLOUDINARY_CLOUD_NAME === 'YOUR_CLOUD_NAME' || CLOUDINARY_UPLOAD_PRESET === 'YOUR_UPLOAD_PRESET') {
+        alert('Please configure Cloudinary in admin.html. See instructions in CLOUDINARY_SETUP.md');
+        return;
+      }
 
-    function handleFile(file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        previewImg.src = e.target.result;
-        droppedPreview.classList.add('show');
-        updateDroppedCategorySelect();
-        droppedTitle.value = file.name.replace(/\.[^/.]+$/, '');
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function updateDroppedCategorySelect() {
-      droppedCategory.innerHTML = '';
-      data.categories.forEach(cat => {
-        const option = document.createElement('option');
-        option.value = cat.id;
-        option.textContent = cat.name;
-        droppedCategory.appendChild(option);
+      try {
+        cloudinary.openUploadWidget({
+        cloud_name: CLOUDINARY_CLOUD_NAME,
+        upload_preset: CLOUDINARY_UPLOAD_PRESET,
+        sources: ['local', 'url', 'camera'],
+        multiple: false,
+        folder: 'emma_knipst'
+      }, (error, result) => {
+        if (error) {
+          console.error('Cloudinary error:', error);
+          alert('Upload failed. Check console for details.');
+          return;
+        }
+        if (result && result.event === 'success') {
+          cloudinaryUploadedUrl = result.info.secure_url;
+          document.getElementById('cloudinary-uploads').innerHTML = `
+            <img src="${cloudinaryUploadedUrl}" style="max-width: 200px; max-height: 150px; object-fit: contain; margin-bottom: 0.5rem;">
+            <p style="font-size: 0.85rem; color: #28a745;">Uploaded successfully!</p>
+          `;
+          cloudinaryForm.style.display = 'block';
+          cloudinaryTitle.value = result.info.original_filename || 'Untitled';
+        }
       });
+      } catch (e) {
+        console.error('Widget error:', e);
+        alert('Error opening widget: ' + e.message);
+      }
     }
 
-    addDroppedBtn.addEventListener('click', () => {
-      const title = droppedTitle.value.trim() || 'Untitled';
-      const category = droppedCategory.value;
-      const src = previewImg.src;
+    cloudinaryUploadBtn.addEventListener('click', openCloudinaryWidget);
+
+    addCloudinaryBtn.addEventListener('click', () => {
+      if (!cloudinaryUploadedUrl) return;
+      
+      const title = cloudinaryTitle.value.trim() || 'Untitled';
+      const category = document.getElementById('cloudinary-category').value;
       
       data.photos.unshift({
         id: Date.now(),
-        src,
+        src: cloudinaryUploadedUrl,
         title,
         category
       });
       
       saveData();
-      droppedPreview.classList.remove('show');
-      previewImg.src = '';
-      droppedTitle.value = '';
+      cloudinaryUploadedUrl = null;
+      cloudinaryForm.style.display = 'none';
+      document.getElementById('cloudinary-uploads').innerHTML = '';
+      cloudinaryTitle.value = '';
     });
-  </script>
-</body>
+    </script>
+    <script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script>
+  </body>
 </html>
