@@ -14,7 +14,6 @@ Go to **Netlify Dashboard** → Your Site → **Site settings** → **Environmen
 |----------|-------|
 | SUPABASE_URL | `https://your-project-id.supabase.co` |
 | SUPABASE_ANON_KEY | `your-supabase-anon-key` |
-| ADMIN_PASSWORD | `your-strong-admin-password` |
 | CLOUDINARY_CLOUD_NAME | `your-cloudinary-cloud-name` |
 | CLOUDINARY_UPLOAD_PRESET | `your-cloudinary-upload-preset` |
 

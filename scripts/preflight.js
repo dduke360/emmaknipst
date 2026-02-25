@@ -57,7 +57,6 @@ function main() {
   const requiredEnv = [
     'SUPABASE_URL',
     'SUPABASE_ANON_KEY',
-    'ADMIN_PASSWORD',
     'CLOUDINARY_CLOUD_NAME',
     'CLOUDINARY_UPLOAD_PRESET'
   ];
@@ -90,11 +89,6 @@ function main() {
 
   const adminHtml = readFileSafe(path.join(ROOT, 'admin.html')) || '';
   const supabaseJs = readFileSafe(path.join(ROOT, 'supabase.js')) || '';
-  if (!adminHtml.includes('%ADMIN_PASSWORD%')) {
-    fail('admin.html should contain %ADMIN_PASSWORD% placeholder', failures);
-  } else {
-    ok('admin.html uses ADMIN_PASSWORD placeholder', successes);
-  }
   if (!adminHtml.includes('%CLOUDINARY_CLOUD_NAME%') || !adminHtml.includes('%CLOUDINARY_UPLOAD_PRESET%')) {
     fail('admin.html should contain Cloudinary placeholders', failures);
   } else {

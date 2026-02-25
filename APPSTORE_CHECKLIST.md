@@ -19,7 +19,6 @@
 - Set these in your build/deploy environment:
   - `SUPABASE_URL`
   - `SUPABASE_ANON_KEY`
-  - `ADMIN_PASSWORD`
   - `CLOUDINARY_CLOUD_NAME`
   - `CLOUDINARY_UPLOAD_PRESET`
 - Do not commit real secrets into tracked files.
