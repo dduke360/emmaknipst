@@ -9,6 +9,34 @@ let portfolioData = {
   photos: []
 };
 
+const THEME_KEY = 'emma_theme';
+let currentGalleryPhotos = [];
+let galleryResizeTimer = null;
+
+function setupTheme() {
+  const toggle = document.getElementById('theme-toggle');
+  if (!toggle) return;
+
+  const storedTheme = localStorage.getItem(THEME_KEY);
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const initialTheme = storedTheme || (prefersDark ? 'dark' : 'light');
+
+  applyTheme(initialTheme, toggle);
+
+  toggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next, toggle);
+    localStorage.setItem(THEME_KEY, next);
+  });
+}
+
+function applyTheme(theme, toggle) {
+  document.documentElement.setAttribute('data-theme', theme);
+  toggle.textContent = theme === 'dark' ? 'Light' : 'Dark';
+  toggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+}
+
 async function loadData() {
   try {
     const { data: photos, error: photosError } = await supabaseClient
@@ -51,6 +79,7 @@ function init() {
   renderContact();
   setupLightbox();
   setupNavigation();
+  setupResponsiveGallery();
 }
 
 function renderCategoryFilter() {
@@ -91,34 +120,98 @@ function renderCategoryFilter() {
 
 function renderGallery(photos) {
   const grid = document.getElementById('gallery-grid');
+  currentGalleryPhotos = photos;
   grid.innerHTML = '';
+  updateGalleryGridMetrics();
 
   photos.forEach((photo, index) => {
     const item = document.createElement('div');
     item.className = 'gallery-item';
-    item.style.animationDelay = `${index * 0.05}s`;
-    
+    item.style.animationDelay = `${index * 0.028}s`;
+
+    const span = getMosaicSpan(index, photos.length);
+    item.style.gridColumn = `span ${span.col}`;
+    item.style.gridRow = `span ${span.row}`;
+
     const hasLiked = localStorage.getItem(`liked_${photo.id}`);
-    
     item.innerHTML = `
       <img src="${photo.src}" alt="${photo.title}" loading="lazy">
       <div class="overlay">
         <span>${photo.title}</span>
-        <button class="like-btn ${hasLiked ? 'liked' : ''}" data-id="${photo.id}" data-likes="${photo.likes || 0}">
-          ♥ ${photo.likes || 0}
-        </button>
       </div>
+      <button class="like-btn ${hasLiked ? 'liked' : ''}" data-id="${photo.id}" data-likes="${photo.likes || 0}">
+        ♥ ${photo.likes || 0}
+      </button>
     `;
-    
+
     const likeBtn = item.querySelector('.like-btn');
     likeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleLike(photo.id, photo.likes || 0);
     });
-    
+
     item.addEventListener('click', () => openLightbox(photo));
     grid.appendChild(item);
   });
+}
+
+function setupResponsiveGallery() {
+  window.addEventListener('resize', () => {
+    clearTimeout(galleryResizeTimer);
+    galleryResizeTimer = setTimeout(() => {
+      updateGalleryGridMetrics();
+      if (currentGalleryPhotos.length > 0) {
+        renderGallery(currentGalleryPhotos);
+      }
+    }, 120);
+  });
+}
+
+function updateGalleryGridMetrics() {
+  const grid = document.getElementById('gallery-grid');
+  if (!grid) return;
+  const width = grid.clientWidth || 0;
+
+  let rowUnit = 38;
+  if (width > 1200) rowUnit = 56;
+  else if (width > 980) rowUnit = 48;
+  else if (width > 760) rowUnit = 42;
+  else if (width > 560) rowUnit = 34;
+
+  grid.style.setProperty('--row-unit', `${rowUnit}px`);
+}
+
+function getMosaicSpan(index, total) {
+  const isMobile = window.innerWidth < 700;
+  if (isMobile) {
+    const mobilePattern = [
+      { col: 12, row: 7 },
+      { col: 6, row: 5 },
+      { col: 6, row: 5 },
+      { col: 12, row: 6 }
+    ];
+    return mobilePattern[index % mobilePattern.length];
+  }
+
+  if (total === 1) return { col: 12, row: 9 };
+  if (total === 2) return { col: 6, row: 6 };
+
+  // Hero block like the reference: stacked left + dominant tile right.
+  if (index === 0) return { col: 4, row: 4 };
+  if (index === 1) return { col: 8, row: 9 };
+  if (index === 2) return { col: 4, row: 5 };
+
+  // Fill the remaining grid without trailing holes:
+  // final row becomes 12 | 6+6 | 4+4+4 depending on remainder.
+  const remaining = total - 3;
+  const pos = index - 3;
+  const remainder = remaining % 3;
+  const isLast = pos === remaining - 1;
+  const isLastTwo = pos >= remaining - 2;
+
+  if (remainder === 1 && isLast) return { col: 12, row: 5 };
+  if (remainder === 2 && isLastTwo) return { col: 6, row: 5 };
+  return { col: 4, row: 5 };
 }
 
 async function toggleLike(photoId, currentLikes) {
@@ -155,7 +248,9 @@ function renderAbout() {
   
   const about = portfolioData.photographer.about || '';
   const paragraphs = about.split('\n\n').filter(p => p.trim());
-  const html = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+  const html = paragraphs
+    .map((p, i) => `<p class="${i === 0 ? 'about-intro' : 'about-body'}">${p.replace(/\n/g, '<br>')}</p>`)
+    .join('');
   
   aboutText.innerHTML = html;
   email.href = `mailto:${portfolioData.photographer.email || ''}`;
@@ -217,3 +312,4 @@ function setupNavigation() {
 }
 
 loadData();
+setupTheme();
