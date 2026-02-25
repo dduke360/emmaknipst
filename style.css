@@ -194,6 +194,40 @@ main {
   background: color-mix(in srgb, var(--accent) 12%, var(--surface));
 }
 
+.bw-toggle-btn,
+.film-toggle-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  transition: 180ms ease;
+}
+
+.bw-toggle-btn {
+  margin-left: auto;
+}
+
+.film-toggle-btn {
+  margin-left: 0.35rem;
+}
+
+.bw-toggle-btn:hover,
+.film-toggle-btn:hover {
+  color: var(--text);
+}
+
+.bw-toggle-btn[aria-pressed="true"],
+.film-toggle-btn[aria-pressed="true"] {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--border));
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+}
+
 .gallery-grid {
   --row-unit: 46px;
   display: grid;
@@ -220,7 +254,7 @@ main {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 260ms ease;
+  transition: transform 260ms ease, filter 220ms ease;
 }
 
 .gallery-item:hover img {
@@ -426,6 +460,41 @@ main {
   max-height: 80vh;
   object-fit: contain;
   border-radius: 0.7rem;
+  transition: filter 220ms ease;
+}
+
+body.bw-enabled .gallery-item img,
+body.bw-enabled .lightbox-img {
+  filter: grayscale(1) contrast(1.1);
+}
+
+body.iso400-enabled .gallery-item img,
+body.iso400-enabled .lightbox-img {
+  filter: contrast(1.08) saturate(1.14) sepia(0.2) brightness(0.95) hue-rotate(-7deg);
+}
+
+body.iso400-enabled .gallery-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, rgba(0, 0, 0, 0) 34%, rgba(0, 0, 0, 0.24) 100%),
+    repeating-radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.08) 0 0.8px, rgba(0, 0, 0, 0.07) 0.8px 1.6px);
+  mix-blend-mode: soft-light;
+  opacity: 0.72;
+}
+
+body.iso400-enabled .lightbox.active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.5) 100%),
+    repeating-radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.09) 0 0.8px, rgba(0, 0, 0, 0.08) 0.8px 1.7px);
+  mix-blend-mode: soft-light;
+  opacity: 0.66;
 }
 
 .lightbox-title {
@@ -484,6 +553,16 @@ main {
     white-space: nowrap;
     flex: 0 0 auto;
     scroll-snap-align: start;
+  }
+
+  .bw-toggle-btn {
+    margin-left: 0;
+    flex: 0 0 auto;
+  }
+
+  .film-toggle-btn {
+    margin-left: 0;
+    flex: 0 0 auto;
   }
 
   .gallery-grid {

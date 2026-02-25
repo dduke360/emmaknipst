@@ -10,11 +10,15 @@ let portfolioData = {
 };
 
 const THEME_KEY = 'emma_theme_mode';
+const IMAGE_TONE_KEY = 'emma_image_tone';
 let currentGalleryPhotos = [];
 let galleryResizeTimer = null;
 let currentThemeMode = 'color';
+let imageToneMode = 'color';
 let selectedBackgroundColor = '';
 let themeToggleEl = null;
+let imageToneToggleEl = null;
+let isoFilmToggleEl = null;
 let lightboxPhotos = [];
 let lightboxIndex = -1;
 let lastGalleryWidth = 0;
@@ -278,6 +282,36 @@ function renderCategoryFilter() {
     filterContainer.appendChild(btn);
   });
 
+  imageToneToggleEl = document.createElement('button');
+  imageToneToggleEl.type = 'button';
+  imageToneToggleEl.className = 'bw-toggle-btn';
+  imageToneToggleEl.id = 'bw-toggle';
+  imageToneToggleEl.textContent = 'B/W';
+  filterContainer.appendChild(imageToneToggleEl);
+
+  isoFilmToggleEl = document.createElement('button');
+  isoFilmToggleEl.type = 'button';
+  isoFilmToggleEl.className = 'film-toggle-btn';
+  isoFilmToggleEl.id = 'iso400-toggle';
+  isoFilmToggleEl.textContent = 'ISO 400 Film';
+  filterContainer.appendChild(isoFilmToggleEl);
+
+  const storedTone = localStorage.getItem(IMAGE_TONE_KEY);
+  const initialTone = storedTone === 'bw' || storedTone === 'iso400' ? storedTone : 'color';
+  applyImageToneMode(initialTone);
+
+  imageToneToggleEl.addEventListener('click', () => {
+    const next = imageToneMode === 'bw' ? 'color' : 'bw';
+    applyImageToneMode(next);
+    localStorage.setItem(IMAGE_TONE_KEY, next);
+  });
+
+  isoFilmToggleEl.addEventListener('click', () => {
+    const next = imageToneMode === 'iso400' ? 'color' : 'iso400';
+    applyImageToneMode(next);
+    localStorage.setItem(IMAGE_TONE_KEY, next);
+  });
+
   filterContainer.addEventListener('click', (e) => {
     if (e.target.classList.contains('filter-btn')) {
       document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
@@ -294,6 +328,24 @@ function renderCategoryFilter() {
       renderGallery(filteredPhotos);
     }
   });
+}
+
+function applyImageToneMode(mode) {
+  imageToneMode = mode === 'bw' || mode === 'iso400' ? mode : 'color';
+  document.body.classList.toggle('bw-enabled', imageToneMode === 'bw');
+  document.body.classList.toggle('iso400-enabled', imageToneMode === 'iso400');
+
+  if (imageToneToggleEl) {
+    const isBw = imageToneMode === 'bw';
+    imageToneToggleEl.setAttribute('aria-pressed', String(isBw));
+    imageToneToggleEl.setAttribute('aria-label', isBw ? 'Disable black and white mode' : 'Enable black and white mode');
+  }
+
+  if (isoFilmToggleEl) {
+    const isIso = imageToneMode === 'iso400';
+    isoFilmToggleEl.setAttribute('aria-pressed', String(isIso));
+    isoFilmToggleEl.setAttribute('aria-label', isIso ? 'Disable ISO 400 film look' : 'Enable ISO 400 film look');
+  }
 }
 
 function renderGallery(photos) {
