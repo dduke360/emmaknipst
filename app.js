@@ -9,32 +9,206 @@ let portfolioData = {
   photos: []
 };
 
-const THEME_KEY = 'emma_theme';
+const THEME_KEY = 'emma_theme_mode';
 let currentGalleryPhotos = [];
 let galleryResizeTimer = null;
+let currentThemeMode = 'color';
+let selectedBackgroundColor = '';
+let themeToggleEl = null;
+let lightboxPhotos = [];
+let lightboxIndex = -1;
+let lastGalleryWidth = 0;
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function normalizeHex(hex) {
+  if (!hex) return null;
+  let value = String(hex).trim().toLowerCase();
+  if (!value.startsWith('#')) value = `#${value}`;
+  if (/^#[0-9a-f]{3}$/.test(value)) {
+    value = `#${value[1]}${value[1]}${value[2]}${value[2]}${value[3]}${value[3]}`;
+  }
+  return /^#[0-9a-f]{6}$/.test(value) ? value : null;
+}
+
+function hexToRgb(hex) {
+  const n = normalizeHex(hex);
+  if (!n) return null;
+  const int = parseInt(n.slice(1), 16);
+  return {
+    r: (int >> 16) & 255,
+    g: (int >> 8) & 255,
+    b: int & 255
+  };
+}
+
+function rgbToHex({ r, g, b }) {
+  const toHex = (v) => clamp(Math.round(v), 0, 255).toString(16).padStart(2, '0');
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+function mixHex(a, b, t) {
+  const c1 = hexToRgb(a);
+  const c2 = hexToRgb(b);
+  if (!c1 || !c2) return a;
+  const ratio = clamp(t, 0, 1);
+  return rgbToHex({
+    r: c1.r + (c2.r - c1.r) * ratio,
+    g: c1.g + (c2.g - c1.g) * ratio,
+    b: c1.b + (c2.b - c1.b) * ratio
+  });
+}
+
+function rgbToHsl({ r, g, b }) {
+  const nr = r / 255;
+  const ng = g / 255;
+  const nb = b / 255;
+  const max = Math.max(nr, ng, nb);
+  const min = Math.min(nr, ng, nb);
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case nr:
+        h = ((ng - nb) / d + (ng < nb ? 6 : 0)) / 6;
+        break;
+      case ng:
+        h = ((nb - nr) / d + 2) / 6;
+        break;
+      default:
+        h = ((nr - ng) / d + 4) / 6;
+    }
+  }
+
+  return { h, s, l };
+}
+
+function hslToRgb({ h, s, l }) {
+  if (s === 0) {
+    const v = Math.round(l * 255);
+    return { r: v, g: v, b: v };
+  }
+
+  const hue2rgb = (p, q, t) => {
+    let tt = t;
+    if (tt < 0) tt += 1;
+    if (tt > 1) tt -= 1;
+    if (tt < 1 / 6) return p + (q - p) * 6 * tt;
+    if (tt < 1 / 2) return q;
+    if (tt < 2 / 3) return p + (q - p) * (2 / 3 - tt) * 6;
+    return p;
+  };
+
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+  return {
+    r: Math.round(hue2rgb(p, q, h + 1 / 3) * 255),
+    g: Math.round(hue2rgb(p, q, h) * 255),
+    b: Math.round(hue2rgb(p, q, h - 1 / 3) * 255)
+  };
+}
+
+function relativeLuminance(hex) {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return 0;
+  const toLinear = (v) => {
+    const srgb = v / 255;
+    return srgb <= 0.04045 ? srgb / 12.92 : ((srgb + 0.055) / 1.055) ** 2.4;
+  };
+  const r = toLinear(rgb.r);
+  const g = toLinear(rgb.g);
+  const b = toLinear(rgb.b);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function derivePalette(bgHex) {
+  const bg = normalizeHex(bgHex);
+  if (!bg) return null;
+
+  const lum = relativeLuminance(bg);
+  const isDark = lum < 0.34;
+  const text = isDark ? '#f5f5f7' : '#111114';
+  const white = '#ffffff';
+  const black = '#000000';
+
+  const surface = isDark ? mixHex(bg, white, 0.1) : mixHex(bg, white, 0.72);
+  const muted = mixHex(text, bg, isDark ? 0.46 : 0.56);
+  const border = mixHex(text, bg, isDark ? 0.72 : 0.84);
+  const canvas = isDark ? mixHex(bg, black, 0.2) : mixHex(bg, black, 0.1);
+  const tile = isDark ? mixHex(bg, white, 0.14) : mixHex(bg, black, 0.08);
+
+  const hsl = rgbToHsl(hexToRgb(bg));
+  const accentHsl = {
+    h: (hsl.h + (isDark ? 0.06 : 0.08)) % 1,
+    s: clamp(hsl.s + 0.22, 0.2, 0.92),
+    l: isDark ? clamp(hsl.l + 0.34, 0.58, 0.76) : clamp(hsl.l - 0.22, 0.28, 0.52)
+  };
+  const accent = rgbToHex(hslToRgb(accentHsl));
+
+  return {
+    bg,
+    surface,
+    text,
+    muted,
+    border,
+    accent,
+    shadow: isDark ? '0 20px 44px rgba(0,0,0,0.42)' : '0 18px 40px rgba(25,28,35,0.08)',
+    galleryCanvas: canvas,
+    galleryTile: tile
+  };
+}
+
+function applyCustomBackground(color) {
+  const palette = derivePalette(color);
+  const root = document.documentElement;
+
+  if (!palette) {
+    [
+      '--bg-custom', '--surface', '--text', '--muted', '--border', '--accent',
+      '--shadow', '--gallery-canvas', '--gallery-tile'
+    ].forEach(v => root.style.removeProperty(v));
+    return;
+  }
+
+  root.style.setProperty('--bg-custom', palette.bg);
+  root.style.setProperty('--surface', palette.surface);
+  root.style.setProperty('--text', palette.text);
+  root.style.setProperty('--muted', palette.muted);
+  root.style.setProperty('--border', palette.border);
+  root.style.setProperty('--accent', palette.accent);
+  root.style.setProperty('--shadow', palette.shadow);
+  root.style.setProperty('--gallery-canvas', palette.galleryCanvas);
+  root.style.setProperty('--gallery-tile', palette.galleryTile);
+}
 
 function setupTheme() {
-  const toggle = document.getElementById('theme-toggle');
-  if (!toggle) return;
+  themeToggleEl = document.getElementById('theme-toggle');
+  if (!themeToggleEl) return;
 
-  const storedTheme = localStorage.getItem(THEME_KEY);
-  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const initialTheme = storedTheme || (prefersDark ? 'dark' : 'light');
+  const storedMode = localStorage.getItem(THEME_KEY);
+  const initialMode = storedMode === 'light' ? 'light' : 'color';
+  applyThemeMode(initialMode);
 
-  applyTheme(initialTheme, toggle);
-
-  toggle.addEventListener('click', () => {
-    const current = document.documentElement.getAttribute('data-theme') || 'light';
-    const next = current === 'dark' ? 'light' : 'dark';
-    applyTheme(next, toggle);
+  themeToggleEl.addEventListener('click', () => {
+    const next = currentThemeMode === 'color' ? 'light' : 'color';
+    applyThemeMode(next);
     localStorage.setItem(THEME_KEY, next);
   });
 }
 
-function applyTheme(theme, toggle) {
-  document.documentElement.setAttribute('data-theme', theme);
-  toggle.textContent = theme === 'dark' ? 'Light' : 'Dark';
-  toggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+function applyThemeMode(mode) {
+  currentThemeMode = mode;
+  document.documentElement.setAttribute('data-theme', 'light');
+  applyCustomBackground(mode === 'color' ? selectedBackgroundColor : null);
+  if (!themeToggleEl) return;
+  themeToggleEl.textContent = mode === 'color' ? 'Light' : 'Color';
+  themeToggleEl.setAttribute('aria-label', mode === 'color' ? 'Switch to light mode' : 'Switch to color mode');
 }
 
 async function loadData() {
@@ -61,10 +235,13 @@ async function loadData() {
     portfolioData.photographer = {
       about: settingsObj.about || '',
       email: settingsObj.email || '',
-      instagram: settingsObj.instagram || ''
+      instagram: settingsObj.instagram || '',
+      backgroundColor: settingsObj.background_color || ''
     };
     
     localStorage.setItem('emma_photos', JSON.stringify(portfolioData));
+    selectedBackgroundColor = portfolioData.photographer.backgroundColor || '';
+    applyThemeMode(currentThemeMode);
 
     init();
   } catch (error) {
@@ -105,6 +282,7 @@ function renderCategoryFilter() {
     if (e.target.classList.contains('filter-btn')) {
       document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
       e.target.classList.add('active');
+      e.target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
       
       const category = e.target.dataset.category;
       
@@ -123,6 +301,7 @@ function renderGallery(photos) {
   currentGalleryPhotos = photos;
   grid.innerHTML = '';
   updateGalleryGridMetrics();
+  lastGalleryWidth = grid.clientWidth || lastGalleryWidth;
 
   photos.forEach((photo, index) => {
     const item = document.createElement('div');
@@ -159,6 +338,15 @@ function setupResponsiveGallery() {
   window.addEventListener('resize', () => {
     clearTimeout(galleryResizeTimer);
     galleryResizeTimer = setTimeout(() => {
+      const grid = document.getElementById('gallery-grid');
+      if (!grid) return;
+      const width = grid.clientWidth || 0;
+
+      // On mobile, browser chrome show/hide triggers many resize events with unchanged width.
+      // Re-render only when width changes enough to affect tile packing.
+      if (Math.abs(width - lastGalleryWidth) < 8) return;
+
+      lastGalleryWidth = width;
       updateGalleryGridMetrics();
       if (currentGalleryPhotos.length > 0) {
         renderGallery(currentGalleryPhotos);
@@ -265,15 +453,13 @@ function setupLightbox() {
   const lightboxImg = document.getElementById('lightbox-img');
   const lightboxTitle = document.getElementById('lightbox-title');
   const closeBtn = document.querySelector('.lightbox-close');
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchStartTime = 0;
 
-  window.openLightbox = async (photo) => {
-    lightboxImg.src = photo.src.replace('w=800', 'w=1600');
-    lightboxTitle.textContent = photo.title;
-    lightbox.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    
-    // Increment view count
+  const updateViews = async (photo) => {
     const newViews = (photo.views || 0) + 1;
+    photo.views = newViews;
     try {
       await supabaseClient
         .from('photos')
@@ -284,17 +470,73 @@ function setupLightbox() {
     }
   };
 
+  const showPhoto = async (photo) => {
+    if (!photo) return;
+    lightboxImg.src = photo.src.replace('w=800', 'w=1600');
+    lightboxTitle.textContent = photo.title;
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    await updateViews(photo);
+  };
+
+  const navigatePhoto = async (direction) => {
+    if (!lightbox.classList.contains('active') || lightboxPhotos.length < 2) return;
+    lightboxIndex = (lightboxIndex + direction + lightboxPhotos.length) % lightboxPhotos.length;
+    await showPhoto(lightboxPhotos[lightboxIndex]);
+  };
+
+  window.openLightbox = async (photo) => {
+    lightboxPhotos = currentGalleryPhotos.length ? currentGalleryPhotos : portfolioData.photos;
+    lightboxIndex = lightboxPhotos.findIndex(p => p.id === photo.id);
+    if (lightboxIndex === -1) {
+      lightboxPhotos = [photo];
+      lightboxIndex = 0;
+    }
+    await showPhoto(photo);
+  };
+
   const closeLightbox = () => {
     lightbox.classList.remove('active');
     document.body.style.overflow = '';
+    lightboxPhotos = [];
+    lightboxIndex = -1;
   };
 
   closeBtn.addEventListener('click', closeLightbox);
+  lightboxImg.addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) closeLightbox();
   });
-  document.addEventListener('keydown', (e) => {
+
+  lightbox.addEventListener('touchstart', (e) => {
+    if (!lightbox.classList.contains('active')) return;
+    const touch = e.changedTouches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+    touchStartTime = Date.now();
+  }, { passive: true });
+
+  lightbox.addEventListener('touchend', async (e) => {
+    if (!lightbox.classList.contains('active')) return;
+    const touch = e.changedTouches[0];
+    const dx = touch.clientX - touchStartX;
+    const dy = touch.clientY - touchStartY;
+    const dt = Date.now() - touchStartTime;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    const isHorizontalSwipe = absX > 45 && absX > absY * 1.3 && dt < 700;
+    if (!isHorizontalSwipe) return;
+
+    if (dx < 0) await navigatePhoto(1);
+    if (dx > 0) await navigatePhoto(-1);
+  }, { passive: true });
+
+  document.addEventListener('keydown', async (e) => {
+    if (!lightbox.classList.contains('active')) return;
     if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') await navigatePhoto(1);
+    if (e.key === 'ArrowLeft') await navigatePhoto(-1);
   });
 }
 

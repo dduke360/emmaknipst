@@ -43,7 +43,7 @@
       margin: 0;
       min-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-      background: var(--admin-bg);
+      background: var(--admin-bg-custom, var(--admin-bg));
       color: var(--admin-text);
     }
 
@@ -324,6 +324,51 @@
       color: var(--admin-success);
     }
 
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 0.55rem;
+      margin-bottom: 0.5rem;
+      max-width: 460px;
+    }
+
+    .color-group {
+      margin-bottom: 0.8rem;
+    }
+
+    .color-group-title {
+      font-size: 0.72rem;
+      color: var(--admin-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.4rem;
+    }
+
+    .color-chip {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 999px;
+      border: 2px solid var(--admin-border);
+      cursor: pointer;
+      background: transparent;
+      transition: transform 150ms ease, border-color 150ms ease;
+    }
+
+    .color-chip:hover {
+      transform: scale(1.05);
+    }
+
+    .color-chip.active {
+      border-color: var(--admin-text);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--admin-text) 20%, transparent);
+    }
+
+    .color-help {
+      font-size: 0.78rem;
+      color: var(--admin-muted);
+      margin-bottom: 0.75rem;
+    }
+
     .login-screen {
       min-height: 100vh;
       display: flex;
@@ -382,6 +427,10 @@
       .category-form {
         flex-direction: column;
         align-items: stretch;
+      }
+
+      .color-grid {
+        grid-template-columns: repeat(6, 1fr);
       }
     }
   </style>
@@ -457,6 +506,13 @@
     </div>
 
     <div class="admin-section">
+      <h2>Background Color</h2>
+      <p class="color-help">Choose a background color for the public site. 8 light presets and 8 dark presets.</p>
+      <div id="background-palette"></div>
+      <button id="save-background-btn" class="btn btn-primary">Save Background</button>
+    </div>
+
+    <div class="admin-section">
       <h2>All Photos</h2>
       <div id="photos-grid" class="photos-grid"></div>
     </div>
@@ -484,10 +540,24 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
   <script>
-    const THEME_KEY = 'emma_theme';
+    const THEME_KEY = 'emma_theme_mode';
     const ADMIN_PASSWORD = 'emma2026';
+    const LIGHT_COLORS = [
+      '#f2f2f7', '#ffffff', '#f8f4ef', '#f6efe8',
+      '#eef2f7', '#e9f3ff', '#eaf7f0', '#f7edf7'
+    ];
+    const DARK_COLORS = [
+      '#2b2d31', '#1f2937', '#202a44', '#5a1e1e',
+      '#1b4332', '#2c2438', '#3b2f1f', '#1e2a2f'
+    ];
+    const BACKGROUND_COLORS = [...LIGHT_COLORS, ...DARK_COLORS];
+    const BACKGROUND_COLOR_GROUPS = [
+      { title: 'Light Colors', colors: LIGHT_COLORS },
+      { title: 'Dark Colors', colors: DARK_COLORS }
+    ];
     let data = null;
     let cloudinaryUploadedUrl = null;
+    let selectedBackgroundColor = BACKGROUND_COLORS[0];
 
     // Cloudinary config
     const CLOUDINARY_CLOUD_NAME = 'djoh49z3m';
@@ -502,33 +572,236 @@
     const categoryList = document.getElementById('category-list');
     const themeToggleLogin = document.getElementById('theme-toggle-login');
     const themeToggleAdmin = document.getElementById('theme-toggle-admin');
+    const backgroundPalette = document.getElementById('background-palette');
+    const saveBackgroundBtn = document.getElementById('save-background-btn');
 
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function normalizeHex(hex) {
+      if (!hex) return null;
+      let value = String(hex).trim().toLowerCase();
+      if (!value.startsWith('#')) value = `#${value}`;
+      if (/^#[0-9a-f]{3}$/.test(value)) {
+        value = `#${value[1]}${value[1]}${value[2]}${value[2]}${value[3]}${value[3]}`;
+      }
+      return /^#[0-9a-f]{6}$/.test(value) ? value : null;
+    }
+
+    function hexToRgb(hex) {
+      const n = normalizeHex(hex);
+      if (!n) return null;
+      const int = parseInt(n.slice(1), 16);
+      return {
+        r: (int >> 16) & 255,
+        g: (int >> 8) & 255,
+        b: int & 255
+      };
+    }
+
+    function rgbToHex({ r, g, b }) {
+      const toHex = (v) => clamp(Math.round(v), 0, 255).toString(16).padStart(2, '0');
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    }
+
+    function mixHex(a, b, t) {
+      const c1 = hexToRgb(a);
+      const c2 = hexToRgb(b);
+      if (!c1 || !c2) return a;
+      const ratio = clamp(t, 0, 1);
+      return rgbToHex({
+        r: c1.r + (c2.r - c1.r) * ratio,
+        g: c1.g + (c2.g - c1.g) * ratio,
+        b: c1.b + (c2.b - c1.b) * ratio
+      });
+    }
+
+    function rgbToHsl({ r, g, b }) {
+      const nr = r / 255;
+      const ng = g / 255;
+      const nb = b / 255;
+      const max = Math.max(nr, ng, nb);
+      const min = Math.min(nr, ng, nb);
+      let h = 0;
+      let s = 0;
+      const l = (max + min) / 2;
+
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case nr:
+            h = ((ng - nb) / d + (ng < nb ? 6 : 0)) / 6;
+            break;
+          case ng:
+            h = ((nb - nr) / d + 2) / 6;
+            break;
+          default:
+            h = ((nr - ng) / d + 4) / 6;
+        }
+      }
+
+      return { h, s, l };
+    }
+
+    function hslToRgb({ h, s, l }) {
+      if (s === 0) {
+        const v = Math.round(l * 255);
+        return { r: v, g: v, b: v };
+      }
+
+      const hue2rgb = (p, q, t) => {
+        let tt = t;
+        if (tt < 0) tt += 1;
+        if (tt > 1) tt -= 1;
+        if (tt < 1 / 6) return p + (q - p) * 6 * tt;
+        if (tt < 1 / 2) return q;
+        if (tt < 2 / 3) return p + (q - p) * (2 / 3 - tt) * 6;
+        return p;
+      };
+
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      return {
+        r: Math.round(hue2rgb(p, q, h + 1 / 3) * 255),
+        g: Math.round(hue2rgb(p, q, h) * 255),
+        b: Math.round(hue2rgb(p, q, h - 1 / 3) * 255)
+      };
+    }
+
+    function relativeLuminance(hex) {
+      const rgb = hexToRgb(hex);
+      if (!rgb) return 0;
+      const toLinear = (v) => {
+        const srgb = v / 255;
+        return srgb <= 0.04045 ? srgb / 12.92 : ((srgb + 0.055) / 1.055) ** 2.4;
+      };
+      const r = toLinear(rgb.r);
+      const g = toLinear(rgb.g);
+      const b = toLinear(rgb.b);
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+
+    function derivePalette(bgHex) {
+      const bg = normalizeHex(bgHex);
+      if (!bg) return null;
+
+      const lum = relativeLuminance(bg);
+      const isDark = lum < 0.34;
+      const text = isDark ? '#f5f5f7' : '#111114';
+      const white = '#ffffff';
+
+      const surface = isDark ? mixHex(bg, white, 0.1) : mixHex(bg, white, 0.72);
+      const surfaceStrong = isDark ? mixHex(bg, white, 0.14) : mixHex(bg, white, 0.86);
+      const muted = mixHex(text, bg, isDark ? 0.46 : 0.56);
+      const border = mixHex(text, bg, isDark ? 0.72 : 0.84);
+
+      const hsl = rgbToHsl(hexToRgb(bg));
+      const accentHsl = {
+        h: (hsl.h + (isDark ? 0.06 : 0.08)) % 1,
+        s: clamp(hsl.s + 0.22, 0.2, 0.92),
+        l: isDark ? clamp(hsl.l + 0.34, 0.58, 0.76) : clamp(hsl.l - 0.22, 0.28, 0.52)
+      };
+      const accent = rgbToHex(hslToRgb(accentHsl));
+
+      return {
+        bg,
+        surface,
+        surfaceStrong,
+        text,
+        muted,
+        border,
+        accent,
+        shadow: isDark ? '0 20px 44px rgba(0,0,0,0.42)' : '0 18px 40px rgba(25,28,35,0.08)'
+      };
+    }
+
+    let currentThemeMode = 'color';
     setupTheme();
 
     function setupTheme() {
-      const storedTheme = localStorage.getItem(THEME_KEY);
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const initialTheme = storedTheme || (prefersDark ? 'dark' : 'light');
-      applyTheme(initialTheme);
+      const storedMode = localStorage.getItem(THEME_KEY);
+      const initialMode = storedMode === 'light' ? 'light' : 'color';
+      applyThemeMode(initialMode);
 
       [themeToggleLogin, themeToggleAdmin].forEach(toggle => {
         if (!toggle) return;
         toggle.addEventListener('click', () => {
-          const current = document.documentElement.getAttribute('data-theme') || 'light';
-          const next = current === 'dark' ? 'light' : 'dark';
-          applyTheme(next);
+          const next = currentThemeMode === 'color' ? 'light' : 'color';
+          applyThemeMode(next);
           localStorage.setItem(THEME_KEY, next);
         });
       });
     }
 
-    function applyTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      const label = theme === 'dark' ? 'Light' : 'Dark';
+    function applyThemeMode(mode) {
+      currentThemeMode = mode;
+      document.documentElement.setAttribute('data-theme', 'light');
+      applyAdminBackground(mode === 'color' ? selectedBackgroundColor : null);
+      const label = mode === 'color' ? 'Light' : 'Color';
       [themeToggleLogin, themeToggleAdmin].forEach(toggle => {
         if (!toggle) return;
         toggle.textContent = label;
-        toggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+        toggle.setAttribute('aria-label', mode === 'color' ? 'Switch to light mode' : 'Switch to color mode');
+      });
+    }
+
+    function applyAdminBackground(color) {
+      const palette = derivePalette(color);
+      const root = document.documentElement;
+
+      if (!palette) {
+        [
+          '--admin-bg-custom', '--admin-surface', '--admin-surface-strong', '--admin-text',
+          '--admin-muted', '--admin-border', '--admin-accent', '--admin-shadow'
+        ].forEach(v => root.style.removeProperty(v));
+        return;
+      }
+
+      root.style.setProperty('--admin-bg-custom', palette.bg);
+      root.style.setProperty('--admin-surface', palette.surface);
+      root.style.setProperty('--admin-surface-strong', palette.surfaceStrong);
+      root.style.setProperty('--admin-text', palette.text);
+      root.style.setProperty('--admin-muted', palette.muted);
+      root.style.setProperty('--admin-border', palette.border);
+      root.style.setProperty('--admin-accent', palette.accent);
+      root.style.setProperty('--admin-shadow', palette.shadow);
+    }
+
+    function renderBackgroundPicker() {
+      backgroundPalette.innerHTML = '';
+      BACKGROUND_COLOR_GROUPS.forEach(group => {
+        const groupWrap = document.createElement('div');
+        groupWrap.className = 'color-group';
+
+        const title = document.createElement('div');
+        title.className = 'color-group-title';
+        title.textContent = group.title;
+        groupWrap.appendChild(title);
+
+        const grid = document.createElement('div');
+        grid.className = 'color-grid';
+
+        group.colors.forEach(color => {
+          const chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = `color-chip ${selectedBackgroundColor === color ? 'active' : ''}`;
+          chip.style.background = color;
+          chip.title = color;
+          chip.setAttribute('aria-label', `Background color ${color}`);
+          chip.addEventListener('click', () => {
+            selectedBackgroundColor = color;
+            if (currentThemeMode === 'color') {
+              applyAdminBackground(color);
+            }
+            renderBackgroundPicker();
+          });
+          grid.appendChild(chip);
+        });
+
+        groupWrap.appendChild(grid);
+        backgroundPalette.appendChild(groupWrap);
       });
     }
 
@@ -545,9 +818,7 @@
     });
 
     logoutBtn.addEventListener('click', () => {
-      loginScreen.classList.remove('hidden');
-      adminApp.classList.add('hidden');
-      document.getElementById('password').value = '';
+      window.location.href = '/index.html';
     });
 
     async function loadData() {
@@ -577,7 +848,8 @@
           photographer: {
             about: settingsObj.about || '',
             email: settingsObj.email || '',
-            instagram: settingsObj.instagram || ''
+            instagram: settingsObj.instagram || '',
+            backgroundColor: settingsObj.background_color || BACKGROUND_COLORS[0]
           },
           categories: [
             { id: 'portraits', name: 'Portraits' },
@@ -590,6 +862,8 @@
 
         // Also save to localStorage as backup
         localStorage.setItem('emma_photos', JSON.stringify(data));
+        selectedBackgroundColor = data.photographer.backgroundColor || BACKGROUND_COLORS[0];
+        applyThemeMode(currentThemeMode);
 
         render();
       } catch (error) {
@@ -598,6 +872,8 @@
         const stored = localStorage.getItem('emma_photos');
         if (stored) {
           data = JSON.parse(stored);
+          selectedBackgroundColor = (data.photographer && data.photographer.backgroundColor) || BACKGROUND_COLORS[0];
+          applyThemeMode(currentThemeMode);
           render();
         } else {
           alert('Failed to load data. Check console for details.');
@@ -650,6 +926,7 @@
       renderPhotos();
       renderAboutForm();
       renderStats();
+      renderBackgroundPicker();
     }
 
     function renderStats() {
@@ -733,6 +1010,13 @@
       localStorage.setItem('emma_photos', JSON.stringify(data));
       
       alert('About saved to cloud!');
+    });
+
+    saveBackgroundBtn.addEventListener('click', async () => {
+      await saveSetting('background_color', selectedBackgroundColor);
+      data.photographer.backgroundColor = selectedBackgroundColor;
+      localStorage.setItem('emma_photos', JSON.stringify(data));
+      alert('Background color saved!');
     });
 
     addCategoryForm.addEventListener('submit', (e) => {

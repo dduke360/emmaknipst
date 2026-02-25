@@ -11,6 +11,8 @@
   --muted: #6b6b73;
   --border: rgba(17, 17, 20, 0.08);
   --accent: #0a84ff;
+  --gallery-canvas: #e8ebf2;
+  --gallery-tile: #dfe4ec;
   --radius-lg: 24px;
   --radius-md: 16px;
   --radius-sm: 12px;
@@ -24,6 +26,8 @@
   --muted: #a1a1aa;
   --border: rgba(245, 245, 247, 0.12);
   --accent: #64d2ff;
+  --gallery-canvas: #1f2024;
+  --gallery-tile: #2a2b30;
   --shadow: 0 20px 44px rgba(0, 0, 0, 0.42);
 }
 
@@ -33,7 +37,7 @@ html {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-  background: var(--bg);
+  background: var(--bg-custom, var(--bg));
   color: var(--text);
   line-height: 1.6;
   min-height: 100vh;
@@ -51,7 +55,7 @@ a {
   z-index: 100;
   padding: 1rem;
   border-bottom: 1px solid var(--border);
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  background: color-mix(in srgb, var(--bg-custom, var(--bg)) 82%, transparent);
   backdrop-filter: saturate(160%) blur(14px);
 }
 
@@ -128,10 +132,11 @@ main {
 .hero-section h1 {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
   font-weight: 650;
-  font-size: clamp(1.55rem, 3.3vw, 2.45rem);
+  font-size: clamp(1.35rem, 2.5vw, 2rem);
   letter-spacing: -0.02em;
   line-height: 1.15;
-  max-width: 14ch;
+  max-width: none;
+  white-space: nowrap;
 }
 
 .hero-copy {
@@ -198,8 +203,8 @@ main {
   gap: 0.72rem;
   padding: 0.72rem;
   border-radius: 20px;
-  background: #1f2024;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--gallery-canvas);
+  border: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
 }
 
 .gallery-item {
@@ -207,7 +212,7 @@ main {
   cursor: pointer;
   border-radius: 14px;
   overflow: hidden;
-  background: #2a2b30;
+  background: var(--gallery-tile);
   animation: rise-in 520ms ease both;
 }
 
@@ -312,7 +317,9 @@ main {
 }
 
 .about-text {
-  max-width: 66ch;
+  max-width: 82ch;
+  margin: 0 auto;
+  text-align: center;
   position: relative;
   z-index: 1;
 }
@@ -329,12 +336,16 @@ main {
   font-size: clamp(1rem, 1.55vw, 1.16rem);
   line-height: 1.42;
   letter-spacing: -0.01em;
-  max-width: 34ch;
+  max-width: 46ch;
+  margin-left: auto;
+  margin-right: auto;
   margin-bottom: 1rem;
 }
 
 .about-text .about-body {
-  max-width: 62ch;
+  max-width: 78ch;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .email-link {
@@ -454,6 +465,27 @@ main {
     margin-bottom: 1.5rem;
   }
 
+  .category-filter {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0 0.15rem 0.35rem;
+    margin-inline: -0.15rem;
+    scroll-snap-type: x proximity;
+    mask-image: linear-gradient(to right, transparent 0, black 14px, black calc(100% - 14px), transparent 100%);
+  }
+
+  .category-filter::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-btn {
+    white-space: nowrap;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
   .gallery-grid {
     gap: 0.55rem;
     padding: 0.55rem;
@@ -476,17 +508,11 @@ main {
   }
 
   .hero-section h1 {
-    max-width: 13ch;
+    white-space: normal;
   }
 
   .category-filter {
-    flex-wrap: nowrap;
-    overflow-x: auto;
     padding-bottom: 0.3rem;
-  }
-
-  .filter-btn {
-    white-space: nowrap;
   }
 
   .gallery-grid {
