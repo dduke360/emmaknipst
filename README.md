@@ -1,5 +1,22 @@
 # Emma Sophie Weber Portfolio
 
+## Local Web Test
+
+1. `.env` anlegen (z. B. aus `.env.example`):
+
+```bash
+cp .env.example .env
+```
+
+2. Werte in `.env` eintragen (Supabase, Admin, Cloudinary).
+3. Lokal starten:
+
+```bash
+npm run dev
+```
+
+Das baut nach `www/` mit deinen `.env`-Werten und startet dann einen lokalen Server.
+
 ## iOS Workflow (Capacitor)
 
 Nutze für den iPhone-App-Build diesen Ablauf:

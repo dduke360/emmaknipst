@@ -808,6 +808,10 @@
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const password = document.getElementById('password').value;
+      if (ADMIN_PASSWORD === 'emma2026') {
+        alert('Admin password is not configured. Set ADMIN_PASSWORD in your environment and run the build.');
+        return;
+      }
       if (password === ADMIN_PASSWORD) {
         loginScreen.classList.add('hidden');
         adminApp.classList.remove('hidden');
@@ -1060,7 +1064,10 @@
         return;
       }
 
-      if (CLOUDINARY_CLOUD_NAME === 'YOUR_CLOUD_NAME' || CLOUDINARY_UPLOAD_PRESET === 'YOUR_UPLOAD_PRESET') {
+      if (
+        CLOUDINARY_CLOUD_NAME.includes('djoh49z3m') ||
+        CLOUDINARY_UPLOAD_PRESET.includes('emmaknipst')
+      ) {
         alert('Please configure Cloudinary in admin.html. See instructions in CLOUDINARY_SETUP.md');
         return;
       }

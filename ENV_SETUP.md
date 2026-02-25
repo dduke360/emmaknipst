@@ -12,12 +12,16 @@ Go to **Netlify Dashboard** → Your Site → **Site settings** → **Environmen
 
 | Variable | Value |
 |----------|-------|
-| SUPABASE_URL | `https://nvsenvgcuavdpqieknlr.supabase.co` |
-| SUPABASE_ANON_KEY | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52c2VuZmdjdWF2ZHBxaWVrbmxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNDgxNDMsImV4cCI6MjA2MTcyNDE0M30.sb_publishable_RPewkAJotF-2BDQ7fIlN7g_ZyUfUavB` |
+| SUPABASE_URL | `https://your-project-id.supabase.co` |
+| SUPABASE_ANON_KEY | `your-supabase-anon-key` |
+| ADMIN_PASSWORD | `your-strong-admin-password` |
+| CLOUDINARY_CLOUD_NAME | `your-cloudinary-cloud-name` |
+| CLOUDINARY_UPLOAD_PRESET | `your-cloudinary-upload-preset` |
 
 ## Current Setup
 
-The `netlify.toml` already has the values configured, so it should work automatically when deployed.
+`netlify.toml` does not contain hardcoded credentials anymore.
+Set all required variables in Netlify (or your CI/CD environment) before deploying.
 
 ## Security Note
 

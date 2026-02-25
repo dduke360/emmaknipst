@@ -24,15 +24,20 @@ const envVars = {
   '%CLOUDINARY_UPLOAD_PRESET%': process.env.CLOUDINARY_UPLOAD_PRESET
 };
 
+const targetDir = process.env.BUILD_TARGET_DIR
+  ? path.resolve(process.env.BUILD_TARGET_DIR)
+  : path.join(__dirname, 'www');
+
 const files = ['supabase.js', 'admin.html'];
 
 files.forEach(file => {
-  if (!fs.existsSync(file)) {
-    console.log(`File not found: ${file}`);
+  const fullPath = path.join(targetDir, file);
+  if (!fs.existsSync(fullPath)) {
+    console.log(`Skipped: ${fullPath} (file not found)`);
     return;
   }
 
-  let content = fs.readFileSync(file, 'utf8');
+  let content = fs.readFileSync(fullPath, 'utf8');
   let changed = false;
 
   Object.keys(envVars).forEach(placeholder => {
@@ -47,10 +52,10 @@ files.forEach(file => {
   });
 
   if (changed) {
-    fs.writeFileSync(file, content);
-    console.log(`Updated: ${file}`);
+    fs.writeFileSync(fullPath, content);
+    console.log(`Updated: ${fullPath}`);
   } else {
-    console.log(`Skipped: ${file} (no placeholders found)`);
+    console.log(`Skipped: ${fullPath} (no placeholders found)`);
   }
 });
 
