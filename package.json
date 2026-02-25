@@ -3,6 +3,16 @@
   "version": "1.0.0",
   "scripts": {
     "build": "node build.js",
+    "preflight": "node scripts/preflight.js",
+    "build:ios-web": "rm -rf www && mkdir -p www && cp index.html admin.html app.js style.css supabase.js www/ && cp -R data www/data",
+    "ios:preflight": "npm run preflight && npm run ios:sync",
+    "ios:sync": "npm run build && npm run build:ios-web && npx cap sync ios",
+    "ios:open": "npx cap open ios",
     "dev": "npx serve ."
+  },
+  "dependencies": {
+    "@capacitor/cli": "^8.1.0",
+    "@capacitor/core": "^8.1.0",
+    "@capacitor/ios": "^8.1.0"
   }
 }

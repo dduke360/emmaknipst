@@ -541,7 +541,7 @@
   <script src="supabase.js"></script>
   <script>
     const THEME_KEY = 'emma_theme_mode';
-    const ADMIN_PASSWORD = '%ADMIN_PASSWORD%';
+    const ADMIN_PASSWORD = 'emma2026';
     const LIGHT_COLORS = [
       '#f2f2f7', '#ffffff', '#f8f4ef', '#f6efe8',
       '#eef2f7', '#e9f3ff', '#eaf7f0', '#f7edf7'
@@ -560,8 +560,8 @@
     let selectedBackgroundColor = BACKGROUND_COLORS[0];
 
     // Cloudinary config
-    const CLOUDINARY_CLOUD_NAME = '%CLOUDINARY_CLOUD_NAME%';
-    const CLOUDINARY_UPLOAD_PRESET = '%CLOUDINARY_UPLOAD_PRESET%';
+    const CLOUDINARY_CLOUD_NAME = 'djoh49z3m';
+    const CLOUDINARY_UPLOAD_PRESET = 'emmaknipst';
 
     const loginScreen = document.getElementById('login-screen');
     const adminApp = document.getElementById('admin-app');
@@ -808,10 +808,6 @@
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const password = document.getElementById('password').value;
-      if (ADMIN_PASSWORD === '%ADMIN_PASSWORD%') {
-        alert('Admin password is not configured. Set ADMIN_PASSWORD in your environment and run the build.');
-        return;
-      }
       if (password === ADMIN_PASSWORD) {
         loginScreen.classList.add('hidden');
         adminApp.classList.remove('hidden');
@@ -1064,10 +1060,7 @@
         return;
       }
 
-      if (
-        CLOUDINARY_CLOUD_NAME.includes('%CLOUDINARY_CLOUD_NAME%') ||
-        CLOUDINARY_UPLOAD_PRESET.includes('%CLOUDINARY_UPLOAD_PRESET%')
-      ) {
+      if (CLOUDINARY_CLOUD_NAME === 'YOUR_CLOUD_NAME' || CLOUDINARY_UPLOAD_PRESET === 'YOUR_UPLOAD_PRESET') {
         alert('Please configure Cloudinary in admin.html. See instructions in CLOUDINARY_SETUP.md');
         return;
       }

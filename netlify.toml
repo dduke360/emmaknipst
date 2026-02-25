@@ -1,10 +1,3 @@
 [build]
   command = "npm run build"
   publish = "."
-
-[build.environment]
-  SUPABASE_URL = "https://nvsenvgcuavdpqieknlr.supabase.co"
-  SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52c2VudmdjdWF2ZHBxaWVrbmxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NjUzMTYsImV4cCI6MjA4NzI0MTMxNn0.R_mUbV8ZOjN6jMxryMhBON2DNDOyWx7ss5rUuYnoB40"
-  ADMIN_PASSWORD = "emma2026"
-  CLOUDINARY_CLOUD_NAME = "djoh49z3m"
-  CLOUDINARY_UPLOAD_PRESET = "emmaknipst"

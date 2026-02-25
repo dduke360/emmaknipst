@@ -19,18 +19,12 @@
 5. Save the preset
 6. Copy the preset name (e.g., `ml_default`)
 
-## 4. Update admin.html
-Open `admin.html` and replace these values:
+## 4. Set Environment Variables
+Set these values in your `.env` (local) or Netlify environment variables:
 
 ```javascript
-const CLOUDINARY_CLOUD_NAME = 'djoh49z3m';
-const CLOUDINARY_UPLOAD_PRESET = 'emmaknipst';
-```
-
-Example:
-```javascript
-const CLOUDINARY_CLOUD_NAME = 'myportfolio';
-const CLOUDINARY_UPLOAD_PRESET = 'ml_default';
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_UPLOAD_PRESET=your-upload-preset
 ```
 
 ## 5. Deploy

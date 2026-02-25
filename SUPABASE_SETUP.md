@@ -55,5 +55,6 @@ CREATE POLICY "Admin can manage settings" ON settings FOR ALL USING (true);
    - **Project URL** (e.g., `https://xxxxx.supabase.co`)
    - **anon public** key (under "Project API keys")
 
-## 5. Update Code
-Open `app.js` and `admin.html` and replace the SupABASE_URL and SUPABASE_ANON_KEY placeholders with your actual values.
+## 5. Set Environment Variables
+Set `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `.env` (local) or your Netlify environment settings.
+Then run the build so placeholders are injected.
