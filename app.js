@@ -24,6 +24,8 @@ let isoFilmToggleEl = null;
 let lightboxPhotos = [];
 let lightboxIndex = -1;
 let lastGalleryWidth = 0;
+const imageAspectRatioCache = new Map();
+let galleryRenderToken = 0;
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -363,19 +365,123 @@ function applyImageToneMode(mode) {
   }
 }
 
-function renderGallery(photos) {
+async function loadImageAspectRatio(src) {
+  if (!src) return 1;
+  if (imageAspectRatioCache.has(src)) return imageAspectRatioCache.get(src);
+
+  const ratio = await new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const nextRatio = img.naturalWidth && img.naturalHeight
+        ? img.naturalWidth / img.naturalHeight
+        : 1;
+      resolve(nextRatio || 1);
+    };
+    img.onerror = () => resolve(1);
+    img.src = src;
+  });
+
+  imageAspectRatioCache.set(src, ratio);
+  return ratio;
+}
+
+function calculateRowSpan(baseRow, aspectRatio, isMobile) {
+  const ratio = Number.isFinite(aspectRatio) && aspectRatio > 0 ? aspectRatio : 1;
+  const adjusted = Math.round(baseRow * (1.08 / ratio));
+  return isMobile ? clamp(adjusted, 4, 10) : clamp(adjusted, 4, 11);
+}
+
+function getPreferredColSpan(aspectRatio, isMobile) {
+  const ratio = Number.isFinite(aspectRatio) && aspectRatio > 0 ? aspectRatio : 1;
+  if (isMobile) {
+    if (ratio >= 1.35) return 12;
+    return 6;
+  }
+
+  if (ratio >= 1.9) return 6;
+  if (ratio >= 1.45) return 5;
+  if (ratio >= 1.05) return 4;
+  if (ratio >= 0.8) return 3;
+  return 2;
+}
+
+function normalizeRowToTwelve(row) {
+  if (!row.length) return row;
+  let sum = row.reduce((acc, item) => acc + item.col, 0);
+  while (sum < 12) {
+    let updated = false;
+    for (let i = 0; i < row.length && sum < 12; i += 1) {
+      if (row[i].col < 12) {
+        row[i].col += 1;
+        sum += 1;
+        updated = true;
+      }
+    }
+    if (!updated) break;
+  }
+  return row;
+}
+
+function buildAspectLayout(aspectRatios, isMobile) {
+  const layout = new Array(aspectRatios.length);
+  let row = [];
+  let rowIndices = [];
+  let rowSum = 0;
+
+  const flushRow = () => {
+    if (!row.length) return;
+    normalizeRowToTwelve(row);
+    const averageRatio = row.reduce((acc, item) => acc + item.ratio, 0) / row.length;
+    const baseRow = isMobile ? (averageRatio < 0.95 ? 8 : 6) : (averageRatio < 0.9 ? 7 : averageRatio > 1.5 ? 4 : 5);
+
+    row.forEach((item, i) => {
+      layout[rowIndices[i]] = {
+        col: item.col,
+        row: baseRow
+      };
+    });
+    row = [];
+    rowIndices = [];
+    rowSum = 0;
+  };
+
+  aspectRatios.forEach((ratio, index) => {
+    const preferred = getPreferredColSpan(ratio, isMobile);
+    let col = preferred;
+
+    if (col > 12) col = 12;
+    if (rowSum + col > 12) flushRow();
+
+    row.push({ col, ratio });
+    rowIndices.push(index);
+    rowSum += col;
+
+    if (rowSum === 12) flushRow();
+  });
+
+  flushRow();
+  return layout.map(item => item || { col: isMobile ? 12 : 4, row: isMobile ? 6 : 5 });
+}
+
+async function renderGallery(photos) {
   const grid = document.getElementById('gallery-grid');
+  const renderToken = ++galleryRenderToken;
   currentGalleryPhotos = photos;
   grid.innerHTML = '';
   updateGalleryGridMetrics();
   lastGalleryWidth = grid.clientWidth || lastGalleryWidth;
+
+  const aspectRatios = await Promise.all(photos.map((photo) => loadImageAspectRatio(photo.src)));
+  if (renderToken !== galleryRenderToken) return;
+  const isMobile = window.innerWidth < 700;
+  const layoutSpans = buildAspectLayout(aspectRatios, isMobile);
 
   photos.forEach((photo, index) => {
     const item = document.createElement('div');
     item.className = 'gallery-item';
     item.style.animationDelay = `${index * 0.028}s`;
 
-    const span = getMosaicSpan(index, photos.length);
+    const span = layoutSpans[index];
     item.style.gridColumn = `span ${span.col}`;
     item.style.gridRow = `span ${span.row}`;
 
@@ -434,39 +540,6 @@ function updateGalleryGridMetrics() {
   else if (width > 560) rowUnit = 34;
 
   grid.style.setProperty('--row-unit', `${rowUnit}px`);
-}
-
-function getMosaicSpan(index, total) {
-  const isMobile = window.innerWidth < 700;
-  if (isMobile) {
-    const mobilePattern = [
-      { col: 12, row: 7 },
-      { col: 6, row: 5 },
-      { col: 6, row: 5 },
-      { col: 12, row: 6 }
-    ];
-    return mobilePattern[index % mobilePattern.length];
-  }
-
-  if (total === 1) return { col: 12, row: 9 };
-  if (total === 2) return { col: 6, row: 6 };
-
-  // Hero block like the reference: stacked left + dominant tile right.
-  if (index === 0) return { col: 4, row: 4 };
-  if (index === 1) return { col: 8, row: 9 };
-  if (index === 2) return { col: 4, row: 5 };
-
-  // Fill the remaining grid without trailing holes:
-  // final row becomes 12 | 6+6 | 4+4+4 depending on remainder.
-  const remaining = total - 3;
-  const pos = index - 3;
-  const remainder = remaining % 3;
-  const isLast = pos === remaining - 1;
-  const isLastTwo = pos >= remaining - 2;
-
-  if (remainder === 1 && isLast) return { col: 12, row: 5 };
-  if (remainder === 2 && isLastTwo) return { col: 6, row: 5 };
-  return { col: 4, row: 5 };
 }
 
 async function toggleLike(photoId, currentLikes) {
