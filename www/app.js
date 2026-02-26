@@ -35,6 +35,12 @@ function withCloudinaryTransform(url, transform) {
   return url.replace('/upload/', `/upload/${transform}/`);
 }
 
+function withWatermark(transform) {
+  const currentYear = new Date().getFullYear();
+  const watermark = `l_text:Arial_28:%C2%A9%20${currentYear}%20emmaknipst,co_white,o_48,g_south_east,x_18,y_18`;
+  return `${transform},${watermark}`;
+}
+
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
@@ -542,7 +548,7 @@ async function renderGallery(photos) {
     const yearLabel = photo.year ? String(photo.year) : '';
     const gallerySrc = withCloudinaryTransform(
       photo.src,
-      'f_auto,q_auto,dpr_auto,w_400,c_limit'
+      withWatermark('f_auto,q_auto,dpr_auto,w_400,c_limit')
     );
     item.innerHTML = `
       <img src="${gallerySrc}" alt="${photo.title}" loading="lazy">
@@ -699,7 +705,7 @@ function setupLightbox() {
     if (!photo) return;
     lightboxImg.src = withCloudinaryTransform(
       photo.src,
-      'f_auto,q_auto,dpr_auto,w_1600,c_limit'
+      withWatermark('f_auto,q_auto,dpr_auto,w_1600,c_limit')
     );
     const filmLabel = photo.film
       ? ((portfolioData.films || []).find(f => f.id === photo.film)?.name || photo.film)
