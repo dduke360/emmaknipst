@@ -1,11 +1,13 @@
+const DEFAULT_CATEGORIES = [
+  { id: 'portraits', name: 'Portraits' },
+  { id: 'fashion', name: 'Fashion' },
+  { id: 'lifestyle', name: 'Lifestyle' },
+  { id: 'nature', name: 'Nature' }
+];
+
 let portfolioData = {
   photographer: {},
-  categories: [
-    { id: 'portraits', name: 'Portraits' },
-    { id: 'fashion', name: 'Fashion' },
-    { id: 'lifestyle', name: 'Lifestyle' },
-    { id: 'nature', name: 'Nature' }
-  ],
+  categories: [...DEFAULT_CATEGORIES],
   photos: []
 };
 
@@ -235,7 +237,20 @@ async function loadData() {
       settingsObj[s.key] = s.value;
     });
 
+    let parsedCategories = [...DEFAULT_CATEGORIES];
+    if (settingsObj.categories) {
+      try {
+        const parsed = JSON.parse(settingsObj.categories);
+        if (Array.isArray(parsed) && parsed.length) {
+          parsedCategories = parsed.filter(c => c && c.id && c.name);
+        }
+      } catch (e) {
+        console.warn('Invalid categories setting JSON, using defaults.');
+      }
+    }
+
     portfolioData.photos = photos || [];
+    portfolioData.categories = parsedCategories;
     portfolioData.photographer = {
       about: settingsObj.about || '',
       email: settingsObj.email || '',

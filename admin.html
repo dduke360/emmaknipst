@@ -558,6 +558,12 @@
       { title: 'Light Colors', colors: LIGHT_COLORS },
       { title: 'Dark Colors', colors: DARK_COLORS }
     ];
+    const DEFAULT_CATEGORIES = [
+      { id: 'portraits', name: 'Portraits' },
+      { id: 'fashion', name: 'Fashion' },
+      { id: 'lifestyle', name: 'Lifestyle' },
+      { id: 'nature', name: 'Nature' }
+    ];
     let data = null;
     let cloudinaryUploadedItems = [];
     let selectedBackgroundColor = BACKGROUND_COLORS[0];
@@ -864,6 +870,18 @@
           settingsObj[s.key] = s.value;
         });
 
+        let parsedCategories = [...DEFAULT_CATEGORIES];
+        if (settingsObj.categories) {
+          try {
+            const parsed = JSON.parse(settingsObj.categories);
+            if (Array.isArray(parsed) && parsed.length) {
+              parsedCategories = parsed.filter(c => c && c.id && c.name);
+            }
+          } catch (e) {
+            console.warn('Invalid categories setting JSON, using defaults.');
+          }
+        }
+
         data = {
           photographer: {
             about: settingsObj.about || '',
@@ -871,12 +889,7 @@
             instagram: settingsObj.instagram || '',
             backgroundColor: settingsObj.background_color || BACKGROUND_COLORS[0]
           },
-          categories: [
-            { id: 'portraits', name: 'Portraits' },
-            { id: 'fashion', name: 'Fashion' },
-            { id: 'lifestyle', name: 'Lifestyle' },
-            { id: 'nature', name: 'Nature' }
-          ],
+          categories: parsedCategories,
           photos: photos || []
         };
 
@@ -948,6 +961,7 @@
     }
 
     async function saveData() {
+      await saveSetting('categories', JSON.stringify(data.categories));
       // Save to localStorage as immediate feedback
       localStorage.setItem('emma_photos', JSON.stringify(data));
       render();
@@ -1051,14 +1065,14 @@
       alert('Background color saved!');
     });
 
-    addCategoryForm.addEventListener('submit', (e) => {
+    addCategoryForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = document.getElementById('new-category').value.trim();
       if (name) {
         const id = name.toLowerCase().replace(/\s+/g, '-');
         if (!data.categories.find(c => c.id === id)) {
           data.categories.push({ id, name });
-          saveData();
+          await saveData();
         }
         document.getElementById('new-category').value = '';
       }
@@ -1073,10 +1087,10 @@
       }
     };
 
-    window.deleteCategory = (id) => {
+    window.deleteCategory = async (id) => {
       if (confirm('Delete this category? Photos will need a new category.')) {
         data.categories = data.categories.filter(c => c.id !== id);
-        saveData();
+        await saveData();
       }
     };
 
