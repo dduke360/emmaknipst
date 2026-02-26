@@ -352,8 +352,9 @@ main {
 
 .about-text {
   max-width: 82ch;
-  margin: 0 auto;
-  text-align: center;
+  margin: 0;
+  padding-left: 50px;
+  text-align: left;
   position: relative;
   z-index: 1;
 }
@@ -364,8 +365,8 @@ main {
   line-height: 1.68;
   margin-bottom: 0.85rem;
   max-width: 78ch;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .email-link {
@@ -588,6 +589,10 @@ body.iso400-enabled .lightbox.active::after {
 
   .about-section {
     padding: 1.1rem;
+  }
+
+  .about-text {
+    padding-left: 24px;
   }
 
 }

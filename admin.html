@@ -185,17 +185,21 @@
 
     .photo-card {
       position: relative;
-      aspect-ratio: 1;
       overflow: hidden;
       border: 1px solid var(--admin-border);
       border-radius: var(--admin-radius-md);
       background: var(--admin-surface-strong);
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      padding-bottom: 0.55rem;
     }
 
     .photo-card img {
       width: 100%;
-      height: 100%;
+      aspect-ratio: 1;
       object-fit: cover;
+      cursor: zoom-in;
     }
 
     .photo-card .delete-btn {
@@ -211,6 +215,68 @@
       cursor: pointer;
       font-size: 1rem;
       line-height: 1;
+    }
+
+    .photo-meta {
+      padding: 0 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .photo-title-input {
+      width: 100%;
+      padding: 0.45rem 0.56rem;
+      border: 1px solid var(--admin-border);
+      border-radius: var(--admin-radius-sm);
+      font-size: 0.78rem;
+      background: var(--admin-surface);
+      color: var(--admin-text);
+    }
+
+    .photo-category-select {
+      width: 100%;
+      padding: 0.45rem 0.56rem;
+      border: 1px solid var(--admin-border);
+      border-radius: var(--admin-radius-sm);
+      font-size: 0.78rem;
+      background: var(--admin-surface);
+      color: var(--admin-text);
+    }
+
+    .save-photo-btn {
+      border: 1px solid var(--admin-border);
+      border-radius: 999px;
+      font-size: 0.74rem;
+      padding: 0.33rem 0.56rem;
+      color: var(--admin-text);
+      background: color-mix(in srgb, var(--admin-accent) 20%, transparent);
+      cursor: pointer;
+      align-self: flex-end;
+    }
+
+    .photo-preview-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 3000;
+    }
+
+    .photo-preview-modal.hidden {
+      display: none;
+    }
+
+    .photo-preview-image {
+      max-width: min(92vw, 1200px);
+      max-height: 92vh;
+      border-radius: 14px;
+      object-fit: contain;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+      cursor: zoom-out;
     }
 
     .stats-grid {
@@ -541,6 +607,10 @@
     </div>
   </div>
 
+  <div id="photo-preview-modal" class="photo-preview-modal hidden" aria-hidden="true">
+    <img id="photo-preview-image" class="photo-preview-image" alt="Photo preview">
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
   <script>
@@ -583,6 +653,8 @@
     const themeToggleAdmin = document.getElementById('theme-toggle-admin');
     const backgroundPalette = document.getElementById('background-palette');
     const saveBackgroundBtn = document.getElementById('save-background-btn');
+    const photoPreviewModal = document.getElementById('photo-preview-modal');
+    const photoPreviewImage = document.getElementById('photo-preview-image');
 
     function clamp(value, min, max) {
       return Math.min(max, Math.max(min, value));
@@ -1004,7 +1076,8 @@
 
     function renderCategories() {
       categoryList.innerHTML = '';
-      document.getElementById('cloudinary-category').innerHTML = '';
+      const cloudinaryCategorySelect = document.getElementById('cloudinary-category');
+      cloudinaryCategorySelect.innerHTML = '';
       
       data.categories.forEach(cat => {
         const tag = document.createElement('span');
@@ -1015,19 +1088,49 @@
         const option = document.createElement('option');
         option.value = cat.id;
         option.textContent = cat.name;
-        document.getElementById('cloudinary-category').appendChild(option);
+        cloudinaryCategorySelect.appendChild(option);
       });
+
+      if (data.categories.length) {
+        cloudinaryCategorySelect.value = data.categories[0].id;
+      }
     }
 
     function renderPhotos() {
       photosGrid.innerHTML = '';
+      const categoryIds = data.categories.map(cat => cat.id);
+      const categoryOptions = data.categories.map(cat =>
+        `<option value="${cat.id}">${cat.name}</option>`
+      ).join('');
+
       data.photos.forEach(photo => {
         const card = document.createElement('div');
         card.className = 'photo-card';
+        card.dataset.photoSrc = photo.src;
+        card.dataset.photoTitle = photo.title || 'Photo preview';
         card.innerHTML = `
           <img src="${photo.src}" alt="${photo.title}">
-          <button class="delete-btn" onclick="deletePhoto(${photo.id})">&times;</button>
+          <button class="delete-btn" onclick="deletePhoto('${photo.id}')">&times;</button>
+          <div class="photo-meta">
+            <input
+              class="photo-title-input"
+              type="text"
+              value="${(photo.title || '').replace(/"/g, '&quot;')}"
+              data-photo-id="${photo.id}"
+              aria-label="Display text"
+            >
+            <select class="photo-category-select" data-photo-id="${photo.id}" aria-label="Category">
+              ${categoryOptions}
+            </select>
+            <button class="save-photo-btn" data-photo-id="${photo.id}">Save</button>
+          </div>
         `;
+        const categorySelect = card.querySelector(`.photo-category-select[data-photo-id="${photo.id}"]`);
+        if (categorySelect) {
+          const fallbackCategory = data.categories.length ? data.categories[0].id : '';
+          const hasValidCategory = photo.category && categoryIds.includes(photo.category);
+          categorySelect.value = hasValidCategory ? photo.category : fallbackCategory;
+        }
         photosGrid.appendChild(card);
       });
     }
@@ -1094,6 +1197,93 @@
       }
     };
 
+    photosGrid.addEventListener('click', async (event) => {
+      const nonPreviewTarget = event.target.closest('.delete-btn, .photo-title-input, .photo-category-select, .save-photo-btn');
+      const photoCard = event.target.closest('.photo-card');
+      if (photoCard && !nonPreviewTarget) {
+        photoPreviewImage.src = photoCard.dataset.photoSrc || '';
+        photoPreviewImage.alt = photoCard.dataset.photoTitle || 'Photo preview';
+        photoPreviewModal.classList.remove('hidden');
+        photoPreviewModal.setAttribute('aria-hidden', 'false');
+        return;
+      }
+
+      const saveButton = event.target.closest('.save-photo-btn');
+      if (!saveButton) return;
+      const id = saveButton.dataset.photoId;
+      const input = photosGrid.querySelector(`.photo-title-input[data-photo-id="${id}"]`);
+      const categorySelect = photosGrid.querySelector(`.photo-category-select[data-photo-id="${id}"]`);
+      if (!input || !categorySelect) return;
+      const nextTitle = input.value.trim();
+      const nextCategory = categorySelect.value;
+      if (!nextTitle) {
+        alert('Display text cannot be empty.');
+        return;
+      }
+      if (!nextCategory) {
+        alert('Please select a category.');
+        return;
+      }
+      await updatePhotoMeta(id, nextTitle, nextCategory);
+    });
+
+    photosGrid.addEventListener('keydown', async (event) => {
+      const input = event.target.closest('.photo-title-input');
+      if (!input || event.key !== 'Enter') return;
+      event.preventDefault();
+      const id = input.dataset.photoId;
+      const categorySelect = photosGrid.querySelector(`.photo-category-select[data-photo-id="${id}"]`);
+      const nextTitle = input.value.trim();
+      const nextCategory = categorySelect ? categorySelect.value : '';
+      if (!nextTitle) {
+        alert('Display text cannot be empty.');
+        return;
+      }
+      if (!nextCategory) {
+        alert('Please select a category.');
+        return;
+      }
+      await updatePhotoMeta(id, nextTitle, nextCategory);
+    });
+
+    async function updatePhotoMeta(id, title, category) {
+      try {
+        const normalizedId = /^\d+$/.test(String(id)) ? Number(id) : id;
+        const { error } = await supabaseClient
+          .from('photos')
+          .update({ title, category })
+          .eq('id', normalizedId);
+        if (error) throw error;
+
+        const targetPhoto = data.photos.find(p => String(p.id) === String(id));
+        if (targetPhoto) {
+          targetPhoto.title = title;
+          targetPhoto.category = category;
+        }
+        localStorage.setItem('emma_photos', JSON.stringify(data));
+        await loadData();
+      } catch (error) {
+        console.error('Update photo metadata error:', error);
+        alert('Failed to update photo. Check console for details.');
+      }
+    }
+
+    photoPreviewModal.addEventListener('click', (event) => {
+      if (event.target === photoPreviewModal || event.target === photoPreviewImage) {
+        photoPreviewModal.classList.add('hidden');
+        photoPreviewModal.setAttribute('aria-hidden', 'true');
+        photoPreviewImage.src = '';
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !photoPreviewModal.classList.contains('hidden')) {
+        photoPreviewModal.classList.add('hidden');
+        photoPreviewModal.setAttribute('aria-hidden', 'true');
+        photoPreviewImage.src = '';
+      }
+    });
+
     // Cloudinary upload functionality
     const cloudinaryUploadBtn = document.getElementById('cloudinary-upload-btn');
     const cloudinaryForm = document.getElementById('cloudinary-form');
@@ -1158,7 +1348,7 @@
       if (!cloudinaryUploadedItems.length) return;
       
       const titlePrefix = cloudinaryTitle.value.trim();
-      const category = document.getElementById('cloudinary-category').value;
+      const category = document.getElementById('cloudinary-category').value || (data.categories[0] ? data.categories[0].id : '');
 
       const payload = cloudinaryUploadedItems.map((item, index) => {
         const title = titlePrefix
