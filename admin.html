@@ -234,7 +234,9 @@
       color: var(--admin-text);
     }
 
-    .photo-category-select {
+    .photo-category-select,
+    .photo-film-select,
+    .photo-year-select {
       width: 100%;
       padding: 0.45rem 0.56rem;
       border: 1px solid var(--admin-border);
@@ -545,6 +547,10 @@
           <label>Category</label>
           <select id="cloudinary-category"></select>
         </div>
+        <div class="form-group">
+          <label>Film (optional)</label>
+          <select id="cloudinary-film"></select>
+        </div>
         <button id="add-cloudinary-btn" class="btn btn-success">Add Uploads to Gallery</button>
       </div>
     </div>
@@ -573,6 +579,18 @@
         <button type="submit" class="btn btn-secondary">Add</button>
       </form>
       <div id="category-list" class="category-list"></div>
+    </div>
+
+    <div class="admin-section">
+      <h2>Manage Films</h2>
+      <form id="add-film-form" class="category-form">
+        <div class="form-group category-input-group">
+          <label>New Film Name</label>
+          <input type="text" id="new-film" placeholder="e.g. Agfa Color ISO 100">
+        </div>
+        <button type="submit" class="btn btn-secondary">Add</button>
+      </form>
+      <div id="film-list" class="category-list"></div>
     </div>
 
     <div class="admin-section">
@@ -634,6 +652,11 @@
       { id: 'lifestyle', name: 'Lifestyle' },
       { id: 'nature', name: 'Nature' }
     ];
+    const DEFAULT_FILMS = [
+      { id: 'agfa-color-iso-100', name: 'Agfa Color ISO 100' },
+      { id: 'kodak-portra-400', name: 'Kodak Portra 400' },
+      { id: 'ilford-hp5-plus-400', name: 'Ilford HP5 Plus 400' }
+    ];
     let data = null;
     let cloudinaryUploadedItems = [];
     let selectedBackgroundColor = BACKGROUND_COLORS[0];
@@ -647,8 +670,10 @@
     const loginForm = document.getElementById('login-form');
     const logoutBtn = document.getElementById('logout-btn');
     const addCategoryForm = document.getElementById('add-category-form');
+    const addFilmForm = document.getElementById('add-film-form');
     const photosGrid = document.getElementById('photos-grid');
     const categoryList = document.getElementById('category-list');
+    const filmList = document.getElementById('film-list');
     const themeToggleLogin = document.getElementById('theme-toggle-login');
     const themeToggleAdmin = document.getElementById('theme-toggle-admin');
     const backgroundPalette = document.getElementById('background-palette');
@@ -658,6 +683,11 @@
 
     function clamp(value, min, max) {
       return Math.min(max, Math.max(min, value));
+    }
+
+    function withCloudinaryTransform(url, transform) {
+      if (!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
+      return url.replace('/upload/', `/upload/${transform}/`);
     }
 
     function normalizeHex(hex) {
@@ -954,6 +984,42 @@
           }
         }
 
+        let parsedFilms = [...DEFAULT_FILMS];
+        if (settingsObj.films) {
+          try {
+            const parsed = JSON.parse(settingsObj.films);
+            if (Array.isArray(parsed) && parsed.length) {
+              parsedFilms = parsed.filter(f => f && f.id && f.name);
+            }
+          } catch (e) {
+            console.warn('Invalid films setting JSON, using defaults.');
+          }
+        }
+
+        let parsedPhotoFilms = {};
+        if (settingsObj.photo_films) {
+          try {
+            const parsed = JSON.parse(settingsObj.photo_films);
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+              parsedPhotoFilms = parsed;
+            }
+          } catch (e) {
+            console.warn('Invalid photo_films setting JSON, using empty map.');
+          }
+        }
+
+        let parsedPhotoYears = {};
+        if (settingsObj.photo_years) {
+          try {
+            const parsed = JSON.parse(settingsObj.photo_years);
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+              parsedPhotoYears = parsed;
+            }
+          } catch (e) {
+            console.warn('Invalid photo_years setting JSON, using empty map.');
+          }
+        }
+
         data = {
           photographer: {
             about: settingsObj.about || '',
@@ -962,7 +1028,14 @@
             backgroundColor: settingsObj.background_color || BACKGROUND_COLORS[0]
           },
           categories: parsedCategories,
-          photos: photos || []
+          films: parsedFilms,
+          photoFilms: parsedPhotoFilms,
+          photoYears: parsedPhotoYears,
+          photos: (photos || []).map(photo => ({
+            ...photo,
+            film: parsedPhotoFilms[String(photo.id)] || '',
+            year: parsedPhotoYears[String(photo.id)] || ''
+          }))
         };
 
         // Also save to localStorage as backup
@@ -1011,8 +1084,35 @@
     async function savePhotosBulk(photosToInsert) {
       if (!photosToInsert.length) return;
       try {
-        const { error } = await supabaseClient.from('photos').insert(photosToInsert);
+        const dbPayload = photosToInsert.map(photo => ({
+          src: photo.src,
+          title: photo.title,
+          category: photo.category
+        }));
+        const { data: insertedPhotos, error } = await supabaseClient
+          .from('photos')
+          .insert(dbPayload)
+          .select('id, src');
         if (error) throw error;
+
+        if (!data.photoFilms) data.photoFilms = {};
+        if (Array.isArray(insertedPhotos) && insertedPhotos.length) {
+          const usedIndexes = new Set();
+          insertedPhotos.forEach(inserted => {
+            const index = photosToInsert.findIndex((photo, i) => {
+              if (usedIndexes.has(i)) return false;
+              return photo.src === inserted.src;
+            });
+            if (index !== -1) {
+              usedIndexes.add(index);
+              const film = photosToInsert[index].film || '';
+              if (film) data.photoFilms[String(inserted.id)] = film;
+            }
+          });
+          await saveSetting('photo_films', JSON.stringify(data.photoFilms));
+        }
+        if (!data.photoYears) data.photoYears = {};
+        await saveSetting('photo_years', JSON.stringify(data.photoYears));
         await loadData();
       } catch (error) {
         console.error('Bulk save error:', error);
@@ -1034,6 +1134,9 @@
 
     async function saveData() {
       await saveSetting('categories', JSON.stringify(data.categories));
+      await saveSetting('films', JSON.stringify(data.films || []));
+      await saveSetting('photo_films', JSON.stringify(data.photoFilms || {}));
+      await saveSetting('photo_years', JSON.stringify(data.photoYears || {}));
       // Save to localStorage as immediate feedback
       localStorage.setItem('emma_photos', JSON.stringify(data));
       render();
@@ -1041,6 +1144,7 @@
 
     function render() {
       renderCategories();
+      renderFilms();
       renderPhotos();
       renderAboutForm();
       renderStats();
@@ -1058,7 +1162,7 @@
       document.getElementById('top-views').innerHTML = byViews.map((p, i) => `
         <div class="stats-row">
           <span class="stat-rank">${i + 1}.</span>
-          <img class="stat-thumb" src="${p.src}" alt="${p.title}">
+          <img class="stat-thumb" src="${withCloudinaryTransform(p.src, 'f_auto,q_auto,w_100,c_limit')}" alt="${p.title}">
           <span class="stat-name">${p.title}</span>
           <span class="stat-value">${p.views || 0} views</span>
         </div>
@@ -1067,7 +1171,7 @@
       document.getElementById('top-likes').innerHTML = byLikes.map((p, i) => `
         <div class="stats-row">
           <span class="stat-rank">${i + 1}.</span>
-          <img class="stat-thumb" src="${p.src}" alt="${p.title}">
+          <img class="stat-thumb" src="${withCloudinaryTransform(p.src, 'f_auto,q_auto,w_100,c_limit')}" alt="${p.title}">
           <span class="stat-name">${p.title}</span>
           <span class="stat-value stat-value-like">♥ ${p.likes || 0}</span>
         </div>
@@ -1096,12 +1200,44 @@
       }
     }
 
+    function renderFilms() {
+      filmList.innerHTML = '';
+      const cloudinaryFilmSelect = document.getElementById('cloudinary-film');
+      cloudinaryFilmSelect.innerHTML = '';
+
+      const emptyOption = document.createElement('option');
+      emptyOption.value = '';
+      emptyOption.textContent = 'No film selected';
+      cloudinaryFilmSelect.appendChild(emptyOption);
+
+      (data.films || []).forEach(film => {
+        const tag = document.createElement('span');
+        tag.className = 'category-tag';
+        tag.innerHTML = `${film.name} <button class="category-remove" onclick="deleteFilm('${film.id}')">&times;</button>`;
+        filmList.appendChild(tag);
+
+        const option = document.createElement('option');
+        option.value = film.id;
+        option.textContent = film.name;
+        cloudinaryFilmSelect.appendChild(option);
+      });
+
+      cloudinaryFilmSelect.value = '';
+    }
+
     function renderPhotos() {
       photosGrid.innerHTML = '';
       const categoryIds = data.categories.map(cat => cat.id);
       const categoryOptions = data.categories.map(cat =>
         `<option value="${cat.id}">${cat.name}</option>`
       ).join('');
+      const filmIds = (data.films || []).map(film => film.id);
+      const filmOptions = (data.films || []).map(film =>
+        `<option value="${film.id}">${film.name}</option>`
+      ).join('');
+      const yearOptions = Array.from({ length: 7 }, (_, i) => 2024 + i)
+        .map(year => `<option value="${year}">${year}</option>`)
+        .join('');
 
       data.photos.forEach(photo => {
         const card = document.createElement('div');
@@ -1109,7 +1245,7 @@
         card.dataset.photoSrc = photo.src;
         card.dataset.photoTitle = photo.title || 'Photo preview';
         card.innerHTML = `
-          <img src="${photo.src}" alt="${photo.title}">
+          <img src="${withCloudinaryTransform(photo.src, 'f_auto,q_auto,w_100,c_limit')}" alt="${photo.title}">
           <button class="delete-btn" onclick="deletePhoto('${photo.id}')">&times;</button>
           <div class="photo-meta">
             <input
@@ -1122,6 +1258,14 @@
             <select class="photo-category-select" data-photo-id="${photo.id}" aria-label="Category">
               ${categoryOptions}
             </select>
+            <select class="photo-film-select" data-photo-id="${photo.id}" aria-label="Film">
+              <option value="">No film selected</option>
+              ${filmOptions}
+            </select>
+            <select class="photo-year-select" data-photo-id="${photo.id}" aria-label="Year shot">
+              <option value="">No year selected</option>
+              ${yearOptions}
+            </select>
             <button class="save-photo-btn" data-photo-id="${photo.id}">Save</button>
           </div>
         `;
@@ -1130,6 +1274,16 @@
           const fallbackCategory = data.categories.length ? data.categories[0].id : '';
           const hasValidCategory = photo.category && categoryIds.includes(photo.category);
           categorySelect.value = hasValidCategory ? photo.category : fallbackCategory;
+        }
+        const filmSelect = card.querySelector(`.photo-film-select[data-photo-id="${photo.id}"]`);
+        if (filmSelect) {
+          const hasValidFilm = photo.film && filmIds.includes(photo.film);
+          filmSelect.value = hasValidFilm ? photo.film : '';
+        }
+        const yearSelect = card.querySelector(`.photo-year-select[data-photo-id="${photo.id}"]`);
+        if (yearSelect) {
+          const yearValue = String(photo.year || '');
+          yearSelect.value = /^(2024|2025|2026|2027|2028|2029|2030)$/.test(yearValue) ? yearValue : '';
         }
         photosGrid.appendChild(card);
       });
@@ -1181,10 +1335,26 @@
       }
     });
 
+    addFilmForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('new-film').value.trim();
+      if (name) {
+        const id = name.toLowerCase().replace(/\s+/g, '-');
+        if (!data.films.find(f => f.id === id)) {
+          data.films.push({ id, name });
+          await saveData();
+        }
+        document.getElementById('new-film').value = '';
+      }
+    });
+
     window.deletePhoto = async (id) => {
       if (confirm('Delete this photo?')) {
-        const photo = data.photos.find(p => p.id === id);
+        const photo = data.photos.find(p => String(p.id) === String(id));
         if (photo) {
+          if (!data.photoFilms) data.photoFilms = {};
+          delete data.photoFilms[String(id)];
+          await saveSetting('photo_films', JSON.stringify(data.photoFilms));
           await savePhoto(photo, 'delete');
         }
       }
@@ -1197,8 +1367,24 @@
       }
     };
 
+    window.deleteFilm = async (id) => {
+      if (confirm('Delete this film? It will be removed from assigned photos.')) {
+        data.films = data.films.filter(f => f.id !== id);
+        Object.keys(data.photoFilms || {}).forEach(photoId => {
+          if (data.photoFilms[photoId] === id) {
+            delete data.photoFilms[photoId];
+          }
+        });
+        data.photos = data.photos.map(photo => ({
+          ...photo,
+          film: photo.film === id ? '' : photo.film
+        }));
+        await saveData();
+      }
+    };
+
     photosGrid.addEventListener('click', async (event) => {
-      const nonPreviewTarget = event.target.closest('.delete-btn, .photo-title-input, .photo-category-select, .save-photo-btn');
+      const nonPreviewTarget = event.target.closest('.delete-btn, .photo-title-input, .photo-category-select, .photo-film-select, .photo-year-select, .save-photo-btn');
       const photoCard = event.target.closest('.photo-card');
       if (photoCard && !nonPreviewTarget) {
         photoPreviewImage.src = photoCard.dataset.photoSrc || '';
@@ -1213,9 +1399,13 @@
       const id = saveButton.dataset.photoId;
       const input = photosGrid.querySelector(`.photo-title-input[data-photo-id="${id}"]`);
       const categorySelect = photosGrid.querySelector(`.photo-category-select[data-photo-id="${id}"]`);
-      if (!input || !categorySelect) return;
+      const filmSelect = photosGrid.querySelector(`.photo-film-select[data-photo-id="${id}"]`);
+      const yearSelect = photosGrid.querySelector(`.photo-year-select[data-photo-id="${id}"]`);
+      if (!input || !categorySelect || !filmSelect || !yearSelect) return;
       const nextTitle = input.value.trim();
       const nextCategory = categorySelect.value;
+      const nextFilm = filmSelect.value;
+      const nextYear = yearSelect.value;
       if (!nextTitle) {
         alert('Display text cannot be empty.');
         return;
@@ -1224,7 +1414,7 @@
         alert('Please select a category.');
         return;
       }
-      await updatePhotoMeta(id, nextTitle, nextCategory);
+      await updatePhotoMeta(id, nextTitle, nextCategory, nextFilm, nextYear);
     });
 
     photosGrid.addEventListener('keydown', async (event) => {
@@ -1233,8 +1423,12 @@
       event.preventDefault();
       const id = input.dataset.photoId;
       const categorySelect = photosGrid.querySelector(`.photo-category-select[data-photo-id="${id}"]`);
+      const filmSelect = photosGrid.querySelector(`.photo-film-select[data-photo-id="${id}"]`);
+      const yearSelect = photosGrid.querySelector(`.photo-year-select[data-photo-id="${id}"]`);
       const nextTitle = input.value.trim();
       const nextCategory = categorySelect ? categorySelect.value : '';
+      const nextFilm = filmSelect ? filmSelect.value : '';
+      const nextYear = yearSelect ? yearSelect.value : '';
       if (!nextTitle) {
         alert('Display text cannot be empty.');
         return;
@@ -1243,10 +1437,10 @@
         alert('Please select a category.');
         return;
       }
-      await updatePhotoMeta(id, nextTitle, nextCategory);
+      await updatePhotoMeta(id, nextTitle, nextCategory, nextFilm, nextYear);
     });
 
-    async function updatePhotoMeta(id, title, category) {
+    async function updatePhotoMeta(id, title, category, film, year) {
       try {
         const normalizedId = /^\d+$/.test(String(id)) ? Number(id) : id;
         const { error } = await supabaseClient
@@ -1259,7 +1453,23 @@
         if (targetPhoto) {
           targetPhoto.title = title;
           targetPhoto.category = category;
+          targetPhoto.film = film || '';
+          targetPhoto.year = year || '';
         }
+        if (!data.photoFilms) data.photoFilms = {};
+        if (film) {
+          data.photoFilms[String(id)] = film;
+        } else {
+          delete data.photoFilms[String(id)];
+        }
+        if (!data.photoYears) data.photoYears = {};
+        if (year) {
+          data.photoYears[String(id)] = year;
+        } else {
+          delete data.photoYears[String(id)];
+        }
+        await saveSetting('photo_films', JSON.stringify(data.photoFilms));
+        await saveSetting('photo_years', JSON.stringify(data.photoYears));
         localStorage.setItem('emma_photos', JSON.stringify(data));
         await loadData();
       } catch (error) {
@@ -1327,7 +1537,7 @@
         if (result && result.event === 'queues-end') {
           if (!cloudinaryUploadedItems.length) return;
           const previewHtml = cloudinaryUploadedItems.slice(0, 6).map(item =>
-            `<img src="${item.src}" alt="Uploaded preview" class="upload-preview">`
+            `<img src="${withCloudinaryTransform(item.src, 'f_auto,q_auto,w_100,c_limit')}" alt="Uploaded preview" class="upload-preview">`
           ).join('');
           document.getElementById('cloudinary-uploads').innerHTML = `
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.5rem;">${previewHtml}</div>
@@ -1349,6 +1559,7 @@
       
       const titlePrefix = cloudinaryTitle.value.trim();
       const category = document.getElementById('cloudinary-category').value || (data.categories[0] ? data.categories[0].id : '');
+      const film = document.getElementById('cloudinary-film').value || '';
 
       const payload = cloudinaryUploadedItems.map((item, index) => {
         const title = titlePrefix
@@ -1357,7 +1568,8 @@
         return {
           src: item.src,
           title,
-          category
+          category,
+          film
         };
       });
 

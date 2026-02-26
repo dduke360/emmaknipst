@@ -8,6 +8,9 @@ const DEFAULT_CATEGORIES = [
 let portfolioData = {
   photographer: {},
   categories: [...DEFAULT_CATEGORIES],
+  films: [],
+  photoFilms: {},
+  photoYears: {},
   photos: []
 };
 
@@ -26,6 +29,11 @@ let lightboxIndex = -1;
 let lastGalleryWidth = 0;
 const imageAspectRatioCache = new Map();
 let galleryRenderToken = 0;
+
+function withCloudinaryTransform(url, transform) {
+  if (!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
+  return url.replace('/upload/', `/upload/${transform}/`);
+}
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -251,8 +259,51 @@ async function loadData() {
       }
     }
 
-    portfolioData.photos = photos || [];
+    let parsedFilms = [];
+    if (settingsObj.films) {
+      try {
+        const parsed = JSON.parse(settingsObj.films);
+        if (Array.isArray(parsed)) {
+          parsedFilms = parsed.filter(f => f && f.id && f.name);
+        }
+      } catch (e) {
+        console.warn('Invalid films setting JSON, using empty list.');
+      }
+    }
+
+    let parsedPhotoFilms = {};
+    if (settingsObj.photo_films) {
+      try {
+        const parsed = JSON.parse(settingsObj.photo_films);
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          parsedPhotoFilms = parsed;
+        }
+      } catch (e) {
+        console.warn('Invalid photo_films setting JSON, using empty map.');
+      }
+    }
+
+    let parsedPhotoYears = {};
+    if (settingsObj.photo_years) {
+      try {
+        const parsed = JSON.parse(settingsObj.photo_years);
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          parsedPhotoYears = parsed;
+        }
+      } catch (e) {
+        console.warn('Invalid photo_years setting JSON, using empty map.');
+      }
+    }
+
+    portfolioData.photoFilms = parsedPhotoFilms;
+    portfolioData.photoYears = parsedPhotoYears;
+    portfolioData.photos = (photos || []).map(photo => ({
+      ...photo,
+      film: parsedPhotoFilms[String(photo.id)] || '',
+      year: parsedPhotoYears[String(photo.id)] || ''
+    }));
     portfolioData.categories = parsedCategories;
+    portfolioData.films = parsedFilms;
     portfolioData.photographer = {
       about: settingsObj.about || '',
       email: settingsObj.email || '',
@@ -471,25 +522,36 @@ async function renderGallery(photos) {
   updateGalleryGridMetrics();
   lastGalleryWidth = grid.clientWidth || lastGalleryWidth;
 
-  const aspectRatios = await Promise.all(photos.map((photo) => loadImageAspectRatio(photo.src)));
-  if (renderToken !== galleryRenderToken) return;
   const isMobile = window.innerWidth < 700;
-  const layoutSpans = buildAspectLayout(aspectRatios, isMobile);
+  const cachedAspectRatios = photos.map((photo) => imageAspectRatioCache.get(photo.src) || 1);
+  const initialLayoutSpans = buildAspectLayout(cachedAspectRatios, isMobile);
 
   photos.forEach((photo, index) => {
     const item = document.createElement('div');
     item.className = 'gallery-item';
     item.style.animationDelay = `${index * 0.028}s`;
 
-    const span = layoutSpans[index];
+    const span = initialLayoutSpans[index];
     item.style.gridColumn = `span ${span.col}`;
     item.style.gridRow = `span ${span.row}`;
 
     const hasLiked = localStorage.getItem(`liked_${photo.id}`);
+    const filmLabel = photo.film
+      ? ((portfolioData.films || []).find(f => f.id === photo.film)?.name || photo.film)
+      : '';
+    const yearLabel = photo.year ? String(photo.year) : '';
+    const gallerySrc = withCloudinaryTransform(
+      photo.src,
+      'f_auto,q_auto,dpr_auto,w_400,c_limit'
+    );
     item.innerHTML = `
-      <img src="${photo.src}" alt="${photo.title}" loading="lazy">
+      <img src="${gallerySrc}" alt="${photo.title}" loading="lazy">
       <div class="overlay">
-        <span>${photo.title}</span>
+        <div class="overlay-meta">
+          <span class="overlay-title">${photo.title}</span>
+          ${filmLabel ? `<span class="overlay-film">${filmLabel}</span>` : ''}
+          ${yearLabel ? `<span class="overlay-film">${yearLabel}</span>` : ''}
+        </div>
       </div>
       <button class="like-btn ${hasLiked ? 'liked' : ''}" data-id="${photo.id}" data-likes="${photo.likes || 0}">
         ♥ ${photo.likes || 0}
@@ -504,6 +566,21 @@ async function renderGallery(photos) {
 
     item.addEventListener('click', () => openLightbox(photo));
     grid.appendChild(item);
+  });
+
+  const needsAsyncRatios = photos.some((photo) => !imageAspectRatioCache.has(photo.src));
+  if (!needsAsyncRatios) return;
+
+  const aspectRatios = await Promise.all(photos.map((photo) => loadImageAspectRatio(photo.src)));
+  if (renderToken !== galleryRenderToken) return;
+
+  const refinedLayoutSpans = buildAspectLayout(aspectRatios, isMobile);
+  const items = grid.querySelectorAll('.gallery-item');
+  items.forEach((item, index) => {
+    const span = refinedLayoutSpans[index];
+    if (!span) return;
+    item.style.gridColumn = `span ${span.col}`;
+    item.style.gridRow = `span ${span.row}`;
   });
 }
 
@@ -593,9 +670,17 @@ function setupLightbox() {
   const lightboxImg = document.getElementById('lightbox-img');
   const lightboxTitle = document.getElementById('lightbox-title');
   const closeBtn = document.querySelector('.lightbox-close');
+  const prevBtn = document.querySelector('.lightbox-prev');
+  const nextBtn = document.querySelector('.lightbox-next');
   let touchStartX = 0;
   let touchStartY = 0;
   let touchStartTime = 0;
+
+  const updateNavButtons = () => {
+    const enabled = lightbox.classList.contains('active') && lightboxPhotos.length > 1;
+    if (prevBtn) prevBtn.disabled = !enabled;
+    if (nextBtn) nextBtn.disabled = !enabled;
+  };
 
   const updateViews = async (photo) => {
     const newViews = (photo.views || 0) + 1;
@@ -612,10 +697,22 @@ function setupLightbox() {
 
   const showPhoto = async (photo) => {
     if (!photo) return;
-    lightboxImg.src = photo.src.replace('w=800', 'w=1600');
-    lightboxTitle.textContent = photo.title;
+    lightboxImg.src = withCloudinaryTransform(
+      photo.src,
+      'f_auto,q_auto,dpr_auto,w_1600,c_limit'
+    );
+    const filmLabel = photo.film
+      ? ((portfolioData.films || []).find(f => f.id === photo.film)?.name || photo.film)
+      : '';
+    const yearLabel = photo.year ? String(photo.year) : '';
+    lightboxTitle.innerHTML = `
+      <span class="lightbox-title-main">${photo.title || ''}</span>
+      ${filmLabel ? `<span class="lightbox-title-sub">${filmLabel}</span>` : ''}
+      ${yearLabel ? `<span class="lightbox-title-sub">${yearLabel}</span>` : ''}
+    `;
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
+    updateNavButtons();
     await updateViews(photo);
   };
 
@@ -640,9 +737,12 @@ function setupLightbox() {
     document.body.style.overflow = '';
     lightboxPhotos = [];
     lightboxIndex = -1;
+    updateNavButtons();
   };
 
   closeBtn.addEventListener('click', closeLightbox);
+  if (prevBtn) prevBtn.addEventListener('click', () => navigatePhoto(-1));
+  if (nextBtn) nextBtn.addEventListener('click', () => navigatePhoto(1));
   lightboxImg.addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) closeLightbox();
@@ -678,6 +778,8 @@ function setupLightbox() {
     if (e.key === 'ArrowRight') await navigatePhoto(1);
     if (e.key === 'ArrowLeft') await navigatePhoto(-1);
   });
+
+  updateNavButtons();
 }
 
 function setupNavigation() {
