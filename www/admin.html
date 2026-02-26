@@ -1081,8 +1081,8 @@
       }
 
       if (
-        CLOUDINARY_CLOUD_NAME.includes('djoh49z3m') ||
-        CLOUDINARY_UPLOAD_PRESET.includes('emmaknipst')
+        CLOUDINARY_CLOUD_NAME.includes('%') ||
+        CLOUDINARY_UPLOAD_PRESET.includes('%')
       ) {
         alert('Please configure Cloudinary in admin.html. See instructions in CLOUDINARY_SETUP.md');
         return;

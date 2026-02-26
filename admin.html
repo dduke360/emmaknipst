@@ -1081,8 +1081,8 @@
       }
 
       if (
-        CLOUDINARY_CLOUD_NAME.includes('%CLOUDINARY_CLOUD_NAME%') ||
-        CLOUDINARY_UPLOAD_PRESET.includes('%CLOUDINARY_UPLOAD_PRESET%')
+        CLOUDINARY_CLOUD_NAME.includes('%') ||
+        CLOUDINARY_UPLOAD_PRESET.includes('%')
       ) {
         alert('Please configure Cloudinary in admin.html. See instructions in CLOUDINARY_SETUP.md');
         return;
