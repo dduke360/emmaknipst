@@ -489,7 +489,7 @@ function renderAbout() {
   const about = portfolioData.photographer.about || '';
   const paragraphs = about.split('\n\n').filter(p => p.trim());
   const html = paragraphs
-    .map((p, i) => `<p class="${i === 0 ? 'about-intro' : 'about-body'}">${p.replace(/\n/g, '<br>')}</p>`)
+    .map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`)
     .join('');
   
   aboutText.innerHTML = html;

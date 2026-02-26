@@ -363,20 +363,6 @@ main {
   font-size: 0.92rem;
   line-height: 1.68;
   margin-bottom: 0.85rem;
-}
-
-.about-text .about-intro {
-  color: color-mix(in srgb, var(--text) 88%, var(--muted));
-  font-size: clamp(1rem, 1.55vw, 1.16rem);
-  line-height: 1.42;
-  letter-spacing: -0.01em;
-  max-width: 46ch;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 1rem;
-}
-
-.about-text .about-body {
   max-width: 78ch;
   margin-left: auto;
   margin-right: auto;
@@ -604,9 +590,6 @@ body.iso400-enabled .lightbox.active::after {
     padding: 1.1rem;
   }
 
-  .about-text .about-intro {
-    max-width: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -469,17 +469,17 @@
       <h2>Upload to Cloudinary</h2>
       <p class="section-note">Upload images to Cloudinary (free cloud storage). Images persist across deployments.</p>
       <div id="cloudinary-uploads" class="category-list"></div>
-      <button id="cloudinary-upload-btn" class="btn btn-primary">Upload Image</button>
+      <button id="cloudinary-upload-btn" class="btn btn-primary">Upload Images</button>
       <div id="cloudinary-form" class="category-list" style="display: none;">
         <div class="form-group">
-          <label>Title</label>
-          <input type="text" id="cloudinary-title" placeholder="Photo title">
+          <label>Title Prefix (optional)</label>
+          <input type="text" id="cloudinary-title" placeholder="e.g. Paris Series">
         </div>
         <div class="form-group">
           <label>Category</label>
           <select id="cloudinary-category"></select>
         </div>
-        <button id="add-cloudinary-btn" class="btn btn-success">Add to Gallery</button>
+        <button id="add-cloudinary-btn" class="btn btn-success">Add Uploads to Gallery</button>
       </div>
     </div>
 
@@ -559,7 +559,7 @@
       { title: 'Dark Colors', colors: DARK_COLORS }
     ];
     let data = null;
-    let cloudinaryUploadedUrl = null;
+    let cloudinaryUploadedItems = [];
     let selectedBackgroundColor = BACKGROUND_COLORS[0];
 
     // Cloudinary config
@@ -923,6 +923,18 @@
       }
     }
 
+    async function savePhotosBulk(photosToInsert) {
+      if (!photosToInsert.length) return;
+      try {
+        const { error } = await supabaseClient.from('photos').insert(photosToInsert);
+        if (error) throw error;
+        await loadData();
+      } catch (error) {
+        console.error('Bulk save error:', error);
+        alert('Failed to save uploads. Check console for details.');
+      }
+    }
+
     async function saveSetting(key, value) {
       try {
         const { error } = await supabaseClient
@@ -1093,7 +1105,8 @@
         cloud_name: CLOUDINARY_CLOUD_NAME,
         upload_preset: CLOUDINARY_UPLOAD_PRESET,
         sources: ['local', 'url', 'camera'],
-        multiple: false,
+        multiple: true,
+        maxFiles: 30,
         folder: 'emma_knipst'
       }, (error, result) => {
         if (error) {
@@ -1102,13 +1115,21 @@
           return;
         }
         if (result && result.event === 'success') {
-          cloudinaryUploadedUrl = result.info.secure_url;
+          cloudinaryUploadedItems.push({
+            src: result.info.secure_url,
+            originalFilename: result.info.original_filename || 'Untitled'
+          });
+        }
+        if (result && result.event === 'queues-end') {
+          if (!cloudinaryUploadedItems.length) return;
+          const previewHtml = cloudinaryUploadedItems.slice(0, 6).map(item =>
+            `<img src="${item.src}" alt="Uploaded preview" class="upload-preview">`
+          ).join('');
           document.getElementById('cloudinary-uploads').innerHTML = `
-            <img src="${cloudinaryUploadedUrl}" alt="Uploaded preview" class="upload-preview">
-            <p class="upload-success">Uploaded successfully!</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.5rem;">${previewHtml}</div>
+            <p class="upload-success">${cloudinaryUploadedItems.length} image(s) uploaded successfully.</p>
           `;
           cloudinaryForm.style.display = 'block';
-          cloudinaryTitle.value = result.info.original_filename || 'Untitled';
         }
       });
       } catch (e) {
@@ -1120,18 +1141,25 @@
     cloudinaryUploadBtn.addEventListener('click', openCloudinaryWidget);
 
     addCloudinaryBtn.addEventListener('click', async () => {
-      if (!cloudinaryUploadedUrl) return;
+      if (!cloudinaryUploadedItems.length) return;
       
-      const title = cloudinaryTitle.value.trim() || 'Untitled';
+      const titlePrefix = cloudinaryTitle.value.trim();
       const category = document.getElementById('cloudinary-category').value;
-      
-      await savePhoto({
-        src: cloudinaryUploadedUrl,
-        title,
-        category
-      }, 'insert');
-      
-      cloudinaryUploadedUrl = null;
+
+      const payload = cloudinaryUploadedItems.map((item, index) => {
+        const title = titlePrefix
+          ? `${titlePrefix}${cloudinaryUploadedItems.length > 1 ? ` ${index + 1}` : ''}`
+          : item.originalFilename;
+        return {
+          src: item.src,
+          title,
+          category
+        };
+      });
+
+      await savePhotosBulk(payload);
+
+      cloudinaryUploadedItems = [];
       cloudinaryForm.style.display = 'none';
       document.getElementById('cloudinary-uploads').innerHTML = '';
       cloudinaryTitle.value = '';
