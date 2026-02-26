@@ -471,17 +471,16 @@ async function renderGallery(photos) {
   updateGalleryGridMetrics();
   lastGalleryWidth = grid.clientWidth || lastGalleryWidth;
 
-  const aspectRatios = await Promise.all(photos.map((photo) => loadImageAspectRatio(photo.src)));
-  if (renderToken !== galleryRenderToken) return;
   const isMobile = window.innerWidth < 700;
-  const layoutSpans = buildAspectLayout(aspectRatios, isMobile);
+  const cachedAspectRatios = photos.map((photo) => imageAspectRatioCache.get(photo.src) || 1);
+  const initialLayoutSpans = buildAspectLayout(cachedAspectRatios, isMobile);
 
   photos.forEach((photo, index) => {
     const item = document.createElement('div');
     item.className = 'gallery-item';
     item.style.animationDelay = `${index * 0.028}s`;
 
-    const span = layoutSpans[index];
+    const span = initialLayoutSpans[index];
     item.style.gridColumn = `span ${span.col}`;
     item.style.gridRow = `span ${span.row}`;
 
@@ -504,6 +503,21 @@ async function renderGallery(photos) {
 
     item.addEventListener('click', () => openLightbox(photo));
     grid.appendChild(item);
+  });
+
+  const needsAsyncRatios = photos.some((photo) => !imageAspectRatioCache.has(photo.src));
+  if (!needsAsyncRatios) return;
+
+  const aspectRatios = await Promise.all(photos.map((photo) => loadImageAspectRatio(photo.src)));
+  if (renderToken !== galleryRenderToken) return;
+
+  const refinedLayoutSpans = buildAspectLayout(aspectRatios, isMobile);
+  const items = grid.querySelectorAll('.gallery-item');
+  items.forEach((item, index) => {
+    const span = refinedLayoutSpans[index];
+    if (!span) return;
+    item.style.gridColumn = `span ${span.col}`;
+    item.style.gridRow = `span ${span.row}`;
   });
 }
 
