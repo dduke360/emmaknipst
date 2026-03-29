@@ -29,10 +29,30 @@ let lightboxIndex = -1;
 let lastGalleryWidth = 0;
 const imageAspectRatioCache = new Map();
 let galleryRenderToken = 0;
+const CLOUDINARY_TRANSFORMS = Object.freeze({
+  gallery: 'dpr_auto,w_360,c_limit',
+  lightbox: 'dpr_auto,w_1440,c_limit'
+});
+
+function ensureCloudinaryAutoOptimization(transform = '') {
+  const parts = String(transform)
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (!parts.includes('f_auto')) parts.unshift('f_auto');
+  if (!parts.includes('q_auto')) {
+    const formatIndex = parts.indexOf('f_auto');
+    parts.splice(formatIndex + 1, 0, 'q_auto');
+  }
+
+  return parts.join(',');
+}
 
 function withCloudinaryTransform(url, transform) {
   if (!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
-  return url.replace('/upload/', `/upload/${transform}/`);
+  const optimizedTransform = ensureCloudinaryAutoOptimization(transform);
+  return url.replace('/upload/', `/upload/${optimizedTransform}/`);
 }
 
 function withWatermark(transform) {
@@ -548,7 +568,7 @@ async function renderGallery(photos) {
     const yearLabel = photo.year ? String(photo.year) : '';
     const gallerySrc = withCloudinaryTransform(
       photo.src,
-      withWatermark('f_auto,q_auto,dpr_auto,w_400,c_limit')
+      CLOUDINARY_TRANSFORMS.gallery
     );
     item.innerHTML = `
       <img src="${gallerySrc}" alt="${photo.title}" loading="lazy">
@@ -705,7 +725,7 @@ function setupLightbox() {
     if (!photo) return;
     lightboxImg.src = withCloudinaryTransform(
       photo.src,
-      withWatermark('f_auto,q_auto,dpr_auto,w_1600,c_limit')
+      withWatermark(CLOUDINARY_TRANSFORMS.lightbox)
     );
     const filmLabel = photo.film
       ? ((portfolioData.films || []).find(f => f.id === photo.film)?.name || photo.film)

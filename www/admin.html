@@ -664,6 +664,14 @@
     // Cloudinary config
     const CLOUDINARY_CLOUD_NAME = 'djoh49z3m';
     const CLOUDINARY_UPLOAD_PRESET = 'emmaknipst';
+    const CLOUDINARY_TRANSFORMS = Object.freeze({
+      thumb: 'w_100,c_limit'
+    });
+    const CLOUDINARY_UPLOAD_LIMITS = Object.freeze({
+      maxImageWidth: 2400,
+      maxImageHeight: 2400,
+      maxFileSize: 8_000_000
+    });
 
     const loginScreen = document.getElementById('login-screen');
     const adminApp = document.getElementById('admin-app');
@@ -685,9 +693,25 @@
       return Math.min(max, Math.max(min, value));
     }
 
+    function ensureCloudinaryAutoOptimization(transform = '') {
+      const parts = String(transform)
+        .split(',')
+        .map((part) => part.trim())
+        .filter(Boolean);
+
+      if (!parts.includes('f_auto')) parts.unshift('f_auto');
+      if (!parts.includes('q_auto')) {
+        const formatIndex = parts.indexOf('f_auto');
+        parts.splice(formatIndex + 1, 0, 'q_auto');
+      }
+
+      return parts.join(',');
+    }
+
     function withCloudinaryTransform(url, transform) {
       if (!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
-      return url.replace('/upload/', `/upload/${transform}/`);
+      const optimizedTransform = ensureCloudinaryAutoOptimization(transform);
+      return url.replace('/upload/', `/upload/${optimizedTransform}/`);
     }
 
     function normalizeHex(hex) {
@@ -1162,7 +1186,7 @@
       document.getElementById('top-views').innerHTML = byViews.map((p, i) => `
         <div class="stats-row">
           <span class="stat-rank">${i + 1}.</span>
-          <img class="stat-thumb" src="${withCloudinaryTransform(p.src, 'f_auto,q_auto,w_100,c_limit')}" alt="${p.title}">
+          <img class="stat-thumb" src="${withCloudinaryTransform(p.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="${p.title}">
           <span class="stat-name">${p.title}</span>
           <span class="stat-value">${p.views || 0} views</span>
         </div>
@@ -1171,7 +1195,7 @@
       document.getElementById('top-likes').innerHTML = byLikes.map((p, i) => `
         <div class="stats-row">
           <span class="stat-rank">${i + 1}.</span>
-          <img class="stat-thumb" src="${withCloudinaryTransform(p.src, 'f_auto,q_auto,w_100,c_limit')}" alt="${p.title}">
+          <img class="stat-thumb" src="${withCloudinaryTransform(p.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="${p.title}">
           <span class="stat-name">${p.title}</span>
           <span class="stat-value stat-value-like">♥ ${p.likes || 0}</span>
         </div>
@@ -1245,7 +1269,7 @@
         card.dataset.photoSrc = photo.src;
         card.dataset.photoTitle = photo.title || 'Photo preview';
         card.innerHTML = `
-          <img src="${withCloudinaryTransform(photo.src, 'f_auto,q_auto,w_100,c_limit')}" alt="${photo.title}">
+          <img src="${withCloudinaryTransform(photo.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="${photo.title}">
           <button class="delete-btn" onclick="deletePhoto('${photo.id}')">&times;</button>
           <div class="photo-meta">
             <input
@@ -1521,6 +1545,10 @@
         sources: ['local', 'url', 'camera'],
         multiple: true,
         maxFiles: 30,
+        resourceType: 'image',
+        maxImageWidth: CLOUDINARY_UPLOAD_LIMITS.maxImageWidth,
+        maxImageHeight: CLOUDINARY_UPLOAD_LIMITS.maxImageHeight,
+        maxFileSize: CLOUDINARY_UPLOAD_LIMITS.maxFileSize,
         folder: 'emma_knipst'
       }, (error, result) => {
         if (error) {
@@ -1537,7 +1565,7 @@
         if (result && result.event === 'queues-end') {
           if (!cloudinaryUploadedItems.length) return;
           const previewHtml = cloudinaryUploadedItems.slice(0, 6).map(item =>
-            `<img src="${withCloudinaryTransform(item.src, 'f_auto,q_auto,w_100,c_limit')}" alt="Uploaded preview" class="upload-preview">`
+            `<img src="${withCloudinaryTransform(item.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="Uploaded preview" class="upload-preview">`
           ).join('');
           document.getElementById('cloudinary-uploads').innerHTML = `
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.5rem;">${previewHtml}</div>
