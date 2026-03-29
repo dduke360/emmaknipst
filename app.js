@@ -29,9 +29,14 @@ let lightboxIndex = -1;
 let lastGalleryWidth = 0;
 const imageAspectRatioCache = new Map();
 let galleryRenderToken = 0;
+let currentGalleryVisibleCount = 0;
 const CLOUDINARY_TRANSFORMS = Object.freeze({
   gallery: 'dpr_auto,w_360,c_limit',
   lightbox: 'dpr_auto,w_1440,c_limit'
+});
+const GALLERY_BATCH = Object.freeze({
+  mobile: 12,
+  desktop: 24
 });
 
 function ensureCloudinaryAutoOptimization(transform = '') {
@@ -353,6 +358,7 @@ function init() {
   renderAbout();
   renderContact();
   setupLightbox();
+  setupGalleryLoadMore();
   setupNavigation();
   setupResponsiveGallery();
 }
@@ -541,68 +547,143 @@ function buildAspectLayout(aspectRatios, isMobile) {
 }
 
 async function renderGallery(photos) {
+  return renderGalleryWithOptions(photos);
+}
+
+function getGalleryBatchSize() {
+  return window.innerWidth < 700 ? GALLERY_BATCH.mobile : GALLERY_BATCH.desktop;
+}
+
+function updateGalleryControls() {
+  const controls = document.getElementById('gallery-controls');
+  const progress = document.getElementById('gallery-progress');
+  const loadMoreBtn = document.getElementById('gallery-load-more');
+  if (!controls || !progress || !loadMoreBtn) return;
+
+  const total = currentGalleryPhotos.length;
+  const visible = Math.min(currentGalleryVisibleCount, total);
+  const hasMore = visible < total;
+
+  controls.hidden = total === 0;
+  progress.textContent = total ? `${visible} of ${total} photos loaded` : '';
+  loadMoreBtn.hidden = !hasMore;
+  loadMoreBtn.disabled = !hasMore;
+}
+
+async function loadMoreGalleryItems() {
+  if (currentGalleryVisibleCount >= currentGalleryPhotos.length) return;
+  currentGalleryVisibleCount = Math.min(
+    currentGalleryVisibleCount + getGalleryBatchSize(),
+    currentGalleryPhotos.length
+  );
+  await renderGalleryWithOptions(currentGalleryPhotos, { preserveVisibleCount: true, appendOnly: true });
+}
+
+function createGalleryItem(photo, index, span) {
+  const item = document.createElement('div');
+  item.className = 'gallery-item';
+  item.dataset.photoId = String(photo.id);
+  item.style.animationDelay = `${index * 0.028}s`;
+  item.style.gridColumn = `span ${span.col}`;
+  item.style.gridRow = `span ${span.row}`;
+
+  const hasLiked = localStorage.getItem(`liked_${photo.id}`);
+  const filmLabel = photo.film
+    ? ((portfolioData.films || []).find(f => f.id === photo.film)?.name || photo.film)
+    : '';
+  const yearLabel = photo.year ? String(photo.year) : '';
+  const gallerySrc = withCloudinaryTransform(
+    photo.src,
+    CLOUDINARY_TRANSFORMS.gallery
+  );
+
+  item.innerHTML = `
+    <img src="${gallerySrc}" alt="${photo.title}" loading="lazy">
+    <div class="overlay">
+      <div class="overlay-meta">
+        <span class="overlay-title">${photo.title}</span>
+        ${filmLabel ? `<span class="overlay-film">${filmLabel}</span>` : ''}
+        ${yearLabel ? `<span class="overlay-film">${yearLabel}</span>` : ''}
+      </div>
+    </div>
+    <button class="like-btn ${hasLiked ? 'liked' : ''}" data-id="${photo.id}" data-likes="${photo.likes || 0}">
+      ♥ ${photo.likes || 0}
+    </button>
+  `;
+
+  const likeBtn = item.querySelector('.like-btn');
+  likeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleLike(photo.id, photo.likes || 0);
+  });
+
+  item.addEventListener('click', () => openLightbox(photo));
+  return item;
+}
+
+async function renderGalleryWithOptions(photos, options = {}) {
   const grid = document.getElementById('gallery-grid');
+  const { preserveVisibleCount = false, appendOnly = false } = options;
   const renderToken = ++galleryRenderToken;
   currentGalleryPhotos = photos;
-  grid.innerHTML = '';
+  const batchSize = getGalleryBatchSize();
+  currentGalleryVisibleCount = preserveVisibleCount
+    ? Math.min(Math.max(currentGalleryVisibleCount, batchSize), photos.length)
+    : Math.min(batchSize, photos.length);
+  const visiblePhotos = photos.slice(0, currentGalleryVisibleCount);
+  const existingItems = Array.from(grid.querySelectorAll('.gallery-item'));
+  const canAppendOnly = appendOnly && existingItems.length > 0 && existingItems.length < visiblePhotos.length;
+
+  if (!canAppendOnly) {
+    grid.innerHTML = '';
+  }
+
   updateGalleryGridMetrics();
   lastGalleryWidth = grid.clientWidth || lastGalleryWidth;
 
   const isMobile = window.innerWidth < 700;
-  const cachedAspectRatios = photos.map((photo) => imageAspectRatioCache.get(photo.src) || 1);
+  const cachedAspectRatios = visiblePhotos.map((photo) => imageAspectRatioCache.get(photo.src) || 1);
   const initialLayoutSpans = buildAspectLayout(cachedAspectRatios, isMobile);
 
-  photos.forEach((photo, index) => {
-    const item = document.createElement('div');
-    item.className = 'gallery-item';
-    item.style.animationDelay = `${index * 0.028}s`;
-
-    const span = initialLayoutSpans[index];
-    item.style.gridColumn = `span ${span.col}`;
-    item.style.gridRow = `span ${span.row}`;
-
-    const hasLiked = localStorage.getItem(`liked_${photo.id}`);
-    const filmLabel = photo.film
-      ? ((portfolioData.films || []).find(f => f.id === photo.film)?.name || photo.film)
-      : '';
-    const yearLabel = photo.year ? String(photo.year) : '';
-    const gallerySrc = withCloudinaryTransform(
-      photo.src,
-      CLOUDINARY_TRANSFORMS.gallery
-    );
-    item.innerHTML = `
-      <img src="${gallerySrc}" alt="${photo.title}" loading="lazy">
-      <div class="overlay">
-        <div class="overlay-meta">
-          <span class="overlay-title">${photo.title}</span>
-          ${filmLabel ? `<span class="overlay-film">${filmLabel}</span>` : ''}
-          ${yearLabel ? `<span class="overlay-film">${yearLabel}</span>` : ''}
-        </div>
-      </div>
-      <button class="like-btn ${hasLiked ? 'liked' : ''}" data-id="${photo.id}" data-likes="${photo.likes || 0}">
-        ♥ ${photo.likes || 0}
-      </button>
-    `;
-
-    const likeBtn = item.querySelector('.like-btn');
-    likeBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleLike(photo.id, photo.likes || 0);
+  if (canAppendOnly) {
+    existingItems.forEach((item, index) => {
+      const span = initialLayoutSpans[index];
+      if (!span) return;
+      item.style.gridColumn = `span ${span.col}`;
+      item.style.gridRow = `span ${span.row}`;
     });
 
-    item.addEventListener('click', () => openLightbox(photo));
-    grid.appendChild(item);
+    visiblePhotos.slice(existingItems.length).forEach((photo, offset) => {
+      const index = existingItems.length + offset;
+      const span = initialLayoutSpans[index];
+      grid.appendChild(createGalleryItem(photo, index, span));
+    });
+  } else {
+    visiblePhotos.forEach((photo, index) => {
+      const span = initialLayoutSpans[index];
+      grid.appendChild(createGalleryItem(photo, index, span));
+    });
+  }
+
+  const items = grid.querySelectorAll('.gallery-item');
+  items.forEach((item, index) => {
+    const span = initialLayoutSpans[index];
+    if (!span) return;
+    item.style.gridColumn = `span ${span.col}`;
+    item.style.gridRow = `span ${span.row}`;
   });
 
-  const needsAsyncRatios = photos.some((photo) => !imageAspectRatioCache.has(photo.src));
+  updateGalleryControls();
+
+  const needsAsyncRatios = visiblePhotos.some((photo) => !imageAspectRatioCache.has(photo.src));
   if (!needsAsyncRatios) return;
 
-  const aspectRatios = await Promise.all(photos.map((photo) => loadImageAspectRatio(photo.src)));
+  const aspectRatios = await Promise.all(visiblePhotos.map((photo) => loadImageAspectRatio(photo.src)));
   if (renderToken !== galleryRenderToken) return;
 
   const refinedLayoutSpans = buildAspectLayout(aspectRatios, isMobile);
-  const items = grid.querySelectorAll('.gallery-item');
-  items.forEach((item, index) => {
+  const renderedItems = grid.querySelectorAll('.gallery-item');
+  renderedItems.forEach((item, index) => {
     const span = refinedLayoutSpans[index];
     if (!span) return;
     item.style.gridColumn = `span ${span.col}`;
@@ -625,7 +706,7 @@ function setupResponsiveGallery() {
       lastGalleryWidth = width;
       updateGalleryGridMetrics();
       if (currentGalleryPhotos.length > 0) {
-        renderGallery(currentGalleryPhotos);
+        renderGalleryWithOptions(currentGalleryPhotos, { preserveVisibleCount: true });
       }
     }, 120);
   });
@@ -818,6 +899,15 @@ function setupNavigation() {
         target.scrollIntoView({ behavior: 'smooth' });
       }
     });
+  });
+}
+
+function setupGalleryLoadMore() {
+  const loadMoreBtn = document.getElementById('gallery-load-more');
+  if (!loadMoreBtn) return;
+  loadMoreBtn.addEventListener('click', () => {
+    loadMoreBtn.blur();
+    loadMoreGalleryItems();
   });
 }
 
