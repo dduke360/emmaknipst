@@ -16,6 +16,8 @@ Go to **Netlify Dashboard** → Your Site → **Site settings** → **Environmen
 | SUPABASE_ANON_KEY | `your-supabase-anon-key` |
 | CLOUDINARY_CLOUD_NAME | `your-cloudinary-cloud-name` |
 | CLOUDINARY_UPLOAD_PRESET | `your-cloudinary-upload-preset` |
+| CLOUDINARY_API_KEY | `your-cloudinary-api-key` |
+| CLOUDINARY_API_SECRET | `your-cloudinary-api-secret` |
 
 ## Current Setup
 

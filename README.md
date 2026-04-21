@@ -20,6 +20,8 @@ Pflicht-Variablen:
 - `SUPABASE_ANON_KEY`
 - `CLOUDINARY_CLOUD_NAME`
 - `CLOUDINARY_UPLOAD_PRESET`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
 
 Hinweis:
 - Werte sind als Platzhalter im Source (`admin.html`, `supabase.js`) hinterlegt.
@@ -50,6 +52,13 @@ Nützliche Commands:
   - `SUPABASE_ANON_KEY`
   - `CLOUDINARY_CLOUD_NAME`
   - `CLOUDINARY_UPLOAD_PRESET`
+  - `CLOUDINARY_API_KEY`
+  - `CLOUDINARY_API_SECRET`
+
+Cloudinary-Hinweis:
+- Der Admin-Upload nutzt jetzt eine Netlify Function für signierte Uploads.
+- Das Cloudinary Upload Preset sollte in Cloudinary auf `Signed` gestellt werden.
+- Wenn du Originale schützen willst, setze im Preset zusätzlich den Delivery Type auf `private`.
 
 ## iOS Workflow (Capacitor)
 Standardablauf:

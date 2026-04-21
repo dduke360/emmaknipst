@@ -58,7 +58,9 @@ function main() {
     'SUPABASE_URL',
     'SUPABASE_ANON_KEY',
     'CLOUDINARY_CLOUD_NAME',
-    'CLOUDINARY_UPLOAD_PRESET'
+    'CLOUDINARY_UPLOAD_PRESET',
+    'CLOUDINARY_API_KEY',
+    'CLOUDINARY_API_SECRET'
   ];
 
   requiredEnv.forEach((key) => {
@@ -89,7 +91,11 @@ function main() {
 
   const adminHtml = readFileSafe(path.join(ROOT, 'admin.html')) || '';
   const supabaseJs = readFileSafe(path.join(ROOT, 'supabase.js')) || '';
-  if (!adminHtml.includes('%CLOUDINARY_CLOUD_NAME%') || !adminHtml.includes('%CLOUDINARY_UPLOAD_PRESET%')) {
+  if (
+    !adminHtml.includes('%CLOUDINARY_CLOUD_NAME%') ||
+    !adminHtml.includes('%CLOUDINARY_UPLOAD_PRESET%') ||
+    !adminHtml.includes('%CLOUDINARY_API_KEY%')
+  ) {
     fail('admin.html should contain Cloudinary placeholders', failures);
   } else {
     ok('admin.html uses Cloudinary placeholders', successes);
