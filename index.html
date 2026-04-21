@@ -15,9 +15,6 @@
       root.setAttribute('data-theme', 'light');
 
       try {
-        const mode = localStorage.getItem('emma_theme_mode');
-        if (mode !== 'color') return;
-
         const cached = JSON.parse(localStorage.getItem('emma_photos') || '{}');
         const background = cached?.photographer?.backgroundColor;
         if (!background) return;
