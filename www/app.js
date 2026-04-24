@@ -9,7 +9,9 @@ let portfolioData = {
   photographer: {},
   categories: [...DEFAULT_CATEGORIES],
   films: [],
+  caseStudies: [],
   photoFilms: {},
+  photoCloudinary: {},
   photoYears: {},
   photos: []
 };
@@ -30,6 +32,8 @@ let lastGalleryWidth = 0;
 const imageAspectRatioCache = new Map();
 let galleryRenderToken = 0;
 let currentGalleryVisibleCount = 0;
+const signedDeliveryUrlCache = new Map();
+let activeStorySlug = '';
 const CLOUDINARY_TRANSFORMS = Object.freeze({
   gallery: 'dpr_auto,w_360,c_limit',
   lightbox: 'dpr_auto,w_1440,c_limit'
@@ -58,6 +62,168 @@ function withCloudinaryTransform(url, transform) {
   if (!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
   const optimizedTransform = ensureCloudinaryAutoOptimization(transform);
   return url.replace('/upload/', `/upload/${optimizedTransform}/`);
+}
+
+function buildCloudinaryAssetUrl(meta, transform = '') {
+  if (!meta || !meta.publicId || !meta.cloudName) return meta?.src || '';
+  const resourceType = meta.resourceType || 'image';
+  const deliveryType = meta.deliveryType || 'upload';
+  const optimizedTransform = transform ? ensureCloudinaryAutoOptimization(transform) : '';
+  const versionPart = meta.version ? `v${meta.version}` : '';
+  const publicIdPath = String(meta.publicId)
+    .split('/')
+    .map((segment) => encodeURIComponent(segment))
+    .join('/');
+  const extension = meta.format ? `.${encodeURIComponent(meta.format)}` : '';
+  const pathParts = [
+    'https://res.cloudinary.com',
+    encodeURIComponent(meta.cloudName),
+    resourceType,
+    deliveryType
+  ];
+
+  if (optimizedTransform) pathParts.push(optimizedTransform);
+  if (versionPart) pathParts.push(versionPart);
+  pathParts.push(`${publicIdPath}${extension}`);
+  return pathParts.join('/');
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function slugify(value) {
+  return String(value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function getPhotoDisplaySrc(photo, transform = CLOUDINARY_TRANSFORMS.gallery) {
+  return photo?.cloudinary
+    ? buildCloudinaryAssetUrl(photo.cloudinary, transform)
+    : withCloudinaryTransform(photo?.src, transform);
+}
+
+function getCategoryName(categoryId) {
+  return portfolioData.categories.find((category) => category.id === categoryId)?.name || categoryId || 'Series';
+}
+
+function generateCaseStudiesFromPhotos(photos) {
+  const byCategory = new Map();
+
+  photos.forEach((photo) => {
+    const key = photo.category || 'uncategorized';
+    if (!byCategory.has(key)) byCategory.set(key, []);
+    byCategory.get(key).push(photo);
+  });
+
+  return Array.from(byCategory.entries())
+    .map(([categoryId, group]) => {
+      const sorted = [...group].sort((a, b) => (b.views || 0) - (a.views || 0) || (b.likes || 0) - (a.likes || 0) || Number(b.id) - Number(a.id));
+      const featured = sorted[0];
+      const photoIds = sorted.map((photo) => photo.id);
+      const years = [...new Set(group.map((photo) => photo.year).filter(Boolean))].sort().reverse();
+      const films = [...new Set(group.map((photo) => photo.film).filter(Boolean))]
+        .map((filmId) => portfolioData.films.find((film) => film.id === filmId)?.name || filmId);
+      const categoryName = getCategoryName(categoryId);
+      const imageCount = group.length;
+      const yearLabel = years.length ? years.join(' / ') : 'Current work';
+      const filmLabel = films.length ? films.slice(0, 2).join(' + ') : 'Digital and mixed light';
+
+      return {
+        id: `case-${slugify(categoryId)}`,
+        slug: slugify(categoryId),
+        title: `${categoryName} Case Study`,
+        category: categoryName,
+        intro: `${imageCount} images shaped as a cohesive ${categoryName.toLowerCase()} series with a clear visual rhythm and stronger narrative sequencing.`,
+        story: '',
+        metrics: [
+          `${imageCount} selected frames`,
+          yearLabel,
+          filmLabel
+        ],
+        photoIds,
+        featuredPhotoId: featured?.id || null
+      };
+    })
+    .filter((study) => study.featuredPhotoId)
+    .sort((a, b) => {
+      const photoA = photos.find((photo) => photo.id === a.featuredPhotoId);
+      const photoB = photos.find((photo) => photo.id === b.featuredPhotoId);
+      return (photoB?.views || 0) - (photoA?.views || 0) || (photoB?.likes || 0) - (photoA?.likes || 0);
+    })
+    .slice(0, 3);
+}
+
+function normalizeCaseStudies(rawCaseStudies, photos) {
+  if (!Array.isArray(rawCaseStudies) || !rawCaseStudies.length) {
+    return generateCaseStudiesFromPhotos(photos);
+  }
+
+  const photoMap = new Map(photos.map((photo) => [String(photo.id), photo]));
+  const getCategoryPhotoIds = (categoryName) => {
+    if (!categoryName) return [];
+    const normalizedCategoryName = slugify(categoryName);
+    const categoryEntry = portfolioData.categories.find((category) =>
+      slugify(category.name || '') === normalizedCategoryName
+      || slugify(category.id || '') === normalizedCategoryName
+    );
+    const categoryId = categoryEntry?.id || categoryName;
+    return photos
+      .filter((photo) => slugify(photo.category || '') === slugify(categoryId))
+      .sort((a, b) => (b.views || 0) - (a.views || 0) || (b.likes || 0) - (a.likes || 0) || Number(b.id) - Number(a.id))
+      .map((photo) => photo.id);
+  };
+
+  const normalized = rawCaseStudies
+    .map((study, index) => {
+      if (!study || typeof study !== 'object') return null;
+      const photoIds = Array.isArray(study.photoIds)
+        ? study.photoIds.map((id) => String(id)).filter((id) => photoMap.has(id)).map((id) => photoMap.get(id).id)
+        : [];
+      const featuredPhotoId = photoMap.has(String(study.featuredPhotoId))
+        ? photoMap.get(String(study.featuredPhotoId)).id
+        : (photoIds[0] || null);
+
+      if (!featuredPhotoId) return null;
+
+      const normalizedSlug = slugify(study.slug || study.title || '');
+      const normalizedCategory = slugify(study.category || '');
+      const looksAutoGenerated = Boolean(
+        String(study.id || '').startsWith('case-')
+        || String(study.title || '').toLowerCase().endsWith('case study')
+        || (normalizedSlug && normalizedCategory && normalizedSlug === normalizedCategory)
+      );
+      const categoryPhotoIds = getCategoryPhotoIds(study.category);
+      const effectivePhotoIds = looksAutoGenerated && photoIds.length <= 3 && categoryPhotoIds.length > photoIds.length
+        ? [...photoIds, ...categoryPhotoIds.filter((id) => !photoIds.includes(id))]
+        : photoIds;
+
+      return {
+        id: study.id || `case-study-${index + 1}`,
+        slug: study.slug || slugify(study.title || `case-study-${index + 1}`),
+        title: study.title || `Case Study ${index + 1}`,
+        category: study.category || getCategoryName(photoMap.get(String(featuredPhotoId))?.category),
+        intro: study.intro || '',
+        story: study.story || '',
+        metrics: Array.isArray(study.metrics) ? study.metrics.filter(Boolean).slice(0, 3) : [],
+        photoIds: effectivePhotoIds.length ? effectivePhotoIds : [featuredPhotoId],
+        featuredPhotoId,
+        status: study.status === 'draft' ? 'draft' : 'published',
+        seoTitle: study.seoTitle || '',
+        seoDescription: study.seoDescription || ''
+      };
+    })
+    .filter(Boolean);
+
+  return normalized.length ? normalized : generateCaseStudiesFromPhotos(photos);
 }
 
 function withWatermark(transform) {
@@ -326,15 +492,42 @@ async function loadData() {
       }
     }
 
+    let parsedPhotoCloudinary = {};
+    if (settingsObj.photo_cloudinary) {
+      try {
+        const parsed = JSON.parse(settingsObj.photo_cloudinary);
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          parsedPhotoCloudinary = parsed;
+        }
+      } catch (e) {
+        console.warn('Invalid photo_cloudinary setting JSON, using empty map.');
+      }
+    }
+
+    let parsedCaseStudies = [];
+    if (settingsObj.case_studies) {
+      try {
+        const parsed = JSON.parse(settingsObj.case_studies);
+        if (Array.isArray(parsed)) {
+          parsedCaseStudies = parsed;
+        }
+      } catch (e) {
+        console.warn('Invalid case_studies setting JSON, using generated stories.');
+      }
+    }
+
     portfolioData.photoFilms = parsedPhotoFilms;
+    portfolioData.photoCloudinary = parsedPhotoCloudinary;
     portfolioData.photoYears = parsedPhotoYears;
     portfolioData.photos = (photos || []).map(photo => ({
       ...photo,
+      cloudinary: parsedPhotoCloudinary[String(photo.id)] || null,
       film: parsedPhotoFilms[String(photo.id)] || '',
       year: parsedPhotoYears[String(photo.id)] || ''
     }));
     portfolioData.categories = parsedCategories;
     portfolioData.films = parsedFilms;
+    portfolioData.caseStudies = normalizeCaseStudies(parsedCaseStudies, portfolioData.photos);
     portfolioData.photographer = {
       about: settingsObj.about || '',
       email: settingsObj.email || '',
@@ -353,6 +546,9 @@ async function loadData() {
 }
 
 function init() {
+  const story = getStoryFromLocation();
+  renderCaseStudies(story);
+  renderCaseStudyDetail(story);
   renderCategoryFilter();
   renderGallery(portfolioData.photos);
   renderAbout();
@@ -361,6 +557,153 @@ function init() {
   setupGalleryLoadMore();
   setupNavigation();
   setupResponsiveGallery();
+}
+
+function getStoryFromLocation() {
+  const params = new URLSearchParams(window.location.search);
+  return slugify(params.get('story') || '');
+}
+
+function setDocumentMetadata(study = null) {
+  const defaultTitle = 'Emma Knipst | Photography';
+  const defaultDescription = 'Portfolio of Emma Knipst - Capturing moments through the lens';
+  const title = study ? (study.seoTitle || `${study.title} | Emma Knipst`) : defaultTitle;
+  const description = study ? (study.seoDescription || study.intro || defaultDescription) : defaultDescription;
+  document.title = title;
+  const descriptionEl = document.querySelector('meta[name="description"]');
+  if (descriptionEl) descriptionEl.setAttribute('content', description);
+}
+
+function renderCaseStudies(activeSlug = '') {
+  const section = document.getElementById('case-studies');
+  const grid = document.getElementById('case-studies-grid');
+  if (!section || !grid) return;
+
+  const studies = (portfolioData.caseStudies || []).filter((study) => study.status !== 'draft');
+  if (!studies.length) {
+    section.hidden = true;
+    return;
+  }
+
+  section.hidden = activeSlug !== '';
+  grid.innerHTML = studies.map((study, index) => {
+    const featured = portfolioData.photos.find((photo) => photo.id === study.featuredPhotoId);
+    const storyText = String(study.story || '').trim();
+    const sequenceLabel = String(index + 1).padStart(2, '0');
+    const supporting = (study.photoIds || [])
+      .slice(0, 3)
+      .map((id) => portfolioData.photos.find((photo) => photo.id === id))
+      .filter(Boolean);
+    const previewHtml = supporting.map((photo) => `
+      <button class="case-study-thumb" type="button" data-photo-id="${photo.id}" aria-label="Open ${escapeHtml(photo.title || study.title)}">
+        <img src="${escapeHtml(getPhotoDisplaySrc(photo, CLOUDINARY_TRANSFORMS.gallery))}" alt="${escapeHtml(photo.title || study.title)}" loading="lazy">
+      </button>
+    `).join('');
+
+    return `
+      <article class="case-study-card" id="case-study-${escapeHtml(study.slug)}">
+        <div class="case-study-aura" aria-hidden="true"></div>
+        <div class="case-study-copy">
+          <div class="case-study-copy-top">
+            <div class="case-study-meta">
+              <span class="case-study-sequence">Story ${sequenceLabel}</span>
+              <span class="case-study-rule" aria-hidden="true"></span>
+            </div>
+            <p class="case-study-eyebrow">${escapeHtml(study.category || 'Case Study')}</p>
+            <h3>${escapeHtml(study.title)}</h3>
+            <p class="case-study-intro">${escapeHtml(study.intro || '')}</p>
+          </div>
+          ${storyText ? `<p class="case-study-story">${escapeHtml(storyText)}</p>` : ''}
+          <div class="case-study-metrics">
+            ${(study.metrics || []).map((metric) => `<span>${escapeHtml(metric)}</span>`).join('')}
+          </div>
+          <a class="case-study-open-link" href="/?story=${encodeURIComponent(study.slug)}">Read case study</a>
+        </div>
+        <div class="case-study-visuals">
+          <button class="case-study-hero" type="button" data-photo-id="${featured?.id || ''}" aria-label="Open ${escapeHtml(featured?.title || study.title)}">
+            <img src="${escapeHtml(getPhotoDisplaySrc(featured, CLOUDINARY_TRANSFORMS.lightbox))}" alt="${escapeHtml(featured?.title || study.title)}" loading="lazy">
+            <span class="case-study-hero-overlay" aria-hidden="true">
+              <span class="case-study-hero-label">Selected Frame</span>
+              <span class="case-study-hero-title">${escapeHtml(featured?.title || study.title)}</span>
+            </span>
+          </button>
+          <div class="case-study-preview-strip">
+            ${previewHtml}
+          </div>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  grid.querySelectorAll('[data-photo-id]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const photo = portfolioData.photos.find((entry) => String(entry.id) === String(button.dataset.photoId));
+      if (photo) openLightbox(photo);
+    });
+  });
+}
+
+function renderCaseStudyDetail(activeSlug = '') {
+  const section = document.getElementById('case-study-detail');
+  const gallerySection = document.getElementById('gallery');
+  const kicker = document.getElementById('case-study-detail-kicker');
+  const title = document.getElementById('case-study-detail-title');
+  const intro = document.getElementById('case-study-detail-intro');
+  const metrics = document.getElementById('case-study-detail-metrics');
+  const story = document.getElementById('case-study-detail-story');
+  const hero = document.getElementById('case-study-detail-hero');
+  const grid = document.getElementById('case-study-detail-grid');
+  const backLink = document.getElementById('case-study-back-link');
+  const backToGalleryLink = document.getElementById('case-study-back-link-bottom');
+  if (!section || !gallerySection || !kicker || !title || !intro || !metrics || !story || !hero || !grid || !backLink || !backToGalleryLink) return;
+
+  const study = (portfolioData.caseStudies || []).find((entry) => entry.slug === activeSlug && entry.status !== 'draft');
+  activeStorySlug = study?.slug || '';
+  setDocumentMetadata(study || null);
+
+  if (!study) {
+    section.hidden = true;
+    gallerySection.hidden = false;
+    return;
+  }
+
+  const featured = portfolioData.photos.find((photo) => photo.id === study.featuredPhotoId);
+  const photos = (study.photoIds || [])
+    .map((id) => portfolioData.photos.find((photo) => photo.id === id))
+    .filter(Boolean);
+
+  section.hidden = false;
+  gallerySection.hidden = true;
+  backLink.href = '/';
+  backToGalleryLink.href = '/#gallery';
+  kicker.textContent = study.category || 'Case Study';
+  title.textContent = study.title || '';
+  intro.textContent = study.intro || '';
+  story.textContent = study.story || '';
+  story.hidden = !String(study.story || '').trim();
+  metrics.innerHTML = (study.metrics || []).map((item) => `<span>${escapeHtml(item)}</span>`).join('');
+  hero.innerHTML = featured ? `
+    <button class="case-study-detail-hero-button" type="button" data-photo-id="${featured.id}">
+      <img src="${escapeHtml(getPhotoDisplaySrc(featured, CLOUDINARY_TRANSFORMS.lightbox))}" alt="${escapeHtml(featured.title || study.title)}" loading="eager">
+      <span class="case-study-detail-hero-overlay" aria-hidden="true">
+        <span class="case-study-detail-hero-label">Lead Image</span>
+        <span class="case-study-detail-hero-title">${escapeHtml(featured.title || study.title)}</span>
+      </span>
+    </button>
+  ` : '';
+  grid.innerHTML = photos.map((photo) => `
+    <button class="case-study-detail-photo" type="button" data-photo-id="${photo.id}">
+      <img src="${escapeHtml(getPhotoDisplaySrc(photo, CLOUDINARY_TRANSFORMS.lightbox))}" alt="${escapeHtml(photo.title || study.title)}" loading="lazy">
+      <span>${escapeHtml(photo.title || '')}</span>
+    </button>
+  `).join('');
+
+  section.querySelectorAll('[data-photo-id]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const photo = portfolioData.photos.find((entry) => String(entry.id) === String(button.dataset.photoId));
+      if (photo) openLightbox(photo);
+    });
+  });
 }
 
 function renderCategoryFilter() {
@@ -592,10 +935,9 @@ function createGalleryItem(photo, index, span) {
     ? ((portfolioData.films || []).find(f => f.id === photo.film)?.name || photo.film)
     : '';
   const yearLabel = photo.year ? String(photo.year) : '';
-  const gallerySrc = withCloudinaryTransform(
-    photo.src,
-    CLOUDINARY_TRANSFORMS.gallery
-  );
+    const gallerySrc = photo.cloudinary
+      ? buildCloudinaryAssetUrl(photo.cloudinary, CLOUDINARY_TRANSFORMS.gallery)
+      : withCloudinaryTransform(photo.src, CLOUDINARY_TRANSFORMS.gallery);
 
   item.innerHTML = `
     <img src="${gallerySrc}" alt="${photo.title}" loading="lazy">
@@ -802,12 +1144,44 @@ function setupLightbox() {
     }
   };
 
+  const getSignedDeliveryUrl = async (photo, transform) => {
+    if (!photo?.cloudinary?.publicId) return null;
+    const cacheKey = `${photo.id}:${transform}`;
+    if (signedDeliveryUrlCache.has(cacheKey)) return signedDeliveryUrlCache.get(cacheKey);
+
+    const response = await fetch('/.netlify/functions/cloudinary-delivery-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        transform,
+        cloudinary: photo.cloudinary
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(await response.text() || 'Failed to fetch signed delivery URL.');
+    }
+
+    const payload = await response.json();
+    signedDeliveryUrlCache.set(cacheKey, payload.url);
+    return payload.url;
+  };
+
   const showPhoto = async (photo) => {
     if (!photo) return;
-    lightboxImg.src = withCloudinaryTransform(
-      photo.src,
-      withWatermark(CLOUDINARY_TRANSFORMS.lightbox)
-    );
+    const lightboxTransform = withWatermark(CLOUDINARY_TRANSFORMS.lightbox);
+    if (photo.cloudinary && ['private', 'authenticated'].includes(photo.cloudinary.deliveryType)) {
+      try {
+        lightboxImg.src = await getSignedDeliveryUrl(photo, lightboxTransform);
+      } catch (error) {
+        console.error('Failed to load signed image URL:', error);
+        lightboxImg.src = buildCloudinaryAssetUrl(photo.cloudinary, lightboxTransform);
+      }
+    } else if (photo.cloudinary) {
+      lightboxImg.src = buildCloudinaryAssetUrl(photo.cloudinary, lightboxTransform);
+    } else {
+      lightboxImg.src = withCloudinaryTransform(photo.src, lightboxTransform);
+    }
     const filmLabel = photo.film
       ? ((portfolioData.films || []).find(f => f.id === photo.film)?.name || photo.film)
       : '';
@@ -896,6 +1270,10 @@ function setupNavigation() {
       const targetId = link.dataset.link;
       const target = document.getElementById(targetId);
       if (target) {
+        if (activeStorySlug && target.hidden) {
+          window.location.href = `/#${encodeURIComponent(targetId)}`;
+          return;
+        }
         target.scrollIntoView({ behavior: 'smooth' });
       }
     });

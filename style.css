@@ -466,6 +466,11 @@ main {
   text-transform: uppercase;
 }
 
+.case-study-back-link-bottom {
+  margin-top: 1.4rem;
+  margin-bottom: 0;
+}
+
 .case-study-detail-shell {
   display: grid;
   grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);

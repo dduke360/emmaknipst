@@ -437,6 +437,205 @@
       margin-bottom: 0.75rem;
     }
 
+    .split-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .case-study-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.7rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .case-study-header h2 {
+      margin: 0;
+    }
+
+    .case-study-guide-toggle {
+      background: linear-gradient(130deg, color-mix(in srgb, var(--admin-accent) 90%, #ffffff 10%), color-mix(in srgb, var(--admin-accent) 62%, #0d1c34 38%));
+      border-color: color-mix(in srgb, var(--admin-accent) 70%, var(--admin-border));
+      color: #fff;
+    }
+
+    .case-study-guide {
+      border: 1px solid color-mix(in srgb, var(--admin-accent) 32%, var(--admin-border));
+      background:
+        radial-gradient(circle at 4% -10%, color-mix(in srgb, var(--admin-accent) 22%, transparent), transparent 50%),
+        linear-gradient(180deg, color-mix(in srgb, var(--admin-surface-strong) 88%, white 12%), var(--admin-surface));
+      border-radius: var(--admin-radius-md);
+      padding: 0.95rem;
+      margin-bottom: 0.95rem;
+      box-shadow: 0 12px 28px color-mix(in srgb, var(--admin-accent) 16%, transparent);
+    }
+
+    [data-theme="dark"] .case-study-guide {
+      background:
+        radial-gradient(circle at 4% -10%, color-mix(in srgb, var(--admin-accent) 30%, transparent), transparent 55%),
+        linear-gradient(180deg, color-mix(in srgb, var(--admin-surface-strong) 92%, #0f1117 8%), var(--admin-surface));
+    }
+
+    .case-study-guide h3 {
+      margin: 0 0 0.35rem;
+      font-size: 0.92rem;
+      letter-spacing: -0.01em;
+    }
+
+    .case-study-guide p {
+      margin: 0;
+      font-size: 0.78rem;
+      color: var(--admin-muted);
+    }
+
+    .case-study-guide-steps {
+      list-style: none;
+      padding: 0;
+      margin: 0.85rem 0 0;
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .case-study-guide-step {
+      display: grid;
+      grid-template-columns: 1.35rem minmax(0, 1fr);
+      gap: 0.5rem;
+      align-items: start;
+      border: 1px solid var(--admin-border);
+      border-radius: 12px;
+      padding: 0.5rem 0.6rem;
+      background: color-mix(in srgb, var(--admin-surface-strong) 86%, transparent);
+    }
+
+    .case-study-guide-step-index {
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #fff;
+      background: color-mix(in srgb, var(--admin-accent) 78%, #0d1c34 22%);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--admin-accent) 20%, transparent);
+    }
+
+    .case-study-guide-step strong {
+      display: block;
+      font-size: 0.79rem;
+      margin-bottom: 0.14rem;
+    }
+
+    .case-study-guide-step span {
+      display: block;
+      font-size: 0.74rem;
+      color: var(--admin-muted);
+      line-height: 1.4;
+    }
+
+    .case-study-list {
+      display: grid;
+      gap: 0.65rem;
+      align-content: start;
+    }
+
+    .case-study-list-item {
+      width: 100%;
+      text-align: left;
+      font: inherit;
+      border: 1px solid var(--admin-border);
+      border-radius: var(--admin-radius-md);
+      padding: 0.8rem;
+      background: var(--admin-surface-strong);
+      cursor: pointer;
+      transition: 160ms ease;
+    }
+
+    .case-study-list-item.active {
+      border-color: color-mix(in srgb, var(--admin-accent) 55%, var(--admin-border));
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--admin-accent) 20%, transparent);
+    }
+
+    .case-study-list-item h3 {
+      margin: 0 0 0.2rem;
+      font-size: 0.92rem;
+    }
+
+    .case-study-list-item p {
+      margin: 0;
+      color: var(--admin-muted);
+      font-size: 0.78rem;
+    }
+
+    .case-study-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.8rem;
+    }
+
+    .case-study-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+
+    .case-study-form-grid .form-group.full-span {
+      grid-column: 1 / -1;
+    }
+
+    .metric-inputs {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .photo-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+      gap: 0.65rem;
+      max-height: 420px;
+      overflow: auto;
+      padding: 0.25rem;
+    }
+
+    .photo-picker-card {
+      position: relative;
+      display: grid;
+      gap: 0.35rem;
+      padding: 0.35rem;
+      border-radius: 14px;
+      border: 1px solid var(--admin-border);
+      background: var(--admin-surface-strong);
+      cursor: pointer;
+    }
+
+    .photo-picker-card img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .photo-picker-card.selected {
+      border-color: color-mix(in srgb, var(--admin-accent) 55%, var(--admin-border));
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--admin-accent) 25%, transparent);
+    }
+
+    .photo-picker-meta {
+      font-size: 0.7rem;
+      line-height: 1.35;
+      color: var(--admin-muted);
+    }
+
+    .selection-summary {
+      font-size: 0.78rem;
+      color: var(--admin-muted);
+      margin-bottom: 0.65rem;
+    }
+
     .login-screen {
       min-height: 100vh;
       display: flex;
@@ -479,6 +678,11 @@
       .stats-grid {
         grid-template-columns: 1fr;
       }
+
+      .split-grid,
+      .case-study-form-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 620px) {
@@ -499,6 +703,11 @@
 
       .color-grid {
         grid-template-columns: repeat(6, 1fr);
+      }
+
+      .case-study-header {
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
   </style>
@@ -601,6 +810,125 @@
     </div>
 
     <div class="admin-section">
+      <div class="case-study-header">
+        <h2>Case Studies</h2>
+        <button id="case-study-guide-toggle" class="btn case-study-guide-toggle" type="button" aria-expanded="false" aria-controls="case-study-guide">How to add a story</button>
+      </div>
+      <p class="section-note">Create dynamic story pages without touching the connected photo records. Stories are stored in `settings.case_studies` and rendered via `?story=slug`.</p>
+      <div id="case-study-guide" class="case-study-guide" hidden>
+        <h3>Story Setup Guide</h3>
+        <p>Follow these steps to create a complete case study that appears correctly on the public site.</p>
+        <ol class="case-study-guide-steps">
+          <li class="case-study-guide-step">
+            <span class="case-study-guide-step-index">1</span>
+            <div>
+              <strong>Create the draft</strong>
+              <span>Click `New Story`, then add a clear title. The slug is generated automatically and can be edited.</span>
+            </div>
+          </li>
+          <li class="case-study-guide-step">
+            <span class="case-study-guide-step-index">2</span>
+            <div>
+              <strong>Fill key copy fields</strong>
+              <span>Add `Category Label`, `Intro`, and `Story` text. Keep intro short and use story text for the narrative.</span>
+            </div>
+          </li>
+          <li class="case-study-guide-step">
+            <span class="case-study-guide-step-index">3</span>
+            <div>
+              <strong>Select story photos</strong>
+              <span>Choose all images in `Story Photos`, then set one as `Featured Photo` for the large hero frame.</span>
+            </div>
+          </li>
+          <li class="case-study-guide-step">
+            <span class="case-study-guide-step-index">4</span>
+            <div>
+              <strong>Set status and save</strong>
+              <span>Use `Draft` while editing. Switch to `Published` and click `Save Story` when ready.</span>
+            </div>
+          </li>
+          <li class="case-study-guide-step">
+            <span class="case-study-guide-step-index">5</span>
+            <div>
+              <strong>Preview and verify</strong>
+              <span>Use `Open Preview` to confirm layout, image order, and the URL `/?story=your-slug`.</span>
+            </div>
+          </li>
+        </ol>
+      </div>
+      <div class="split-grid">
+        <div>
+          <div class="case-study-actions">
+            <button id="new-case-study-btn" class="btn btn-primary" type="button">New Story</button>
+            <button id="import-case-study-btn" class="btn btn-secondary" type="button">Import from Photos</button>
+            <button id="delete-case-study-btn" class="btn btn-danger" type="button">Delete Story</button>
+            <a id="preview-case-study-link" class="btn btn-secondary" href="/" target="_blank" rel="noopener">Open Preview</a>
+          </div>
+          <div id="case-study-list" class="case-study-list"></div>
+        </div>
+        <div>
+          <form id="case-study-form">
+            <div class="case-study-form-grid">
+              <div class="form-group">
+                <label>Title</label>
+                <input type="text" id="case-study-title">
+              </div>
+              <div class="form-group">
+                <label>Slug</label>
+                <input type="text" id="case-study-slug" placeholder="editorial-paris-story">
+              </div>
+              <div class="form-group">
+                <label>Category Label</label>
+                <input type="text" id="case-study-category">
+              </div>
+              <div class="form-group">
+                <label>Status</label>
+                <select id="case-study-status">
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                </select>
+              </div>
+              <div class="form-group full-span">
+                <label>Intro</label>
+                <textarea id="case-study-intro" rows="3" class="control-field"></textarea>
+              </div>
+              <div class="form-group full-span">
+                <label>Story</label>
+                <textarea id="case-study-story" rows="5" class="control-field"></textarea>
+              </div>
+              <div class="form-group full-span">
+                <label>Metrics</label>
+                <div class="metric-inputs">
+                  <input type="text" id="case-study-metric-1" placeholder="12 selected frames">
+                  <input type="text" id="case-study-metric-2" placeholder="2026 / Berlin">
+                  <input type="text" id="case-study-metric-3" placeholder="Kodak Portra 400">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>SEO Title</label>
+                <input type="text" id="case-study-seo-title">
+              </div>
+              <div class="form-group">
+                <label>SEO Description</label>
+                <input type="text" id="case-study-seo-description">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Featured Photo</label>
+              <select id="case-study-featured-photo"></select>
+            </div>
+            <div class="form-group">
+              <label>Story Photos</label>
+              <p class="selection-summary" id="case-study-selection-summary">No photos selected.</p>
+              <div id="case-study-photo-picker" class="photo-picker-grid"></div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Story</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-section">
       <h2>All Photos</h2>
       <div id="photos-grid" class="photos-grid"></div>
     </div>
@@ -664,6 +992,7 @@
     // Cloudinary config
     const CLOUDINARY_CLOUD_NAME = 'djoh49z3m';
     const CLOUDINARY_UPLOAD_PRESET = 'emmaknipst';
+    const CLOUDINARY_API_KEY = '%CLOUDINARY_API_KEY%';
     const CLOUDINARY_TRANSFORMS = Object.freeze({
       thumb: 'w_100,c_limit'
     });
@@ -688,9 +1017,63 @@
     const saveBackgroundBtn = document.getElementById('save-background-btn');
     const photoPreviewModal = document.getElementById('photo-preview-modal');
     const photoPreviewImage = document.getElementById('photo-preview-image');
+    const caseStudyList = document.getElementById('case-study-list');
+    const caseStudyForm = document.getElementById('case-study-form');
+    const newCaseStudyBtn = document.getElementById('new-case-study-btn');
+    const importCaseStudyBtn = document.getElementById('import-case-study-btn');
+    const deleteCaseStudyBtn = document.getElementById('delete-case-study-btn');
+    const previewCaseStudyLink = document.getElementById('preview-case-study-link');
+    const caseStudyGuideToggleBtn = document.getElementById('case-study-guide-toggle');
+    const caseStudyGuide = document.getElementById('case-study-guide');
+    const caseStudyPhotoPicker = document.getElementById('case-study-photo-picker');
+    const caseStudySelectionSummary = document.getElementById('case-study-selection-summary');
+    const caseStudyFeaturedPhoto = document.getElementById('case-study-featured-photo');
+    let activeCaseStudyId = '';
 
     function clamp(value, min, max) {
       return Math.min(max, Math.max(min, value));
+    }
+
+    function slugify(value) {
+      return String(value || '')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function createCaseStudyTemplate() {
+      const nextIndex = (data?.caseStudies?.length || 0) + 1;
+      return {
+        id: `case-study-${Date.now()}`,
+        slug: `story-${nextIndex}`,
+        title: `New Story ${nextIndex}`,
+        category: 'Case Study',
+        intro: '',
+        story: '',
+        metrics: [],
+        photoIds: [],
+        featuredPhotoId: '',
+        status: 'draft',
+        seoTitle: '',
+        seoDescription: ''
+      };
+    }
+
+    function getActiveCaseStudy() {
+      return (data?.caseStudies || []).find(study => study.id === activeCaseStudyId) || null;
+    }
+
+    function updatePreviewLink(study) {
+      previewCaseStudyLink.href = study?.slug ? `/?story=${encodeURIComponent(study.slug)}` : '/';
+    }
+
+    function toggleCaseStudyGuide() {
+      if (!caseStudyGuide || !caseStudyGuideToggleBtn) return;
+      const nextHidden = !caseStudyGuide.hidden;
+      caseStudyGuide.hidden = nextHidden;
+      caseStudyGuideToggleBtn.setAttribute('aria-expanded', String(!nextHidden));
+      caseStudyGuideToggleBtn.textContent = nextHidden ? 'How to add a story' : 'Hide story guide';
     }
 
     function ensureCloudinaryAutoOptimization(transform = '') {
@@ -712,6 +1095,30 @@
       if (!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
       const optimizedTransform = ensureCloudinaryAutoOptimization(transform);
       return url.replace('/upload/', `/upload/${optimizedTransform}/`);
+    }
+
+    function buildCloudinaryAssetUrl(meta, transform = '') {
+      if (!meta || !meta.publicId || !meta.cloudName) return meta?.src || '';
+      const resourceType = meta.resourceType || 'image';
+      const deliveryType = meta.deliveryType || 'upload';
+      const optimizedTransform = transform ? ensureCloudinaryAutoOptimization(transform) : '';
+      const versionPart = meta.version ? `v${meta.version}` : '';
+      const publicIdPath = String(meta.publicId)
+        .split('/')
+        .map((segment) => encodeURIComponent(segment))
+        .join('/');
+      const extension = meta.format ? `.${encodeURIComponent(meta.format)}` : '';
+      const pathParts = [
+        'https://res.cloudinary.com',
+        encodeURIComponent(meta.cloudName),
+        resourceType,
+        deliveryType
+      ];
+
+      if (optimizedTransform) pathParts.push(optimizedTransform);
+      if (versionPart) pathParts.push(versionPart);
+      pathParts.push(`${publicIdPath}${extension}`);
+      return pathParts.join('/');
     }
 
     function normalizeHex(hex) {
@@ -1044,6 +1451,30 @@
           }
         }
 
+        let parsedPhotoCloudinary = {};
+        if (settingsObj.photo_cloudinary) {
+          try {
+            const parsed = JSON.parse(settingsObj.photo_cloudinary);
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+              parsedPhotoCloudinary = parsed;
+            }
+          } catch (e) {
+            console.warn('Invalid photo_cloudinary setting JSON, using empty map.');
+          }
+        }
+
+        let parsedCaseStudies = [];
+        if (settingsObj.case_studies) {
+          try {
+            const parsed = JSON.parse(settingsObj.case_studies);
+            if (Array.isArray(parsed)) {
+              parsedCaseStudies = parsed;
+            }
+          } catch (e) {
+            console.warn('Invalid case_studies setting JSON, using empty list.');
+          }
+        }
+
         data = {
           photographer: {
             about: settingsObj.about || '',
@@ -1053,10 +1484,26 @@
           },
           categories: parsedCategories,
           films: parsedFilms,
+          caseStudies: parsedCaseStudies.map((study, index) => ({
+            id: study.id || `case-study-${index + 1}`,
+            slug: slugify(study.slug || study.title || `case-study-${index + 1}`),
+            title: study.title || `Case Study ${index + 1}`,
+            category: study.category || 'Case Study',
+            intro: study.intro || '',
+            story: study.story || '',
+            metrics: Array.isArray(study.metrics) ? study.metrics.filter(Boolean).slice(0, 3) : [],
+            photoIds: Array.isArray(study.photoIds) ? study.photoIds.map(id => String(id)) : [],
+            featuredPhotoId: study.featuredPhotoId ? String(study.featuredPhotoId) : '',
+            status: study.status === 'draft' ? 'draft' : 'published',
+            seoTitle: study.seoTitle || '',
+            seoDescription: study.seoDescription || ''
+          })),
           photoFilms: parsedPhotoFilms,
+          photoCloudinary: parsedPhotoCloudinary,
           photoYears: parsedPhotoYears,
           photos: (photos || []).map(photo => ({
             ...photo,
+            cloudinary: parsedPhotoCloudinary[String(photo.id)] || null,
             film: parsedPhotoFilms[String(photo.id)] || '',
             year: parsedPhotoYears[String(photo.id)] || ''
           }))
@@ -1066,6 +1513,12 @@
         localStorage.setItem('emma_photos', JSON.stringify(data));
         selectedBackgroundColor = data.photographer.backgroundColor || BACKGROUND_COLORS[0];
         applyThemeMode(currentThemeMode);
+        if (!activeCaseStudyId && data.caseStudies.length) {
+          activeCaseStudyId = data.caseStudies[0].id;
+        }
+        if (activeCaseStudyId && !data.caseStudies.find(study => study.id === activeCaseStudyId)) {
+          activeCaseStudyId = data.caseStudies[0]?.id || '';
+        }
 
         render();
       } catch (error) {
@@ -1120,6 +1573,7 @@
         if (error) throw error;
 
         if (!data.photoFilms) data.photoFilms = {};
+        if (!data.photoCloudinary) data.photoCloudinary = {};
         if (Array.isArray(insertedPhotos) && insertedPhotos.length) {
           const usedIndexes = new Set();
           insertedPhotos.forEach(inserted => {
@@ -1131,9 +1585,13 @@
               usedIndexes.add(index);
               const film = photosToInsert[index].film || '';
               if (film) data.photoFilms[String(inserted.id)] = film;
+              if (photosToInsert[index].cloudinary) {
+                data.photoCloudinary[String(inserted.id)] = photosToInsert[index].cloudinary;
+              }
             }
           });
           await saveSetting('photo_films', JSON.stringify(data.photoFilms));
+          await saveSetting('photo_cloudinary', JSON.stringify(data.photoCloudinary));
         }
         if (!data.photoYears) data.photoYears = {};
         await saveSetting('photo_years', JSON.stringify(data.photoYears));
@@ -1159,7 +1617,9 @@
     async function saveData() {
       await saveSetting('categories', JSON.stringify(data.categories));
       await saveSetting('films', JSON.stringify(data.films || []));
+      await saveSetting('case_studies', JSON.stringify(data.caseStudies || []));
       await saveSetting('photo_films', JSON.stringify(data.photoFilms || {}));
+      await saveSetting('photo_cloudinary', JSON.stringify(data.photoCloudinary || {}));
       await saveSetting('photo_years', JSON.stringify(data.photoYears || {}));
       // Save to localStorage as immediate feedback
       localStorage.setItem('emma_photos', JSON.stringify(data));
@@ -1169,10 +1629,56 @@
     function render() {
       renderCategories();
       renderFilms();
+      renderCaseStudiesAdmin();
       renderPhotos();
       renderAboutForm();
       renderStats();
       renderBackgroundPicker();
+    }
+
+    function renderCaseStudiesAdmin() {
+      const studies = data.caseStudies || [];
+      caseStudyList.innerHTML = studies.length
+        ? studies.map(study => `
+          <button type="button" class="case-study-list-item ${study.id === activeCaseStudyId ? 'active' : ''}" data-case-study-id="${study.id}">
+            <h3>${study.title || 'Untitled story'}</h3>
+            <p>${study.slug || 'missing-slug'} • ${study.status || 'published'}</p>
+          </button>
+        `).join('')
+        : '<p class="section-note">No case studies yet. Create the first story.</p>';
+
+      caseStudyFeaturedPhoto.innerHTML = '<option value="">Select featured photo</option>' + data.photos.map(photo => `
+        <option value="${photo.id}">${photo.title || `Photo ${photo.id}`}</option>
+      `).join('');
+
+      const active = getActiveCaseStudy();
+      document.getElementById('case-study-title').value = active?.title || '';
+      document.getElementById('case-study-slug').value = active?.slug || '';
+      document.getElementById('case-study-slug').dataset.edited = active?.slug ? 'true' : '';
+      document.getElementById('case-study-category').value = active?.category || '';
+      document.getElementById('case-study-status').value = active?.status || 'draft';
+      document.getElementById('case-study-intro').value = active?.intro || '';
+      document.getElementById('case-study-story').value = active?.story || '';
+      document.getElementById('case-study-seo-title').value = active?.seoTitle || '';
+      document.getElementById('case-study-seo-description').value = active?.seoDescription || '';
+      document.getElementById('case-study-metric-1').value = active?.metrics?.[0] || '';
+      document.getElementById('case-study-metric-2').value = active?.metrics?.[1] || '';
+      document.getElementById('case-study-metric-3').value = active?.metrics?.[2] || '';
+      caseStudyFeaturedPhoto.value = active?.featuredPhotoId || '';
+
+      const selectedPhotoIds = new Set((active?.photoIds || []).map(String));
+      caseStudyPhotoPicker.innerHTML = data.photos.map(photo => `
+        <button type="button" class="photo-picker-card ${selectedPhotoIds.has(String(photo.id)) ? 'selected' : ''}" data-photo-id="${photo.id}">
+          <img src="${photo.cloudinary ? buildCloudinaryAssetUrl(photo.cloudinary, CLOUDINARY_TRANSFORMS.thumb) : withCloudinaryTransform(photo.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="${photo.title}">
+          <div class="photo-picker-meta">${photo.title || 'Untitled'}<br>${photo.category || ''}</div>
+        </button>
+      `).join('');
+
+      caseStudySelectionSummary.textContent = selectedPhotoIds.size
+        ? `${selectedPhotoIds.size} photo(s) selected for this story.`
+        : 'No photos selected.';
+      updatePreviewLink(active);
+      deleteCaseStudyBtn.disabled = !active;
     }
 
     function renderStats() {
@@ -1186,7 +1692,7 @@
       document.getElementById('top-views').innerHTML = byViews.map((p, i) => `
         <div class="stats-row">
           <span class="stat-rank">${i + 1}.</span>
-          <img class="stat-thumb" src="${withCloudinaryTransform(p.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="${p.title}">
+          <img class="stat-thumb" src="${p.cloudinary ? buildCloudinaryAssetUrl(p.cloudinary, CLOUDINARY_TRANSFORMS.thumb) : withCloudinaryTransform(p.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="${p.title}">
           <span class="stat-name">${p.title}</span>
           <span class="stat-value">${p.views || 0} views</span>
         </div>
@@ -1195,7 +1701,7 @@
       document.getElementById('top-likes').innerHTML = byLikes.map((p, i) => `
         <div class="stats-row">
           <span class="stat-rank">${i + 1}.</span>
-          <img class="stat-thumb" src="${withCloudinaryTransform(p.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="${p.title}">
+          <img class="stat-thumb" src="${p.cloudinary ? buildCloudinaryAssetUrl(p.cloudinary, CLOUDINARY_TRANSFORMS.thumb) : withCloudinaryTransform(p.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="${p.title}">
           <span class="stat-name">${p.title}</span>
           <span class="stat-value stat-value-like">♥ ${p.likes || 0}</span>
         </div>
@@ -1269,7 +1775,7 @@
         card.dataset.photoSrc = photo.src;
         card.dataset.photoTitle = photo.title || 'Photo preview';
         card.innerHTML = `
-          <img src="${withCloudinaryTransform(photo.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="${photo.title}">
+          <img src="${photo.cloudinary ? buildCloudinaryAssetUrl(photo.cloudinary, CLOUDINARY_TRANSFORMS.thumb) : withCloudinaryTransform(photo.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="${photo.title}">
           <button class="delete-btn" onclick="deletePhoto('${photo.id}')">&times;</button>
           <div class="photo-meta">
             <input
@@ -1372,6 +1878,173 @@
       }
     });
 
+    newCaseStudyBtn.addEventListener('click', () => {
+      const next = createCaseStudyTemplate();
+      data.caseStudies = [next, ...(data.caseStudies || [])];
+      activeCaseStudyId = next.id;
+      renderCaseStudiesAdmin();
+    });
+
+    importCaseStudyBtn.addEventListener('click', async () => {
+      const photos = data?.photos || [];
+      if (!photos.length) {
+        alert('No photos to generate case studies from.');
+        return;
+      }
+
+      if (!confirm('Import auto-generated case studies from photos? This will replace existing case studies.')) {
+        return;
+      }
+
+      const byCategory = new Map();
+      photos.forEach((photo) => {
+        const key = photo.category || 'uncategorized';
+        if (!byCategory.has(key)) byCategory.set(key, []);
+        byCategory.get(key).push(photo);
+      });
+
+      const generated = Array.from(byCategory.entries())
+        .map(([categoryId, group]) => {
+          const sorted = [...group].sort((a, b) => (b.views || 0) - (a.views || 0) || (b.likes || 0) - (a.likes || 0) || Number(b.id) - Number(a.id));
+          const featured = sorted[0];
+          const photoIds = sorted.map((photo) => photo.id);
+          const years = [...new Set(group.map((photo) => photo.year).filter(Boolean))].sort().reverse();
+          const films = [...new Set(group.map((photo) => photo.film).filter(Boolean))]
+            .map((filmId) => data.films?.find((film) => film.id === filmId)?.name || filmId);
+          const categoryName = data.categories?.find((c) => c.id === categoryId)?.name || categoryId || 'Series';
+          const imageCount = group.length;
+          const yearLabel = years.length ? years.join(' / ') : 'Current work';
+          const filmLabel = films.length ? films.slice(0, 2).join(' + ') : 'Digital and mixed light';
+
+          return {
+            id: `case-${slugify(categoryId)}`,
+            slug: slugify(categoryId),
+            title: `${categoryName} Case Study`,
+            category: categoryName,
+            intro: `${imageCount} images shaped as a cohesive ${categoryName.toLowerCase()} series with a clear visual rhythm and stronger narrative sequencing.`,
+            story: '',
+            metrics: [
+              `${imageCount} selected frames`,
+              yearLabel,
+              filmLabel
+            ],
+            photoIds,
+            featuredPhotoId: featured?.id || null,
+            status: 'published',
+            seoTitle: '',
+            seoDescription: ''
+          };
+        })
+        .filter((study) => study.featuredPhotoId)
+        .sort((a, b) => {
+          const photoA = photos.find((photo) => photo.id === a.featuredPhotoId);
+          const photoB = photos.find((photo) => photo.id === b.featuredPhotoId);
+          return (photoB?.views || 0) - (photoA?.views || 0) || (photoB?.likes || 0) - (photoA?.likes || 0);
+        })
+        .slice(0, 3);
+
+      if (!generated.length) {
+        alert('Could not generate any case studies. Make sure photos have categories.');
+        return;
+      }
+
+      data.caseStudies = generated;
+      activeCaseStudyId = generated[0]?.id || '';
+      await saveData();
+      renderCaseStudiesAdmin();
+      alert(`Imported ${generated.length} case studies from photos.`);
+    });
+
+    deleteCaseStudyBtn.addEventListener('click', async () => {
+      const active = getActiveCaseStudy();
+      if (!active) return;
+      if (!confirm(`Delete "${active.title}"?`)) return;
+      data.caseStudies = (data.caseStudies || []).filter(study => study.id !== active.id);
+      activeCaseStudyId = data.caseStudies[0]?.id || '';
+      await saveData();
+    });
+
+    caseStudyList.addEventListener('click', (event) => {
+      const item = event.target.closest('[data-case-study-id]');
+      if (!item) return;
+      activeCaseStudyId = item.dataset.caseStudyId;
+      renderCaseStudiesAdmin();
+    });
+
+    caseStudyPhotoPicker.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-photo-id]');
+      const active = getActiveCaseStudy();
+      if (!button || !active) return;
+      const photoId = String(button.dataset.photoId);
+      const selected = new Set((active.photoIds || []).map(String));
+      if (selected.has(photoId)) {
+        selected.delete(photoId);
+      } else {
+        selected.add(photoId);
+      }
+      active.photoIds = Array.from(selected);
+      if (!active.featuredPhotoId || !selected.has(String(active.featuredPhotoId))) {
+        active.featuredPhotoId = active.photoIds[0] || '';
+      }
+      renderCaseStudiesAdmin();
+    });
+
+    document.getElementById('case-study-title').addEventListener('input', (event) => {
+      const active = getActiveCaseStudy();
+      if (!active) return;
+      active.title = event.target.value;
+      if (!document.getElementById('case-study-slug').dataset.edited) {
+        active.slug = slugify(event.target.value);
+        document.getElementById('case-study-slug').value = active.slug;
+      }
+      renderCaseStudiesAdmin();
+    });
+
+    document.getElementById('case-study-slug').addEventListener('input', (event) => {
+      event.target.dataset.edited = 'true';
+      const active = getActiveCaseStudy();
+      if (!active) return;
+      active.slug = slugify(event.target.value);
+      updatePreviewLink(active);
+    });
+
+    caseStudyForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const active = getActiveCaseStudy();
+      if (!active) return;
+      active.title = document.getElementById('case-study-title').value.trim();
+      active.slug = slugify(document.getElementById('case-study-slug').value.trim() || active.title);
+      active.category = document.getElementById('case-study-category').value.trim();
+      active.status = document.getElementById('case-study-status').value === 'draft' ? 'draft' : 'published';
+      active.intro = document.getElementById('case-study-intro').value.trim();
+      active.story = document.getElementById('case-study-story').value.trim();
+      active.metrics = [
+        document.getElementById('case-study-metric-1').value.trim(),
+        document.getElementById('case-study-metric-2').value.trim(),
+        document.getElementById('case-study-metric-3').value.trim()
+      ].filter(Boolean);
+      active.seoTitle = document.getElementById('case-study-seo-title').value.trim();
+      active.seoDescription = document.getElementById('case-study-seo-description').value.trim();
+      active.featuredPhotoId = String(caseStudyFeaturedPhoto.value || active.photoIds[0] || '');
+      active.photoIds = (active.photoIds || []).map(String);
+
+      if (!active.title || !active.slug) {
+        alert('Title and slug are required.');
+        return;
+      }
+      if (!active.photoIds.length) {
+        alert('Select at least one photo for the story.');
+        return;
+      }
+
+      await saveData();
+      alert('Case study saved.');
+    });
+
+    if (caseStudyGuideToggleBtn) {
+      caseStudyGuideToggleBtn.addEventListener('click', toggleCaseStudyGuide);
+    }
+
     window.deletePhoto = async (id) => {
       if (confirm('Delete this photo?')) {
         const photo = data.photos.find(p => String(p.id) === String(id));
@@ -1379,6 +2052,9 @@
           if (!data.photoFilms) data.photoFilms = {};
           delete data.photoFilms[String(id)];
           await saveSetting('photo_films', JSON.stringify(data.photoFilms));
+          if (!data.photoCloudinary) data.photoCloudinary = {};
+          delete data.photoCloudinary[String(id)];
+          await saveSetting('photo_cloudinary', JSON.stringify(data.photoCloudinary));
           await savePhoto(photo, 'delete');
         }
       }
@@ -1524,6 +2200,25 @@
     const cloudinaryTitle = document.getElementById('cloudinary-title');
     const addCloudinaryBtn = document.getElementById('add-cloudinary-btn');
 
+    async function getSignedUploadParams(paramsToSign = {}) {
+      const response = await fetch('/.netlify/functions/cloudinary-sign-upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          paramsToSign,
+          uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+          folder: 'emma_knipst'
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to generate Cloudinary upload signature.');
+      }
+
+      return response.json();
+    }
+
     function openCloudinaryWidget() {
       if (typeof cloudinary === 'undefined') {
         alert('Cloudinary widget not loaded. Check console (F12) for errors.');
@@ -1532,7 +2227,8 @@
 
       if (
         CLOUDINARY_CLOUD_NAME.includes('%') ||
-        CLOUDINARY_UPLOAD_PRESET.includes('%')
+        CLOUDINARY_UPLOAD_PRESET.includes('%') ||
+        CLOUDINARY_API_KEY.includes('%')
       ) {
         alert('Please configure Cloudinary in admin.html. See instructions in CLOUDINARY_SETUP.md');
         return;
@@ -1541,7 +2237,7 @@
       try {
         cloudinary.openUploadWidget({
         cloud_name: CLOUDINARY_CLOUD_NAME,
-        upload_preset: CLOUDINARY_UPLOAD_PRESET,
+        api_key: CLOUDINARY_API_KEY,
         sources: ['local', 'url', 'camera'],
         multiple: true,
         maxFiles: 30,
@@ -1549,7 +2245,25 @@
         maxImageWidth: CLOUDINARY_UPLOAD_LIMITS.maxImageWidth,
         maxImageHeight: CLOUDINARY_UPLOAD_LIMITS.maxImageHeight,
         maxFileSize: CLOUDINARY_UPLOAD_LIMITS.maxFileSize,
-        folder: 'emma_knipst'
+        prepareUploadParams: async (cb, params) => {
+          try {
+            const signed = await getSignedUploadParams(params);
+            cb({
+              apiKey: CLOUDINARY_API_KEY,
+              folder: signed.folder,
+              publicId: signed.publicId,
+              signature: signed.signature,
+              uploadPreset: signed.uploadPreset,
+              uploadSignatureTimestamp: signed.timestamp,
+              useFilename: false,
+              uniqueFilename: true
+            });
+          } catch (error) {
+            console.error('Cloudinary signature error:', error);
+            cb({ cancel: true });
+            alert('Signed upload could not be prepared. Check function logs and Cloudinary env vars.');
+          }
+        }
       }, (error, result) => {
         if (error) {
           console.error('Cloudinary error:', error);
@@ -1557,15 +2271,24 @@
           return;
         }
         if (result && result.event === 'success') {
+          const cloudinaryMeta = {
+            cloudName: CLOUDINARY_CLOUD_NAME,
+            deliveryType: result.info.type || 'upload',
+            format: result.info.format || '',
+            publicId: result.info.public_id,
+            resourceType: result.info.resource_type || 'image',
+            version: result.info.version || ''
+          };
           cloudinaryUploadedItems.push({
-            src: result.info.secure_url,
-            originalFilename: result.info.original_filename || 'Untitled'
+            cloudinary: cloudinaryMeta,
+            originalFilename: result.info.original_filename || 'Untitled',
+            src: buildCloudinaryAssetUrl(cloudinaryMeta, CLOUDINARY_TRANSFORMS.thumb)
           });
         }
         if (result && result.event === 'queues-end') {
           if (!cloudinaryUploadedItems.length) return;
           const previewHtml = cloudinaryUploadedItems.slice(0, 6).map(item =>
-            `<img src="${withCloudinaryTransform(item.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="Uploaded preview" class="upload-preview">`
+            `<img src="${item.src}" alt="Uploaded preview" class="upload-preview">`
           ).join('');
           document.getElementById('cloudinary-uploads').innerHTML = `
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.5rem;">${previewHtml}</div>
@@ -1594,6 +2317,7 @@
           ? `${titlePrefix}${cloudinaryUploadedItems.length > 1 ? ` ${index + 1}` : ''}`
           : item.originalFilename;
         return {
+          cloudinary: item.cloudinary || null,
           src: item.src,
           title,
           category,

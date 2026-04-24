@@ -12,60 +12,44 @@
   <script>
     (() => {
       const root = document.documentElement;
-      root.setAttribute('data-theme', 'light');
+      const cached = JSON.parse(localStorage.getItem('emma_photos') || '{}');
+      const background = cached?.photographer?.backgroundColor;
+      const savedMode = localStorage.getItem('emma_theme_mode');
+      const useColorMode = savedMode === 'color' || (!savedMode && background);
+      
+      root.setAttribute('data-theme', useColorMode ? 'color' : 'light');
 
-      try {
-        const cached = JSON.parse(localStorage.getItem('emma_photos') || '{}');
-        const background = cached?.photographer?.backgroundColor;
-        if (!background) return;
+      if (!background || !useColorMode) return;
 
-        let value = String(background).trim().toLowerCase();
-        if (!value.startsWith('#')) value = `#${value}`;
-        if (/^#[0-9a-f]{3}$/.test(value)) {
-          value = `#${value[1]}${value[1]}${value[2]}${value[2]}${value[3]}${value[3]}`;
-        }
-        if (!/^#[0-9a-f]{6}$/.test(value)) return;
-
-        const int = parseInt(value.slice(1), 16);
-        const rgb = {
-          r: (int >> 16) & 255,
-          g: (int >> 8) & 255,
-          b: int & 255
-        };
-        const toLinear = (channel) => {
-          const srgb = channel / 255;
-          return srgb <= 0.04045 ? srgb / 12.92 : ((srgb + 0.055) / 1.055) ** 2.4;
-        };
-        const luminance = 0.2126 * toLinear(rgb.r) + 0.7152 * toLinear(rgb.g) + 0.0722 * toLinear(rgb.b);
-        const isDark = luminance < 0.34;
-        const text = isDark ? '#f5f5f7' : '#111114';
-        const mix = (fromHex, toHex, ratio) => {
-          const from = parseInt(fromHex.slice(1), 16);
-          const to = parseInt(toHex.slice(1), 16);
-          const channels = [16, 8, 0].map((shift) => {
-            const a = (from >> shift) & 255;
-            const b = (to >> shift) & 255;
-            return Math.round(a + (b - a) * ratio);
-          });
-          return `#${channels.map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
-        };
-
-        const surface = isDark ? mix(value, '#ffffff', 0.1) : mix(value, '#ffffff', 0.72);
-        const muted = mix(text, value, isDark ? 0.46 : 0.56);
-        const border = mix(text, value, isDark ? 0.72 : 0.84);
-        const canvas = isDark ? mix(value, '#000000', 0.2) : mix(value, '#000000', 0.1);
-        const tile = isDark ? mix(value, '#ffffff', 0.14) : mix(value, '#000000', 0.08);
-
-        root.style.setProperty('--bg-custom', value);
-        root.style.setProperty('--surface', surface);
-        root.style.setProperty('--text', text);
-        root.style.setProperty('--muted', muted);
-        root.style.setProperty('--border', border);
-        root.style.setProperty('--gallery-canvas', canvas);
-        root.style.setProperty('--gallery-tile', tile);
-      } catch (error) {
-        console.warn('Failed to restore cached theme.', error);
+      let value = String(background).trim().toLowerCase();
+      if (!value.startsWith('#')) value = '#' + value;
+      if (/^#[0-9a-f]{3}$/.test(value)) {
+        value = '#' + value[1] + value[1] + value[2] + value[2] + value[3] + value[3];
       }
+      if (!/^#[0-9a-f]{6}$/.test(value)) return;
+
+      const int = parseInt(value.slice(1), 16);
+      const rgb = { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
+      const toLinear = (c) => c / 255 <= 0.04045 ? c / 255 / 12.92 : ((c / 255 + 0.055) / 1.055) ** 2.4;
+      const luminance = 0.2126 * toLinear(rgb.r) + 0.7152 * toLinear(rgb.g) + 0.0722 * toLinear(rgb.b);
+      const isDark = luminance < 0.34;
+      const text = isDark ? '#f5f5f7' : '#111114';
+      const mix = (a, b, t) => {
+        const ha = parseInt(a.slice(1), 16);
+        const hb = parseInt(b.slice(1), 16);
+        const r = Math.round(((ha >> 16) & 255) + ((((hb >> 16) & 255) - ((ha >> 16) & 255)) * t));
+        const g = Math.round(((ha >> 8) & 255) + ((((hb >> 8) & 255) - ((ha >> 8) & 255)) * t));
+        const bb = Math.round((ha & 255) + ((hb & 255) - (ha & 255)) * t);
+        return '#' + r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + bb.toString(16).padStart(2, '0');
+      };
+
+      root.style.setProperty('--bg-custom', value);
+      root.style.setProperty('--surface', isDark ? mix(value, '#ffffff', 0.1) : mix(value, '#ffffff', 0.72));
+      root.style.setProperty('--text', text);
+      root.style.setProperty('--muted', mix(text, value, isDark ? 0.46 : 0.56));
+      root.style.setProperty('--border', mix(text, value, isDark ? 0.72 : 0.84));
+      root.style.setProperty('--gallery-canvas', isDark ? mix(value, '#000000', 0.2) : mix(value, '#000000', 0.1));
+      root.style.setProperty('--gallery-tile', isDark ? mix(value, '#ffffff', 0.14) : mix(value, '#000000', 0.08));
     })();
   </script>
   <link rel="stylesheet" href="style.css">
@@ -119,6 +103,7 @@
         <div class="case-study-detail-hero" id="case-study-detail-hero"></div>
       </div>
       <div class="case-study-detail-grid" id="case-study-detail-grid"></div>
+      <a href="/#gallery" class="case-study-back-link case-study-back-link-bottom" id="case-study-back-link-bottom">Back to gallery</a>
     </section>
 
     <section id="gallery" class="gallery-section">

@@ -443,6 +443,99 @@
       gap: 1rem;
     }
 
+    .case-study-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.7rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .case-study-header h2 {
+      margin: 0;
+    }
+
+    .case-study-guide-toggle {
+      background: linear-gradient(130deg, color-mix(in srgb, var(--admin-accent) 90%, #ffffff 10%), color-mix(in srgb, var(--admin-accent) 62%, #0d1c34 38%));
+      border-color: color-mix(in srgb, var(--admin-accent) 70%, var(--admin-border));
+      color: #fff;
+    }
+
+    .case-study-guide {
+      border: 1px solid color-mix(in srgb, var(--admin-accent) 32%, var(--admin-border));
+      background:
+        radial-gradient(circle at 4% -10%, color-mix(in srgb, var(--admin-accent) 22%, transparent), transparent 50%),
+        linear-gradient(180deg, color-mix(in srgb, var(--admin-surface-strong) 88%, white 12%), var(--admin-surface));
+      border-radius: var(--admin-radius-md);
+      padding: 0.95rem;
+      margin-bottom: 0.95rem;
+      box-shadow: 0 12px 28px color-mix(in srgb, var(--admin-accent) 16%, transparent);
+    }
+
+    [data-theme="dark"] .case-study-guide {
+      background:
+        radial-gradient(circle at 4% -10%, color-mix(in srgb, var(--admin-accent) 30%, transparent), transparent 55%),
+        linear-gradient(180deg, color-mix(in srgb, var(--admin-surface-strong) 92%, #0f1117 8%), var(--admin-surface));
+    }
+
+    .case-study-guide h3 {
+      margin: 0 0 0.35rem;
+      font-size: 0.92rem;
+      letter-spacing: -0.01em;
+    }
+
+    .case-study-guide p {
+      margin: 0;
+      font-size: 0.78rem;
+      color: var(--admin-muted);
+    }
+
+    .case-study-guide-steps {
+      list-style: none;
+      padding: 0;
+      margin: 0.85rem 0 0;
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .case-study-guide-step {
+      display: grid;
+      grid-template-columns: 1.35rem minmax(0, 1fr);
+      gap: 0.5rem;
+      align-items: start;
+      border: 1px solid var(--admin-border);
+      border-radius: 12px;
+      padding: 0.5rem 0.6rem;
+      background: color-mix(in srgb, var(--admin-surface-strong) 86%, transparent);
+    }
+
+    .case-study-guide-step-index {
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #fff;
+      background: color-mix(in srgb, var(--admin-accent) 78%, #0d1c34 22%);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--admin-accent) 20%, transparent);
+    }
+
+    .case-study-guide-step strong {
+      display: block;
+      font-size: 0.79rem;
+      margin-bottom: 0.14rem;
+    }
+
+    .case-study-guide-step span {
+      display: block;
+      font-size: 0.74rem;
+      color: var(--admin-muted);
+      line-height: 1.4;
+    }
+
     .case-study-list {
       display: grid;
       gap: 0.65rem;
@@ -611,6 +704,11 @@
       .color-grid {
         grid-template-columns: repeat(6, 1fr);
       }
+
+      .case-study-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
@@ -712,8 +810,52 @@
     </div>
 
     <div class="admin-section">
-      <h2>Case Studies</h2>
+      <div class="case-study-header">
+        <h2>Case Studies</h2>
+        <button id="case-study-guide-toggle" class="btn case-study-guide-toggle" type="button" aria-expanded="false" aria-controls="case-study-guide">How to add a story</button>
+      </div>
       <p class="section-note">Create dynamic story pages without touching the connected photo records. Stories are stored in `settings.case_studies` and rendered via `?story=slug`.</p>
+      <div id="case-study-guide" class="case-study-guide" hidden>
+        <h3>Story Setup Guide</h3>
+        <p>Follow these steps to create a complete case study that appears correctly on the public site.</p>
+        <ol class="case-study-guide-steps">
+          <li class="case-study-guide-step">
+            <span class="case-study-guide-step-index">1</span>
+            <div>
+              <strong>Create the draft</strong>
+              <span>Click `New Story`, then add a clear title. The slug is generated automatically and can be edited.</span>
+            </div>
+          </li>
+          <li class="case-study-guide-step">
+            <span class="case-study-guide-step-index">2</span>
+            <div>
+              <strong>Fill key copy fields</strong>
+              <span>Add `Category Label`, `Intro`, and `Story` text. Keep intro short and use story text for the narrative.</span>
+            </div>
+          </li>
+          <li class="case-study-guide-step">
+            <span class="case-study-guide-step-index">3</span>
+            <div>
+              <strong>Select story photos</strong>
+              <span>Choose all images in `Story Photos`, then set one as `Featured Photo` for the large hero frame.</span>
+            </div>
+          </li>
+          <li class="case-study-guide-step">
+            <span class="case-study-guide-step-index">4</span>
+            <div>
+              <strong>Set status and save</strong>
+              <span>Use `Draft` while editing. Switch to `Published` and click `Save Story` when ready.</span>
+            </div>
+          </li>
+          <li class="case-study-guide-step">
+            <span class="case-study-guide-step-index">5</span>
+            <div>
+              <strong>Preview and verify</strong>
+              <span>Use `Open Preview` to confirm layout, image order, and the URL `/?story=your-slug`.</span>
+            </div>
+          </li>
+        </ol>
+      </div>
       <div class="split-grid">
         <div>
           <div class="case-study-actions">
@@ -881,6 +1023,8 @@
     const importCaseStudyBtn = document.getElementById('import-case-study-btn');
     const deleteCaseStudyBtn = document.getElementById('delete-case-study-btn');
     const previewCaseStudyLink = document.getElementById('preview-case-study-link');
+    const caseStudyGuideToggleBtn = document.getElementById('case-study-guide-toggle');
+    const caseStudyGuide = document.getElementById('case-study-guide');
     const caseStudyPhotoPicker = document.getElementById('case-study-photo-picker');
     const caseStudySelectionSummary = document.getElementById('case-study-selection-summary');
     const caseStudyFeaturedPhoto = document.getElementById('case-study-featured-photo');
@@ -922,6 +1066,14 @@
 
     function updatePreviewLink(study) {
       previewCaseStudyLink.href = study?.slug ? `/?story=${encodeURIComponent(study.slug)}` : '/';
+    }
+
+    function toggleCaseStudyGuide() {
+      if (!caseStudyGuide || !caseStudyGuideToggleBtn) return;
+      const nextHidden = !caseStudyGuide.hidden;
+      caseStudyGuide.hidden = nextHidden;
+      caseStudyGuideToggleBtn.setAttribute('aria-expanded', String(!nextHidden));
+      caseStudyGuideToggleBtn.textContent = nextHidden ? 'How to add a story' : 'Hide story guide';
     }
 
     function ensureCloudinaryAutoOptimization(transform = '') {
@@ -1755,7 +1907,7 @@
         .map(([categoryId, group]) => {
           const sorted = [...group].sort((a, b) => (b.views || 0) - (a.views || 0) || (b.likes || 0) - (a.likes || 0) || Number(b.id) - Number(a.id));
           const featured = sorted[0];
-          const photoIds = sorted.slice(0, 3).map((photo) => photo.id);
+          const photoIds = sorted.map((photo) => photo.id);
           const years = [...new Set(group.map((photo) => photo.year).filter(Boolean))].sort().reverse();
           const films = [...new Set(group.map((photo) => photo.film).filter(Boolean))]
             .map((filmId) => data.films?.find((film) => film.id === filmId)?.name || filmId);
@@ -1888,6 +2040,10 @@
       await saveData();
       alert('Case study saved.');
     });
+
+    if (caseStudyGuideToggleBtn) {
+      caseStudyGuideToggleBtn.addEventListener('click', toggleCaseStudyGuide);
+    }
 
     window.deletePhoto = async (id) => {
       if (confirm('Delete this photo?')) {
