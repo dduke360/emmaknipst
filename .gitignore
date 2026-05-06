@@ -5,3 +5,6 @@ node_modules/
 *.local
 www/
 ios/App/App/public/
+
+# Local Netlify folder
+.netlify

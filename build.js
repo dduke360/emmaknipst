@@ -51,7 +51,6 @@ const envVars = {
   '%ADMIN_PASSWORD%': process.env.ADMIN_PASSWORD,
   '%CLOUDINARY_CLOUD_NAME%': process.env.CLOUDINARY_CLOUD_NAME,
   '%CLOUDINARY_UPLOAD_PRESET%': process.env.CLOUDINARY_UPLOAD_PRESET,
-  '%CLOUDINARY_API_KEY%': process.env.CLOUDINARY_API_KEY,
   '%APP_VERSION%': getAppVersion()
 };
 

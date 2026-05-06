@@ -1039,7 +1039,6 @@
     // Cloudinary config
     const CLOUDINARY_CLOUD_NAME = 'djoh49z3m';
     const CLOUDINARY_UPLOAD_PRESET = 'emmaknipst';
-    const CLOUDINARY_API_KEY = '%CLOUDINARY_API_KEY%';
     const CLOUDINARY_TRANSFORMS = Object.freeze({
       thumb: 'w_100,c_limit'
     });
@@ -1048,14 +1047,6 @@
       maxImageHeight: 2400,
       maxFileSize: 8_000_000
     });
-    const IMAGE_RIGHTS_NOTICE = 'Urheberrechtlich geschuetzt. Nutzung und Veroeffentlichung nur mit ausdruecklicher Genehmigung von Emma Weber.';
-    const IMAGE_CONTACT_EMAIL = 'emma-sophie.weber@web.de';
-    const IMAGE_UPLOAD_TAGS = ['emma-knipst', 'copyright-protected', 'license-required'];
-
-    function getUploadProtectionContext() {
-      return `alt=${IMAGE_RIGHTS_NOTICE}|caption=${IMAGE_RIGHTS_NOTICE}|copyright=© Emma Weber|creator=Emma Weber|credit=Emma Weber|contact=${IMAGE_CONTACT_EMAIL}|usage_terms=${IMAGE_RIGHTS_NOTICE}`;
-    }
-
     const loginScreen = document.getElementById('login-screen');
     const adminApp = document.getElementById('admin-app');
     const loginForm = document.getElementById('login-form');
@@ -2303,78 +2294,29 @@
     const cloudinaryTitle = document.getElementById('cloudinary-title');
     const addCloudinaryBtn = document.getElementById('add-cloudinary-btn');
 
-    async function getSignedUploadParams(paramsToSign = {}) {
-      const response = await fetch('/.netlify/functions/cloudinary-sign-upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          paramsToSign,
-          uploadPreset: CLOUDINARY_UPLOAD_PRESET,
-          folder: 'emma_knipst'
-        })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Cloudinary-Upload-Signatur konnte nicht erzeugt werden.');
-      }
-
-      return response.json();
-    }
-
     function openCloudinaryWidget() {
       if (typeof cloudinary === 'undefined') {
         alert('Das Cloudinary-Widget wurde nicht geladen. Prüfe die Konsole (F12) auf Fehler.');
         return;
       }
 
-      if (
-        CLOUDINARY_CLOUD_NAME.includes('%') ||
-        CLOUDINARY_UPLOAD_PRESET.includes('%') ||
-        CLOUDINARY_API_KEY.includes('%')
-      ) {
+      if (CLOUDINARY_CLOUD_NAME.includes('%') || CLOUDINARY_UPLOAD_PRESET.includes('%')) {
         alert('Bitte konfiguriere Cloudinary in admin.html. Hinweise stehen in CLOUDINARY_SETUP.md');
         return;
       }
 
       try {
         cloudinary.openUploadWidget({
-        cloud_name: CLOUDINARY_CLOUD_NAME,
-        api_key: CLOUDINARY_API_KEY,
-        sources: ['local', 'url', 'camera'],
-        multiple: true,
-        maxFiles: 30,
-        resourceType: 'image',
-        maxImageWidth: CLOUDINARY_UPLOAD_LIMITS.maxImageWidth,
-        maxImageHeight: CLOUDINARY_UPLOAD_LIMITS.maxImageHeight,
-        maxFileSize: CLOUDINARY_UPLOAD_LIMITS.maxFileSize,
-        prepareUploadParams: async (cb, params) => {
-          try {
-            const context = getUploadProtectionContext();
-            const signed = await getSignedUploadParams({
-              ...params,
-              context,
-              tags: IMAGE_UPLOAD_TAGS
-            });
-            cb({
-              apiKey: CLOUDINARY_API_KEY,
-              context,
-              folder: signed.folder,
-              publicId: signed.publicId,
-              signature: signed.signature,
-              tags: IMAGE_UPLOAD_TAGS,
-              uploadPreset: signed.uploadPreset,
-              uploadSignatureTimestamp: signed.timestamp,
-              useFilename: false,
-              uniqueFilename: true
-            });
-          } catch (error) {
-            console.error('Cloudinary signature error:', error);
-            cb({ cancel: true });
-            alert('Der signierte Upload konnte nicht vorbereitet werden. Prüfe die Function-Logs und die Cloudinary-Umgebungsvariablen.');
-          }
-        }
-      }, (error, result) => {
+          cloud_name: CLOUDINARY_CLOUD_NAME,
+          uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+          sources: ['local', 'url', 'camera'],
+          multiple: true,
+          maxFiles: 30,
+          resourceType: 'image',
+          maxImageWidth: CLOUDINARY_UPLOAD_LIMITS.maxImageWidth,
+          maxImageHeight: CLOUDINARY_UPLOAD_LIMITS.maxImageHeight,
+          maxFileSize: CLOUDINARY_UPLOAD_LIMITS.maxFileSize
+        }, (error, result) => {
         if (error) {
           console.error('Cloudinary error:', error);
           alert('Upload fehlgeschlagen. Prüfe die Konsole für Details.');
