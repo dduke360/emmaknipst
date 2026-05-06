@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Emma Knipst | Photography</title>
-  <meta name="description" content="Portfolio of Emma Knipst - Capturing moments through the lens">
+  <title>Emma Knipst | Fotografie</title>
+  <meta name="description" content="Portfolio von Emma Knipst - festgehaltene Momente durch die Linse">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -60,9 +60,9 @@
       <a href="#" class="logo">emmaknipst</a>
       <ul class="nav-links">
         <li><a href="#case-studies" data-link="case-studies">Stories</a></li>
-        <li><a href="#gallery" data-link="gallery">Gallery</a></li>
-        <li><a href="#about" data-link="about">About</a></li>
-        <li><button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">Dark</button></li>
+        <li><a href="#gallery" data-link="gallery">Galerie</a></li>
+        <li><a href="#about" data-link="about">Über mich</a></li>
+        <li><button id="theme-toggle" class="theme-toggle" type="button" aria-label="Zum hellen Modus wechseln">Hell</button></li>
         <li><a href="https://www.instagram.com/emmaknipst/" target="_blank" rel="noopener" aria-label="Instagram">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
         </a></li>
@@ -72,26 +72,25 @@
 
   <main>
     <section class="hero-section">
-      <p class="hero-kicker">Photography Portfolio</p>
-      <h1>Selected work by<br>Emma Sophie Weber.</h1>
-      <p class="hero-copy">Portrait, fashion, and lifestyle imagery.</p>
+      <p class="hero-kicker">Fotografie Portfolio</p>
+      <h1>Ausgewählte Arbeiten von<br>Emma Sophie Weber.</h1>
       <div class="hero-actions">
-        <a href="#case-studies" class="hero-cta" data-link="case-studies">View Stories</a>
-        <a href="#gallery" class="hero-cta hero-cta-secondary" data-link="gallery">Browse Gallery</a>
+        <a href="#case-studies" class="hero-cta" data-link="case-studies">Stories ansehen</a>
+        <a href="#gallery" class="hero-cta hero-cta-secondary" data-link="gallery">Galerie ansehen</a>
       </div>
     </section>
 
     <section id="case-studies" class="case-studies-section" hidden>
       <div class="section-heading">
-        <p class="section-kicker">Case Studies</p>
-        <h2>Selected shoots, sequenced like editorial stories.</h2>
-        <p class="section-copy">A curated narrative layer built from the existing connected photo archive.</p>
+        <p class="section-kicker">Stories</p>
+        <h2>Ausgewählte Shootings, erzählt wie editoriale Bildstrecken.</h2>
+        <p class="section-copy">Eine kuratierte Erzählebene, aufgebaut aus dem bestehenden Fotoarchiv.</p>
       </div>
       <div class="case-studies-grid" id="case-studies-grid"></div>
     </section>
 
     <section id="case-study-detail" class="case-study-detail-section" hidden>
-      <a href="/" class="case-study-back-link" id="case-study-back-link">Back to overview</a>
+      <a href="/" class="case-study-back-link" id="case-study-back-link">Zur Übersicht</a>
       <div class="case-study-detail-shell">
         <div class="case-study-detail-copy">
           <p class="case-study-detail-kicker" id="case-study-detail-kicker"></p>
@@ -103,37 +102,39 @@
         <div class="case-study-detail-hero" id="case-study-detail-hero"></div>
       </div>
       <div class="case-study-detail-grid" id="case-study-detail-grid"></div>
-      <a href="/#gallery" class="case-study-back-link case-study-back-link-bottom" id="case-study-back-link-bottom">Back to gallery</a>
+      <a href="/#gallery" class="case-study-back-link case-study-back-link-bottom" id="case-study-back-link-bottom">Zur Galerie</a>
     </section>
 
     <section id="gallery" class="gallery-section">
       <div class="category-filter">
-        <button class="filter-btn active" data-category="all">All</button>
+        <button class="filter-btn active" data-category="all">Alle</button>
       </div>
       <div class="gallery-grid" id="gallery-grid"></div>
       <div class="gallery-controls" id="gallery-controls" hidden>
         <p class="gallery-progress" id="gallery-progress" aria-live="polite"></p>
-        <button class="gallery-load-more" id="gallery-load-more" type="button">Load More</button>
+        <button class="gallery-load-more" id="gallery-load-more" type="button">Mehr laden</button>
       </div>
     </section>
 
     <section id="about" class="about-section">
-      <h2 class="about-heading">About</h2>
+      <h2 class="about-heading">Über mich</h2>
       <div class="about-text" id="about-text"></div>
-      <a href="mailto:hello@emmaknipst.com" class="email-link" id="contact-email"></a>
+      <a href="mailto:emma-sophie.weber@web.de" class="email-link" id="contact-email"></a>
     </section>
   </main>
 
   <footer class="footer">
-    <p>&copy; 2026 emmaknipst. All rights reserved. Version 1.1</p>
+    <p>&copy; 2026 emmaknipst. Alle Rechte vorbehalten. %APP_VERSION%</p>
+    <p class="footer-notice">Alle Bilder sind urheberrechtlich geschuetzt. Nutzung, Download, Weitergabe oder Veroeffentlichung nur mit ausdruecklicher Genehmigung von Emma Weber.</p>
   </footer>
 
   <div class="lightbox" id="lightbox">
-    <button class="lightbox-nav lightbox-prev" type="button" aria-label="Previous image">&#10094;</button>
-    <button class="lightbox-nav lightbox-next" type="button" aria-label="Next image">&#10095;</button>
+    <button class="lightbox-nav lightbox-prev" type="button" aria-label="Vorheriges Bild">&#10094;</button>
+    <button class="lightbox-nav lightbox-next" type="button" aria-label="Nächstes Bild">&#10095;</button>
     <button class="lightbox-close">&times;</button>
     <img src="" alt="" class="lightbox-img" id="lightbox-img">
     <p class="lightbox-title" id="lightbox-title"></p>
+    <p class="lightbox-notice">Urheberrechtlich geschuetzt. Keine Nutzung oder Veroeffentlichung ohne Genehmigung.</p>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

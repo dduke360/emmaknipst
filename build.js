@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 // Load .env file if exists
 const envFile = path.join(__dirname, '.env');
@@ -16,20 +17,49 @@ if (fs.existsSync(envFile)) {
   });
 }
 
+function getAppVersion() {
+  try {
+    const gitTag = execSync('git describe --tags --abbrev=0', {
+      cwd: __dirname,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore']
+    }).trim();
+    if (gitTag) return formatAppVersion(gitTag);
+  } catch (error) {
+    // Fall back to package.json version when no tag is available.
+  }
+
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
+    if (packageJson.version) return formatAppVersion(packageJson.version);
+  } catch (error) {
+    // Fall through to final default below.
+  }
+
+  return 'vdev';
+}
+
+function formatAppVersion(version) {
+  const value = String(version || '').trim();
+  if (!value) return 'vdev';
+  return value.startsWith('v') ? value : `v${value}`;
+}
+
 const envVars = {
   '%SUPABASE_URL%': process.env.SUPABASE_URL,
   '%SUPABASE_ANON_KEY%': process.env.SUPABASE_ANON_KEY,
   '%ADMIN_PASSWORD%': process.env.ADMIN_PASSWORD,
   '%CLOUDINARY_CLOUD_NAME%': process.env.CLOUDINARY_CLOUD_NAME,
   '%CLOUDINARY_UPLOAD_PRESET%': process.env.CLOUDINARY_UPLOAD_PRESET,
-  '%CLOUDINARY_API_KEY%': process.env.CLOUDINARY_API_KEY
+  '%CLOUDINARY_API_KEY%': process.env.CLOUDINARY_API_KEY,
+  '%APP_VERSION%': getAppVersion()
 };
 
 const targetDir = process.env.BUILD_TARGET_DIR
   ? path.resolve(process.env.BUILD_TARGET_DIR)
   : path.join(__dirname, 'www');
 
-const files = ['supabase.js', 'admin.html'];
+const files = ['index.html', 'supabase.js', 'admin.html'];
 
 files.forEach(file => {
   const fullPath = path.join(targetDir, file);

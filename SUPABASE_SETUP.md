@@ -33,7 +33,7 @@ CREATE TABLE settings (
 -- Insert default settings
 INSERT INTO settings (key, value) VALUES 
   ('about', 'I''m a young photographer based in Berlin, Germany. I specialize in portrait, fashion, and lifestyle photography. My work is about capturing authentic moments and raw emotions.'),
-  ('email', 'hello@emmaknipst.com'),
+  ('email', 'emma-sophie.weber@web.de'),
   ('instagram', '@emmaknipst');
 
 -- Enable RLS (Row Level Security)

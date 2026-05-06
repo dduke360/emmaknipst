@@ -1,0 +1,1000 @@
+{
+  "exported_at": "2026-04-26T18:05:39.029Z",
+  "project": "emma-knipst",
+  "source": "supabase-rest-api",
+  "notes": "Application-level data backup from reachable public/auth tables. Not a full PostgreSQL dump.",
+  "tables": {
+    "photos": {
+      "table": "photos",
+      "status": 200,
+      "data": [
+        {
+          "id": 35,
+          "title": "BERLIN MITTE",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134967/emma_knipst/wdepngbkzswltosjz4ky.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 40,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134977/emma_knipst/wrqirkxv5qx27owhfl09.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 2
+        },
+        {
+          "id": 19,
+          "title": "reingewaschen",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772132164/emma_knipst/vxxsdwazvlh8gkivyuma.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T18:56:35.861987+00:00",
+          "likes": 0,
+          "views": 4
+        },
+        {
+          "id": 45,
+          "title": "felix",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134984/emma_knipst/shnzqabonb3fh2nlfsz7.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 31,
+          "title": "helena smoking",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134963/emma_knipst/s4lodf45n3ivns2sygkb.jpg",
+          "category": "people-smoking",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 3
+        },
+        {
+          "id": 48,
+          "title": "HANNAH UND KIANA",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135636/emma_knipst/cnh431hvqpg7onvbrq3h.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 26,
+          "title": "amelie smoking",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134951/emma_knipst/porwfggqdhoc4ksscxme.jpg",
+          "category": "people-smoking",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 2
+        },
+        {
+          "id": 36,
+          "title": "körper",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134968/emma_knipst/uzbqsujm6xqwbfexea7u.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 32,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134965/emma_knipst/xx5w6ycwa1thm9zdcq2u.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 14,
+          "title": "KNOTS",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772131356/emma_knipst/gqbypzxyzptq6v9qvqm0.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T18:42:47.995826+00:00",
+          "likes": 0,
+          "views": 6
+        },
+        {
+          "id": 34,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134967/emma_knipst/rtlmmpa2nsivhedsywq4.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 38,
+          "title": "softeis",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134972/emma_knipst/bpp62dylbrz1giesq67x.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 49,
+          "title": "HANNAH UND KIANA",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135637/emma_knipst/dbkaezuglclyzskz3yez.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 47,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135631/emma_knipst/x1rosvkwhwwp2ugsf9pa.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 41,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134978/emma_knipst/ewupq60apdssc6gat3yw.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 2
+        },
+        {
+          "id": 33,
+          "title": "hidden figures",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134966/emma_knipst/urmqly9ieodfrpkcih9r.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 15,
+          "title": "HANNAH UND KIANA",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772131407/emma_knipst/unpvcet2evxivpveoz1s.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T18:43:49.170775+00:00",
+          "likes": 0,
+          "views": 4
+        },
+        {
+          "id": 108,
+          "title": "küsse",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1774567742/emma_knipst/b0zvugu5bdwjefrqy4mg.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-03-26T23:29:19.367481+00:00",
+          "likes": 0,
+          "views": 3
+        },
+        {
+          "id": 105,
+          "title": "hannah",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1774567740/emma_knipst/bmwhwsykgyjr6bwezsyk.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-03-26T23:29:19.367481+00:00",
+          "likes": 0,
+          "views": 3
+        },
+        {
+          "id": 18,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772132164/emma_knipst/lidcio5mffshx1mff5t4.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T18:56:35.861987+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 44,
+          "title": "seitenspiegel",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134983/emma_knipst/eq7sujsqlpnxosbizzjj.jpg",
+          "category": "people-smoking",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 110,
+          "title": "im wind",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1774567744/emma_knipst/whatwwojiqlra7t55sdg.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-03-26T23:29:19.367481+00:00",
+          "likes": 0,
+          "views": 5
+        },
+        {
+          "id": 107,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1774567741/emma_knipst/kyodnwyalw0zuwik5dqn.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-03-26T23:29:19.367481+00:00",
+          "likes": 0,
+          "views": 16
+        },
+        {
+          "id": 16,
+          "title": "SANTA FLAVIA",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772132161/emma_knipst/pzowifdkx8iyrrkk4v1l.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T18:56:35.861987+00:00",
+          "likes": 0,
+          "views": 11
+        },
+        {
+          "id": 103,
+          "title": "felder",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1774567735/emma_knipst/fx3wrzvjmbvfvnmztzda.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-03-26T23:29:19.367481+00:00",
+          "likes": 0,
+          "views": 4
+        },
+        {
+          "id": 42,
+          "title": "BRATISLAVA",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134979/emma_knipst/zbfibz8ilbrsnngghdb8.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 17,
+          "title": "budapest",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772132162/emma_knipst/wymcwbzkqc3dbzxuwspv.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T18:56:35.861987+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 22,
+          "title": "a smoke",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772132172/emma_knipst/vm6dn9pbqqnikajg9kky.jpg",
+          "category": "people-smoking",
+          "created_at": "2026-02-26T18:56:35.861987+00:00",
+          "likes": 0,
+          "views": 2
+        },
+        {
+          "id": 23,
+          "title": "mensch ärgere dich nicht!",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772132173/emma_knipst/gdlo2ew4go9ss1dcjmfn.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T18:56:35.861987+00:00",
+          "likes": 0,
+          "views": 7
+        },
+        {
+          "id": 109,
+          "title": "draussen",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1774567743/emma_knipst/tykzy6oq8ejxzgeugcv6.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-03-26T23:29:19.367481+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 30,
+          "title": "frei",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134964/emma_knipst/teswk3r2ayqxrpjfvnri.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 104,
+          "title": "schaf",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1774567739/emma_knipst/fpentxgb6v26cunenzih.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-03-26T23:29:19.367481+00:00",
+          "likes": 0,
+          "views": 5
+        },
+        {
+          "id": 106,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1774567741/emma_knipst/pvbmf1n497r4qw4mlhwp.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-03-26T23:29:19.367481+00:00",
+          "likes": 0,
+          "views": 3
+        },
+        {
+          "id": 24,
+          "title": "LICHTENBERG",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772132175/emma_knipst/obi9o1pcdgvdcqzdz7wk.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T18:56:35.861987+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 29,
+          "title": "LINA",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134955/emma_knipst/wwvtdxowxaynuvacyczd.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 20,
+          "title": "digital nonsense",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772132168/emma_knipst/rvt2qzllvkqw5hcadpre.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T18:56:35.861987+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 25,
+          "title": "frühstück",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772132177/emma_knipst/rp4qi1iwq2t2vqkqwzdp.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T18:56:35.861987+00:00",
+          "likes": 0,
+          "views": 5
+        },
+        {
+          "id": 37,
+          "title": "alle schwimmen am meer ohne mich",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134969/emma_knipst/lrnvhscu8gw4n1g4ezg2.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 27,
+          "title": "berlin berlin",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134953/emma_knipst/ea7xbbxb8iptvbkvurxk.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 21,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772132168/emma_knipst/x2v9rt2fd9d4xhzbffhw.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T18:56:35.861987+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 28,
+          "title": "ALEXA",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134955/emma_knipst/qslzxztsrg87lwmdipr3.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 46,
+          "title": "HANNAH UND KIANA",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135628/emma_knipst/jsidh0qsast4x1qzy4ii.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 39,
+          "title": "seifenblasen und sehnsucht",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134976/emma_knipst/jdx00gu4afxkuzkwsffb.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 59,
+          "title": "numb 4",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135657/emma_knipst/gezppunemodnkogdqwu0.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 62,
+          "title": "numb 2",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135662/emma_knipst/ruff3jnpcvfzuoedaxrk.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 54,
+          "title": "numb 5",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135648/emma_knipst/atpqknihhuntvmx1ybaa.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 57,
+          "title": "felix smoking",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135654/emma_knipst/o1um6pfczi8fitjcmndk.jpg",
+          "category": "people-smoking",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 3
+        },
+        {
+          "id": 114,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1774567745/emma_knipst/igltftsoahswylrnh7fz.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-03-26T23:29:19.367481+00:00",
+          "likes": 0,
+          "views": 6
+        },
+        {
+          "id": 64,
+          "title": "caro smoking",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135667/emma_knipst/ojiiy21uoclkyysno3gk.jpg",
+          "category": "people-smoking",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 1,
+          "views": 6
+        },
+        {
+          "id": 113,
+          "title": "fussballfeld",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1774567746/emma_knipst/ufo2rhtvskeans3kvvgk.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-03-26T23:29:19.367481+00:00",
+          "likes": 0,
+          "views": 2
+        },
+        {
+          "id": 53,
+          "title": "HANNAH UND KIANA",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135640/emma_knipst/lpxvv6bqg7g28tomxzgp.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 52,
+          "title": "numb 6",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135638/emma_knipst/s7molw1vlqosjydr2mqx.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 58,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135656/emma_knipst/t1xcvdiuv7aze6zxqik0.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 65,
+          "title": "schaukeln",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135669/emma_knipst/qn6yrhr4pb9mqowpxgq7.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 56,
+          "title": "wir",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135652/emma_knipst/cj6vdxsr8n83nbajk3ky.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 63,
+          "title": "numb 1",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135664/emma_knipst/aoemlvucbzck4zsktb4v.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 55,
+          "title": "HANNAH UND KIANA",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135651/emma_knipst/u9foydlfxnt5sk9odta6.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 43,
+          "title": "catch me if you can",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772134981/emma_knipst/fymo8eub9yahxzu72wa1.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:43:18.463868+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 60,
+          "title": "numb 3",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135657/emma_knipst/c5attyk6blze5eq44jes.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 112,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1774567744/emma_knipst/wvfe6f9gzfdtr816b3d3.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-03-26T23:29:19.367481+00:00",
+          "likes": 0,
+          "views": 4
+        },
+        {
+          "id": 50,
+          "title": "vienne",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135637/emma_knipst/ewztfi34wapz3kvyi3kq.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 51,
+          "title": "gig preparations",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135637/emma_knipst/inuxjsd7g4uyefaknc5m.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 67,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136330/emma_knipst/irdihdfr9uieq4fbxcz9.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 2
+        },
+        {
+          "id": 68,
+          "title": "LINA",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136332/emma_knipst/kexszmaue4qbb53qjo9n.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 61,
+          "title": "HANNAH UND KIANA",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772135660/emma_knipst/b2wvfjtw2wxoktpaz7z3.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T19:54:40.502502+00:00",
+          "likes": 0,
+          "views": 2
+        },
+        {
+          "id": 66,
+          "title": "plastik",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136329/emma_knipst/wfg1tmig1o3vffsesab5.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 2
+        },
+        {
+          "id": 70,
+          "title": "CARO",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136334/emma_knipst/ywtbr3vzkbuoscghzcly.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 71,
+          "title": "rauchen",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136338/emma_knipst/jdytgc6cnujkcbv93bru.jpg",
+          "category": "people-smoking",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 5
+        },
+        {
+          "id": 69,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136332/emma_knipst/szhjznqbbmfmvx2zwy1k.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 2
+        },
+        {
+          "id": 98,
+          "title": "melancholie magazin",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136914/emma_knipst/dcn11oh3zraabmv3h5mm.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T20:15:24.918193+00:00",
+          "likes": 0,
+          "views": 8
+        },
+        {
+          "id": 91,
+          "title": "melancholie magazin",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136903/emma_knipst/bgxtjvz84cdywg1zwzys.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T20:15:24.918193+00:00",
+          "likes": 0,
+          "views": 12
+        },
+        {
+          "id": 84,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136361/emma_knipst/bxp57qduhmxisjmraz4m.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 96,
+          "title": "setcard",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136910/emma_knipst/garsufrni1zwyqkqsvow.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:15:24.918193+00:00",
+          "likes": 0,
+          "views": 11
+        },
+        {
+          "id": 86,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136363/emma_knipst/u9afup3zgo9jod80ew3r.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 90,
+          "title": "melancholie magazin",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136902/emma_knipst/i7txgqnisncjdmogc6mc.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T20:15:24.918193+00:00",
+          "likes": 0,
+          "views": 6
+        },
+        {
+          "id": 83,
+          "title": "angel 1",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136360/emma_knipst/mjeqqcrxjq0hwcgugstb.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 87,
+          "title": "TRABZON",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136364/emma_knipst/bcux2pn3jkzmb2lje7xs.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 74,
+          "title": "portrait series",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136344/emma_knipst/fvcmj84uj08g7dzwb7vi.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 75,
+          "title": "portrait series",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136347/emma_knipst/t18ydaubv2lpldcmqphi.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 72,
+          "title": "momentaufnahme",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136342/emma_knipst/epjhr8zatfrwbzav9yyk.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 2
+        },
+        {
+          "id": 78,
+          "title": "wut",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136351/emma_knipst/ufmy7crqszrbrnfrin4o.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 2
+        },
+        {
+          "id": 80,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136347/emma_knipst/cljwpvtoyrivfwo1petv.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 85,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136349/emma_knipst/uzfouj41yrreevfwk2zv.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 82,
+          "title": "angel 2",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136359/emma_knipst/uytgmxz19oqrtowkqqky.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 1
+        },
+        {
+          "id": 79,
+          "title": "angel 3",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136356/emma_knipst/uu9lb6ziq8tcwizindgs.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 89,
+          "title": "setcard",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136902/emma_knipst/zekkylqtuptyuauvqpso.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:15:24.918193+00:00",
+          "likes": 0,
+          "views": 11
+        },
+        {
+          "id": 92,
+          "title": "setcard",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136903/emma_knipst/dlwln9vw0jnylnkpx400.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:15:24.918193+00:00",
+          "likes": 0,
+          "views": 6
+        },
+        {
+          "id": 76,
+          "title": "angel 4",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136350/emma_knipst/yksbd36xjfpe2elkwacc.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 3
+        },
+        {
+          "id": 88,
+          "title": "granatapfel 1",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136356/emma_knipst/wnji27srrhkfiafqlbnx.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 2
+        },
+        {
+          "id": 93,
+          "title": "melancholie magazin",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136904/emma_knipst/o9o7csbexgbrr2fn3iyh.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T20:15:24.918193+00:00",
+          "likes": 0,
+          "views": 14
+        },
+        {
+          "id": 77,
+          "title": "portrait series",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136346/emma_knipst/rah4ga64ne8oec0hxk39.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 2
+        },
+        {
+          "id": 94,
+          "title": "melancholie magazin",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136907/emma_knipst/lpovyxacalyc4ehonkkg.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T20:15:24.918193+00:00",
+          "likes": 0,
+          "views": 18
+        },
+        {
+          "id": 73,
+          "title": "granatapfel 3",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136344/emma_knipst/wiy4mq2h6uwflk9g1pk3.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 2
+        },
+        {
+          "id": 97,
+          "title": "setcard",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136913/emma_knipst/fgdopnnqqwbgjjqsw1si.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:15:24.918193+00:00",
+          "likes": 0,
+          "views": 6
+        },
+        {
+          "id": 81,
+          "title": "granatapfel 2",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136357/emma_knipst/oteszvbjkub3nqrzfepb.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:06:42.552137+00:00",
+          "likes": 0,
+          "views": 0
+        },
+        {
+          "id": 95,
+          "title": "HANNAH UND KIANA",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136907/emma_knipst/qakk7mwk5ztplrafcmkz.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T20:15:24.918193+00:00",
+          "likes": 0,
+          "views": 12
+        },
+        {
+          "id": 99,
+          "title": "setcard",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136914/emma_knipst/j0atqsusvf6liqyytvaj.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:15:24.918193+00:00",
+          "likes": 0,
+          "views": 6
+        },
+        {
+          "id": 101,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136915/emma_knipst/twdsbcid8iuaed2nacic.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:15:24.918193+00:00",
+          "likes": 0,
+          "views": 11
+        },
+        {
+          "id": 100,
+          "title": "untitled",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136914/emma_knipst/raaalwvqdeuq6v6ufxps.jpg",
+          "category": "ungefiltert",
+          "created_at": "2026-02-26T20:15:24.918193+00:00",
+          "likes": 0,
+          "views": 7
+        },
+        {
+          "id": 102,
+          "title": "verknotet",
+          "src": "https://res.cloudinary.com/djoh49z3m/image/upload/v1772136916/emma_knipst/sobcphl5pemuib3zvjqw.jpg",
+          "category": "publikationen",
+          "created_at": "2026-02-26T20:15:24.918193+00:00",
+          "likes": 0,
+          "views": 8
+        }
+      ]
+    },
+    "settings": {
+      "table": "settings",
+      "status": 200,
+      "data": [
+        {
+          "id": 13,
+          "key": "background_color",
+          "value": "#2c2438"
+        },
+        {
+          "id": 2,
+          "key": "email",
+          "value": "emma-sophie.weber@web.de"
+        },
+        {
+          "id": 3,
+          "key": "instagram",
+          "value": "https://www.instagram.com/emmaknipst/"
+        },
+        {
+          "id": 33,
+          "key": "categories",
+          "value": "[{\"id\":\"publikationen\",\"name\":\"PUBLIKATIONEN\"},{\"id\":\"people-smoking\",\"name\":\"PEOPLE SMOKING\"},{\"id\":\"ungefiltert\",\"name\":\"UNGEFILTERT\"}]"
+        },
+        {
+          "id": 1,
+          "key": "about",
+          "value": "Emma Sophie Weber (sie/ihr), ist 22 Jahre alt und lebt und studiert seit vier Jahren Humanmedizin an der Charité in Berlin. Durch ihren Vater hat sie ihre Leidenschaft an der Fotografie entdeckt und arbeitet besonders gerne analog. \nVor allem das Fotografieren zwischenmenschlicher Gesten und das Vermitteln einer Art intimer Nähe zwischen dem Betrachter des Bildes und der fotografierten Person bereitet Emma eine große Freude.\n\nPUBLIKATIONEN \n\nIhre fotografischen Arbeiten wurden bereits im Kunstmagazin REALITY SCRATCH, im feministischen FLINTA*-Magazin OUR WORDS und in dem L.A.-based Magazin Midcult* veröffentlicht. Außerdem hat sie bei der Ausstellung TIEFWINTER/WINTERTIEF von kunstk!iez und LERM in Berlin im Januar 2026 und bei der Ausstellung LOST von MAULKollektiv im April 2026 mitgewirkt.\nAktuell arbeitet sie beim Poesie- und Fotografiemagazin melancholie! und bringt sich mit ihren analogen Fotografien und der digitalen Seitengestaltung ein."
+        },
+        {
+          "id": 46,
+          "key": "photo_years",
+          "value": "{\"14\":\"2025\",\"15\":\"2025\",\"16\":\"2024\",\"17\":\"2025\",\"18\":\"2025\",\"19\":\"2024\",\"20\":\"2025\",\"21\":\"2025\",\"22\":\"2025\",\"23\":\"2024\",\"24\":\"2025\",\"25\":\"2025\",\"26\":\"2025\",\"27\":\"2025\",\"28\":\"2025\",\"29\":\"2025\",\"30\":\"2025\",\"31\":\"2025\",\"32\":\"2025\",\"33\":\"2025\",\"34\":\"2025\",\"35\":\"2025\",\"36\":\"2025\",\"37\":\"2025\",\"38\":\"2025\",\"39\":\"2025\",\"40\":\"2025\",\"41\":\"2025\",\"42\":\"2025\",\"43\":\"2025\",\"44\":\"2025\",\"45\":\"2025\",\"46\":\"2025\",\"47\":\"2025\",\"48\":\"2025\",\"49\":\"2025\",\"50\":\"2025\",\"51\":\"2025\",\"52\":\"2025\",\"53\":\"2025\",\"54\":\"2025\",\"55\":\"2025\",\"56\":\"2025\",\"57\":\"2025\",\"58\":\"2025\",\"59\":\"2025\",\"60\":\"2025\",\"61\":\"2025\",\"62\":\"2025\",\"63\":\"2025\",\"64\":\"2025\",\"65\":\"2025\",\"66\":\"2025\",\"67\":\"2025\",\"68\":\"2025\",\"69\":\"2025\",\"70\":\"2025\",\"71\":\"2025\",\"72\":\"2025\",\"73\":\"2025\",\"74\":\"2025\",\"75\":\"2025\",\"76\":\"2025\",\"77\":\"2025\",\"78\":\"2025\",\"79\":\"2025\",\"80\":\"2025\",\"81\":\"2025\",\"82\":\"2025\",\"83\":\"2025\",\"84\":\"2025\",\"85\":\"2025\",\"86\":\"2025\",\"87\":\"2025\",\"88\":\"2025\",\"89\":\"2025\",\"90\":\"2025\",\"91\":\"2025\",\"92\":\"2025\",\"93\":\"2025\",\"94\":\"2025\",\"95\":\"2025\",\"96\":\"2025\",\"97\":\"2025\",\"98\":\"2025\",\"99\":\"2025\",\"100\":\"2025\",\"101\":\"2025\",\"102\":\"2025\",\"103\":\"2026\",\"104\":\"2026\",\"105\":\"2026\",\"106\":\"2026\",\"107\":\"2026\",\"108\":\"2026\",\"109\":\"2026\",\"110\":\"2026\",\"112\":\"2026\",\"113\":\"2026\",\"114\":\"2026\"}"
+        },
+        {
+          "id": 521,
+          "key": "photo_cloudinary",
+          "value": "{}"
+        },
+        {
+          "id": 236,
+          "key": "films",
+          "value": "[{\"id\":\"agfa-apx100-35mm\",\"name\":\"AGFA APX100 35mm\"},{\"id\":\"agfa-apx400-35mm\",\"name\":\"AGFA APX400 35mm\"},{\"id\":\"kodak-portra-400-35mm\",\"name\":\"Kodak Portra 400 35mm\"},{\"id\":\"hanalogital-opal-400-35mm\",\"name\":\"HANALOGITAL OPAL 400 35mm\"},{\"id\":\"kodak-ektar-100-35mm\",\"name\":\"Kodak Ektar 100 35mm\"},{\"id\":\"fujifilm-200-35mm\",\"name\":\"Fujifilm 200 35mm\"},{\"id\":\"lomochrome-purple-xr100-400-35mm\",\"name\":\"Lomochrome Purple  XR100-400 35mm\"},{\"id\":\"kodak-gold-200-35mm\",\"name\":\"Kodak Gold 200 35mm\"},{\"id\":\"kodak-gold-400-35mm\",\"name\":\"Kodak Gold 400 35mm\"},{\"id\":\"kodak-ultramax-400-35mm\",\"name\":\"Kodak UltraMax 400 35mm\"},{\"id\":\"cinemot-lisboa-1999-400-35mm\",\"name\":\"Cinemot Lisboa 1999 400 35mm\"},{\"id\":\"cinemot-santa-cruz-200-35mm\",\"name\":\"Cinemot Santa Cruz 200 35mm\"},{\"id\":\"analogheld-old-shutter-hand-200-35mm\",\"name\":\"Analogheld Old Shutter Hand 200 35mm\"}]"
+        },
+        {
+          "id": 519,
+          "key": "case_studies",
+          "value": "[{\"id\":\"case-publikationen\",\"slug\":\"publikationen\",\"title\":\"PUBLIKATIONEN Case Study\",\"category\":\"PUBLIKATIONEN\",\"intro\":\"29 images shaped as a cohesive publikationen series with a clear visual rhythm and stronger narrative sequencing.\",\"story\":\"\",\"metrics\":[\"29 selected frames\",\"2025\",\"Kodak UltraMax 400 35mm + Kodak Gold 200 35mm\"],\"photoIds\":[94,93,95],\"featuredPhotoId\":94,\"status\":\"published\",\"seoTitle\":\"\",\"seoDescription\":\"\"},{\"id\":\"case-ungefiltert\",\"slug\":\"ungefiltert\",\"title\":\"UNGEFILTERT Case Study\",\"category\":\"UNGEFILTERT\",\"intro\":\"64 images shaped as a cohesive ungefiltert series with a clear visual rhythm and stronger narrative sequencing.\",\"story\":\"\",\"metrics\":[\"64 selected frames\",\"2026 / 2025 / 2024\",\"Analogheld Old Shutter Hand 200 35mm + Kodak Gold 400 35mm\"],\"photoIds\":[107,101,96],\"featuredPhotoId\":107,\"status\":\"published\",\"seoTitle\":\"\",\"seoDescription\":\"\"},{\"id\":\"case-people-smoking\",\"slug\":\"people-smoking\",\"title\":\"PEOPLE SMOKING Case Study\",\"category\":\"PEOPLE SMOKING\",\"intro\":\"7 images shaped as a cohesive people smoking series with a clear visual rhythm and stronger narrative sequencing.\",\"story\":\"\",\"metrics\":[\"7 selected frames\",\"2025\",\"Lomochrome Purple  XR100-400 35mm + Analogheld Old Shutter Hand 200 35mm\"],\"photoIds\":[64,71,57],\"featuredPhotoId\":64,\"status\":\"published\",\"seoTitle\":\"\",\"seoDescription\":\"\"}]"
+        },
+        {
+          "id": 44,
+          "key": "photo_films",
+          "value": "{\"14\":\"kodak-portra-400-35mm\",\"15\":\"kodak-portra-400-35mm\",\"16\":\"fujifilm-200-35mm\",\"17\":\"agfa-apx400-35mm\",\"18\":\"agfa-apx100-35mm\",\"19\":\"kodak-ektar-100-35mm\",\"20\":\"agfa-apx100-35mm\",\"21\":\"kodak-portra-400-35mm\",\"22\":\"agfa-apx100-35mm\",\"23\":\"agfa-apx100-35mm\",\"24\":\"agfa-apx100-35mm\",\"25\":\"agfa-apx100-35mm\",\"26\":\"kodak-ultramax-400-35mm\",\"27\":\"kodak-ultramax-400-35mm\",\"28\":\"kodak-gold-200-35mm\",\"29\":\"kodak-gold-200-35mm\",\"30\":\"kodak-ultramax-400-35mm\",\"31\":\"agfa-apx100-35mm\",\"32\":\"agfa-apx100-35mm\",\"33\":\"agfa-apx400-35mm\",\"34\":\"agfa-apx100-35mm\",\"35\":\"kodak-ultramax-400-35mm\",\"36\":\"agfa-apx100-35mm\",\"37\":\"agfa-apx100-35mm\",\"38\":\"agfa-apx100-35mm\",\"39\":\"agfa-apx100-35mm\",\"40\":\"agfa-apx100-35mm\",\"41\":\"agfa-apx100-35mm\",\"42\":\"kodak-gold-400-35mm\",\"43\":\"agfa-apx100-35mm\",\"44\":\"agfa-apx100-35mm\",\"45\":\"agfa-apx100-35mm\",\"46\":\"kodak-portra-400-35mm\",\"47\":\"kodak-portra-400-35mm\",\"48\":\"kodak-portra-400-35mm\",\"49\":\"hanalogital-opal-400-35mm\",\"50\":\"kodak-gold-400-35mm\",\"51\":\"agfa-apx400-35mm\",\"52\":\"agfa-apx100-35mm\",\"53\":\"hanalogital-opal-400-35mm\",\"54\":\"agfa-apx100-35mm\",\"55\":\"analogheld-old-shutter-hand-200-35mm\",\"56\":\"analogheld-old-shutter-hand-200-35mm\",\"57\":\"agfa-apx100-35mm\",\"58\":\"analogheld-old-shutter-hand-200-35mm\",\"59\":\"agfa-apx100-35mm\",\"60\":\"agfa-apx100-35mm\",\"61\":\"analogheld-old-shutter-hand-200-35mm\",\"62\":\"agfa-apx100-35mm\",\"63\":\"agfa-apx100-35mm\",\"64\":\"analogheld-old-shutter-hand-200-35mm\",\"65\":\"analogheld-old-shutter-hand-200-35mm\",\"66\":\"kodak-gold-200-35mm\",\"67\":\"kodak-ultramax-400-35mm\",\"68\":\"kodak-gold-400-35mm\",\"69\":\"lomochrome-purple-xr100-400-35mm\",\"70\":\"lomochrome-purple-xr100-400-35mm\",\"71\":\"lomochrome-purple-xr100-400-35mm\",\"72\":\"cinemot-santa-cruz-200-35mm\",\"73\":\"kodak-gold-200-35mm\",\"74\":\"cinemot-lisboa-1999-400-35mm\",\"75\":\"cinemot-lisboa-1999-400-35mm\",\"76\":\"kodak-gold-200-35mm\",\"77\":\"cinemot-lisboa-1999-400-35mm\",\"78\":\"kodak-gold-200-35mm\",\"79\":\"kodak-gold-200-35mm\",\"80\":\"agfa-apx100-35mm\",\"81\":\"kodak-gold-200-35mm\",\"82\":\"kodak-gold-200-35mm\",\"83\":\"kodak-gold-200-35mm\",\"84\":\"kodak-gold-200-35mm\",\"85\":\"kodak-gold-400-35mm\",\"86\":\"kodak-gold-400-35mm\",\"87\":\"agfa-apx100-35mm\",\"88\":\"kodak-gold-200-35mm\",\"89\":\"kodak-gold-200-35mm\",\"90\":\"kodak-ultramax-400-35mm\",\"91\":\"kodak-gold-200-35mm\",\"92\":\"agfa-apx100-35mm\",\"93\":\"kodak-ultramax-400-35mm\",\"94\":\"kodak-ultramax-400-35mm\",\"95\":\"analogheld-old-shutter-hand-200-35mm\",\"96\":\"agfa-apx100-35mm\",\"97\":\"agfa-apx100-35mm\",\"98\":\"kodak-ultramax-400-35mm\",\"99\":\"agfa-apx100-35mm\",\"100\":\"agfa-apx400-35mm\",\"101\":\"agfa-apx400-35mm\",\"102\":\"agfa-apx400-35mm\",\"103\":\"analogheld-old-shutter-hand-200-35mm\",\"104\":\"kodak-portra-400-35mm\",\"105\":\"kodak-portra-400-35mm\",\"106\":\"fujifilm-200-35mm\",\"107\":\"analogheld-old-shutter-hand-200-35mm\",\"108\":\"fujifilm-200-35mm\",\"109\":\"kodak-portra-400-35mm\",\"110\":\"analogheld-old-shutter-hand-200-35mm\",\"112\":\"kodak-gold-400-35mm\",\"113\":\"agfa-apx100-35mm\",\"114\":\"agfa-apx100-35mm\"}"
+        }
+      ]
+    },
+    "photo_films": {
+      "table": "photo_films",
+      "status": 404,
+      "data": {
+        "code": "PGRST205",
+        "details": null,
+        "hint": "Perhaps you meant the table 'public.photos'",
+        "message": "Could not find the table 'public.photo_films' in the schema cache"
+      }
+    },
+    "photo_years": {
+      "table": "photo_years",
+      "status": 404,
+      "data": {
+        "code": "PGRST205",
+        "details": null,
+        "hint": "Perhaps you meant the table 'public.photos'",
+        "message": "Could not find the table 'public.photo_years' in the schema cache"
+      }
+    },
+    "photo_cloudinary": {
+      "table": "photo_cloudinary",
+      "status": 404,
+      "data": {
+        "code": "PGRST205",
+        "details": null,
+        "hint": null,
+        "message": "Could not find the table 'public.photo_cloudinary' in the schema cache"
+      }
+    }
+  }
+}

@@ -1,8 +1,8 @@
 const DEFAULT_CATEGORIES = [
-  { id: 'portraits', name: 'Portraits' },
-  { id: 'fashion', name: 'Fashion' },
+  { id: 'portraits', name: 'Porträts' },
+  { id: 'fashion', name: 'Mode' },
   { id: 'lifestyle', name: 'Lifestyle' },
-  { id: 'nature', name: 'Nature' }
+  { id: 'nature', name: 'Natur' }
 ];
 
 let portfolioData = {
@@ -112,7 +112,7 @@ function getPhotoDisplaySrc(photo, transform = CLOUDINARY_TRANSFORMS.gallery) {
 }
 
 function getCategoryName(categoryId) {
-  return portfolioData.categories.find((category) => category.id === categoryId)?.name || categoryId || 'Series';
+  return portfolioData.categories.find((category) => category.id === categoryId)?.name || categoryId || 'Serie';
 }
 
 function generateCaseStudiesFromPhotos(photos) {
@@ -134,18 +134,18 @@ function generateCaseStudiesFromPhotos(photos) {
         .map((filmId) => portfolioData.films.find((film) => film.id === filmId)?.name || filmId);
       const categoryName = getCategoryName(categoryId);
       const imageCount = group.length;
-      const yearLabel = years.length ? years.join(' / ') : 'Current work';
-      const filmLabel = films.length ? films.slice(0, 2).join(' + ') : 'Digital and mixed light';
+      const yearLabel = years.length ? years.join(' / ') : 'Aktuelle Arbeiten';
+      const filmLabel = films.length ? films.slice(0, 2).join(' + ') : 'Digital und Mischlicht';
 
       return {
         id: `case-${slugify(categoryId)}`,
         slug: slugify(categoryId),
-        title: `${categoryName} Case Study`,
+        title: `${categoryName} Story`,
         category: categoryName,
-        intro: `${imageCount} images shaped as a cohesive ${categoryName.toLowerCase()} series with a clear visual rhythm and stronger narrative sequencing.`,
+        intro: `${imageCount} Bilder als zusammenhängende ${categoryName.toLowerCase()}-Serie mit klarem Rhythmus und stärkerer Erzählstruktur.`,
         story: '',
         metrics: [
-          `${imageCount} selected frames`,
+          `${imageCount} ausgewählte Bilder`,
           yearLabel,
           filmLabel
         ],
@@ -209,7 +209,7 @@ function normalizeCaseStudies(rawCaseStudies, photos) {
       return {
         id: study.id || `case-study-${index + 1}`,
         slug: study.slug || slugify(study.title || `case-study-${index + 1}`),
-        title: study.title || `Case Study ${index + 1}`,
+        title: study.title || `Story ${index + 1}`,
         category: study.category || getCategoryName(photoMap.get(String(featuredPhotoId))?.category),
         intro: study.intro || '',
         story: study.story || '',
@@ -420,8 +420,8 @@ function applyThemeMode(mode) {
   document.documentElement.setAttribute('data-theme', 'light');
   applyCustomBackground(mode === 'color' ? selectedBackgroundColor : null);
   if (!themeToggleEl) return;
-  themeToggleEl.textContent = mode === 'color' ? 'Light' : 'Color';
-  themeToggleEl.setAttribute('aria-label', mode === 'color' ? 'Switch to light mode' : 'Switch to color mode');
+  themeToggleEl.textContent = mode === 'color' ? 'Hell' : 'Farbe';
+  themeToggleEl.setAttribute('aria-label', mode === 'color' ? 'Zum hellen Modus wechseln' : 'Zum Farbmodus wechseln');
 }
 
 async function loadData() {
@@ -565,8 +565,8 @@ function getStoryFromLocation() {
 }
 
 function setDocumentMetadata(study = null) {
-  const defaultTitle = 'Emma Knipst | Photography';
-  const defaultDescription = 'Portfolio of Emma Knipst - Capturing moments through the lens';
+  const defaultTitle = 'Emma Knipst | Fotografie';
+  const defaultDescription = 'Portfolio von Emma Knipst - festgehaltene Momente durch die Linse';
   const title = study ? (study.seoTitle || `${study.title} | Emma Knipst`) : defaultTitle;
   const description = study ? (study.seoDescription || study.intro || defaultDescription) : defaultDescription;
   document.title = title;
@@ -595,7 +595,7 @@ function renderCaseStudies(activeSlug = '') {
       .map((id) => portfolioData.photos.find((photo) => photo.id === id))
       .filter(Boolean);
     const previewHtml = supporting.map((photo) => `
-      <button class="case-study-thumb" type="button" data-photo-id="${photo.id}" aria-label="Open ${escapeHtml(photo.title || study.title)}">
+      <button class="case-study-thumb" type="button" data-photo-id="${photo.id}" aria-label="${escapeHtml(photo.title || study.title)} öffnen">
         <img src="${escapeHtml(getPhotoDisplaySrc(photo, CLOUDINARY_TRANSFORMS.gallery))}" alt="${escapeHtml(photo.title || study.title)}" loading="lazy">
       </button>
     `).join('');
@@ -609,7 +609,7 @@ function renderCaseStudies(activeSlug = '') {
               <span class="case-study-sequence">Story ${sequenceLabel}</span>
               <span class="case-study-rule" aria-hidden="true"></span>
             </div>
-            <p class="case-study-eyebrow">${escapeHtml(study.category || 'Case Study')}</p>
+            <p class="case-study-eyebrow">${escapeHtml(study.category || 'Story')}</p>
             <h3>${escapeHtml(study.title)}</h3>
             <p class="case-study-intro">${escapeHtml(study.intro || '')}</p>
           </div>
@@ -617,13 +617,13 @@ function renderCaseStudies(activeSlug = '') {
           <div class="case-study-metrics">
             ${(study.metrics || []).map((metric) => `<span>${escapeHtml(metric)}</span>`).join('')}
           </div>
-          <a class="case-study-open-link" href="/?story=${encodeURIComponent(study.slug)}">Read case study</a>
+          <a class="case-study-open-link" href="/?story=${encodeURIComponent(study.slug)}">Story lesen</a>
         </div>
         <div class="case-study-visuals">
-          <button class="case-study-hero" type="button" data-photo-id="${featured?.id || ''}" aria-label="Open ${escapeHtml(featured?.title || study.title)}">
+          <button class="case-study-hero" type="button" data-photo-id="${featured?.id || ''}" aria-label="${escapeHtml(featured?.title || study.title)} öffnen">
             <img src="${escapeHtml(getPhotoDisplaySrc(featured, CLOUDINARY_TRANSFORMS.lightbox))}" alt="${escapeHtml(featured?.title || study.title)}" loading="lazy">
             <span class="case-study-hero-overlay" aria-hidden="true">
-              <span class="case-study-hero-label">Selected Frame</span>
+              <span class="case-study-hero-label">Ausgewähltes Bild</span>
               <span class="case-study-hero-title">${escapeHtml(featured?.title || study.title)}</span>
             </span>
           </button>
@@ -676,7 +676,7 @@ function renderCaseStudyDetail(activeSlug = '') {
   gallerySection.hidden = true;
   backLink.href = '/';
   backToGalleryLink.href = '/#gallery';
-  kicker.textContent = study.category || 'Case Study';
+  kicker.textContent = study.category || 'Story';
   title.textContent = study.title || '';
   intro.textContent = study.intro || '';
   story.textContent = study.story || '';
@@ -686,7 +686,7 @@ function renderCaseStudyDetail(activeSlug = '') {
     <button class="case-study-detail-hero-button" type="button" data-photo-id="${featured.id}">
       <img src="${escapeHtml(getPhotoDisplaySrc(featured, CLOUDINARY_TRANSFORMS.lightbox))}" alt="${escapeHtml(featured.title || study.title)}" loading="eager">
       <span class="case-study-detail-hero-overlay" aria-hidden="true">
-        <span class="case-study-detail-hero-label">Lead Image</span>
+        <span class="case-study-detail-hero-label">Titelbild</span>
         <span class="case-study-detail-hero-title">${escapeHtml(featured.title || study.title)}</span>
       </span>
     </button>
@@ -714,7 +714,7 @@ function renderCategoryFilter() {
   const allBtn = document.createElement('button');
   allBtn.className = 'filter-btn active';
   allBtn.dataset.category = 'all';
-  allBtn.textContent = 'All';
+  allBtn.textContent = 'Alle';
   filterContainer.appendChild(allBtn);
   
   portfolioData.categories.forEach(category => {
@@ -736,7 +736,7 @@ function renderCategoryFilter() {
   isoFilmToggleEl.type = 'button';
   isoFilmToggleEl.className = 'film-toggle-btn';
   isoFilmToggleEl.id = 'iso400-toggle';
-  isoFilmToggleEl.textContent = 'ISO 400 Film';
+  isoFilmToggleEl.textContent = 'ISO-400-Film';
   filterContainer.appendChild(isoFilmToggleEl);
 
   const storedTone = localStorage.getItem(IMAGE_TONE_KEY);

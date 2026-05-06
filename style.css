@@ -930,6 +930,15 @@ main {
   text-transform: uppercase;
 }
 
+.footer-notice {
+  max-width: 760px;
+  margin: 0.7rem auto 0;
+  font-size: 0.66rem;
+  letter-spacing: 0.03em;
+  line-height: 1.6;
+  text-transform: none;
+}
+
 .lightbox {
   position: fixed;
   inset: 0;
@@ -1059,6 +1068,17 @@ body.iso400-enabled .lightbox.active::after {
 .lightbox-title-sub {
   font-size: 0.74rem;
   color: #a7afb9;
+}
+
+.lightbox-notice {
+  margin: 0.7rem 0 0;
+  max-width: min(720px, 88vw);
+  color: rgba(207, 214, 224, 0.72);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 @keyframes rise-in {

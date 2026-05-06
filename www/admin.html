@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -554,6 +554,25 @@
       transition: 160ms ease;
     }
 
+    .case-study-list-item-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .case-study-list-item-copy {
+      min-width: 0;
+      flex: 1;
+      text-align: left;
+      font: inherit;
+      color: inherit;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+
     .case-study-list-item.active {
       border-color: color-mix(in srgb, var(--admin-accent) 55%, var(--admin-border));
       box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--admin-accent) 20%, transparent);
@@ -568,6 +587,34 @@
       margin: 0;
       color: var(--admin-muted);
       font-size: 0.78rem;
+    }
+
+    .case-study-order-controls {
+      display: flex;
+      gap: 0.35rem;
+      flex-shrink: 0;
+    }
+
+    .case-study-order-btn {
+      width: 2rem;
+      height: 2rem;
+      border: 1px solid var(--admin-border);
+      border-radius: 999px;
+      background: var(--admin-surface);
+      color: var(--admin-text);
+      font: inherit;
+      cursor: pointer;
+      transition: 160ms ease;
+    }
+
+    .case-study-order-btn:hover:not(:disabled) {
+      border-color: color-mix(in srgb, var(--admin-accent) 45%, var(--admin-border));
+      color: var(--admin-accent);
+    }
+
+    .case-study-order-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
 
     .case-study-actions {
@@ -716,142 +763,142 @@
   <div id="login-screen" class="login-screen">
     <div class="login-box">
       <div class="login-header">
-        <h1>Admin Login</h1>
-        <button id="theme-toggle-login" type="button" class="btn btn-secondary theme-toggle-admin">Dark</button>
+        <h1>Admin-Login</h1>
+        <button id="theme-toggle-login" type="button" class="btn btn-secondary theme-toggle-admin">Hell</button>
       </div>
       <form id="login-form">
         <div class="form-group">
-          <label>Email</label>
+          <label>E-Mail</label>
           <input type="email" id="login-email" autocomplete="email" required>
         </div>
         <div class="form-group">
-          <label>Password</label>
+          <label>Passwort</label>
           <input type="password" id="login-password" autocomplete="current-password" required>
         </div>
-        <button type="submit" class="btn btn-primary full-width">Login</button>
+        <button type="submit" class="btn btn-primary full-width">Anmelden</button>
       </form>
     </div>
   </div>
 
   <div id="admin-app" class="admin-container hidden">
     <div class="admin-header">
-      <h1>Photo Admin</h1>
+      <h1>Fotoverwaltung</h1>
       <div class="header-actions">
-        <button id="theme-toggle-admin" type="button" class="btn btn-secondary theme-toggle-admin">Dark</button>
-        <button id="logout-btn" class="btn btn-secondary">Logout</button>
+        <button id="theme-toggle-admin" type="button" class="btn btn-secondary theme-toggle-admin">Hell</button>
+        <button id="logout-btn" class="btn btn-secondary">Abmelden</button>
       </div>
     </div>
 
     <div class="admin-section">
-      <h2>Upload to Cloudinary</h2>
-      <p class="section-note">Upload images to Cloudinary (free cloud storage). Images persist across deployments.</p>
+      <h2>Upload zu Cloudinary</h2>
+      <p class="section-note">Lade Bilder zu Cloudinary hoch. Die Dateien bleiben dort gespeichert und sind unabhängig von Deployments verfügbar.</p>
       <div id="cloudinary-uploads" class="category-list"></div>
-      <button id="cloudinary-upload-btn" class="btn btn-primary">Upload Images</button>
+      <button id="cloudinary-upload-btn" class="btn btn-primary">Bilder hochladen</button>
       <div id="cloudinary-form" class="category-list" style="display: none;">
         <div class="form-group">
-          <label>Title Prefix (optional)</label>
-          <input type="text" id="cloudinary-title" placeholder="e.g. Paris Series">
+          <label>Titel-Präfix (optional)</label>
+          <input type="text" id="cloudinary-title" placeholder="z. B. Paris Serie">
         </div>
         <div class="form-group">
-          <label>Category</label>
+          <label>Kategorie</label>
           <select id="cloudinary-category"></select>
         </div>
         <div class="form-group">
           <label>Film (optional)</label>
           <select id="cloudinary-film"></select>
         </div>
-        <button id="add-cloudinary-btn" class="btn btn-success">Add Uploads to Gallery</button>
+        <button id="add-cloudinary-btn" class="btn btn-success">Uploads zur Galerie hinzufügen</button>
       </div>
     </div>
 
     <div class="admin-section">
-      <h2>Statistics</h2>
+      <h2>Statistiken</h2>
       <div class="stats-grid">
         <div class="stats-card">
-          <h3 class="stat-title">Top 10 by Views</h3>
+          <h3 class="stat-title">Top 10 nach Aufrufen</h3>
           <div id="top-views"></div>
         </div>
         <div class="stats-card">
-          <h3 class="stat-title">Top 10 by Likes</h3>
+          <h3 class="stat-title">Top 10 nach Likes</h3>
           <div id="top-likes"></div>
         </div>
       </div>
     </div>
 
     <div class="admin-section">
-      <h2>Manage Categories</h2>
+      <h2>Kategorien verwalten</h2>
       <form id="add-category-form" class="category-form">
         <div class="form-group category-input-group">
-          <label>New Category Name</label>
-          <input type="text" id="new-category" placeholder="Category name">
+          <label>Neuer Kategoriename</label>
+          <input type="text" id="new-category" placeholder="Kategoriename">
         </div>
-        <button type="submit" class="btn btn-secondary">Add</button>
+        <button type="submit" class="btn btn-secondary">Hinzufügen</button>
       </form>
       <div id="category-list" class="category-list"></div>
     </div>
 
     <div class="admin-section">
-      <h2>Manage Films</h2>
+      <h2>Filme verwalten</h2>
       <form id="add-film-form" class="category-form">
         <div class="form-group category-input-group">
-          <label>New Film Name</label>
-          <input type="text" id="new-film" placeholder="e.g. Agfa Color ISO 100">
+          <label>Neuer Filmname</label>
+          <input type="text" id="new-film" placeholder="z. B. Agfa Color ISO 100">
         </div>
-        <button type="submit" class="btn btn-secondary">Add</button>
+        <button type="submit" class="btn btn-secondary">Hinzufügen</button>
       </form>
       <div id="film-list" class="category-list"></div>
     </div>
 
     <div class="admin-section">
-      <h2>Background Color</h2>
-      <p class="color-help">Choose a background color for the public site. 8 light presets and 8 dark presets.</p>
+      <h2>Hintergrundfarbe</h2>
+      <p class="color-help">Wähle eine Hintergrundfarbe für die öffentliche Seite. Es gibt 8 helle und 8 dunkle Vorgaben.</p>
       <div id="background-palette"></div>
-      <button id="save-background-btn" class="btn btn-primary">Save Background</button>
+      <button id="save-background-btn" class="btn btn-primary">Hintergrund speichern</button>
     </div>
 
     <div class="admin-section">
       <div class="case-study-header">
-        <h2>Case Studies</h2>
-        <button id="case-study-guide-toggle" class="btn case-study-guide-toggle" type="button" aria-expanded="false" aria-controls="case-study-guide">How to add a story</button>
+        <h2>Stories</h2>
+        <button id="case-study-guide-toggle" class="btn case-study-guide-toggle" type="button" aria-expanded="false" aria-controls="case-study-guide">So legst du eine Story an</button>
       </div>
-      <p class="section-note">Create dynamic story pages without touching the connected photo records. Stories are stored in `settings.case_studies` and rendered via `?story=slug`.</p>
+      <p class="section-note">Erstelle eigene Story-Seiten aus vorhandenen Fotos. Titel, Texte, Reihenfolge und Bildauswahl legst du hier separat fest.</p>
       <div id="case-study-guide" class="case-study-guide" hidden>
-        <h3>Story Setup Guide</h3>
-        <p>Follow these steps to create a complete case study that appears correctly on the public site.</p>
+        <h3>Story-Anleitung</h3>
+        <p>Mit diesen Schritten erstellst du eine vollständige Story, die auf der öffentlichen Seite korrekt erscheint.</p>
         <ol class="case-study-guide-steps">
           <li class="case-study-guide-step">
             <span class="case-study-guide-step-index">1</span>
             <div>
-              <strong>Create the draft</strong>
-              <span>Click `New Story`, then add a clear title. The slug is generated automatically and can be edited.</span>
+              <strong>Entwurf anlegen</strong>
+              <span>Klicke auf `Neue Story` und vergib einen klaren Titel. Der Slug wird automatisch erzeugt und kann angepasst werden.</span>
             </div>
           </li>
           <li class="case-study-guide-step">
             <span class="case-study-guide-step-index">2</span>
             <div>
-              <strong>Fill key copy fields</strong>
-              <span>Add `Category Label`, `Intro`, and `Story` text. Keep intro short and use story text for the narrative.</span>
+              <strong>Texte ausfüllen</strong>
+              <span>Füge `Kategorie`, `Intro` und den `Story`-Text hinzu. Halte das Intro kurz und nutze den Story-Text für die Erzählung.</span>
             </div>
           </li>
           <li class="case-study-guide-step">
             <span class="case-study-guide-step-index">3</span>
             <div>
-              <strong>Select story photos</strong>
-              <span>Choose all images in `Story Photos`, then set one as `Featured Photo` for the large hero frame.</span>
+              <strong>Story-Bilder auswählen</strong>
+              <span>Wähle unter `Story-Bilder` alle passenden Bilder aus und setze eines davon als `Titelbild` für die große Hero-Fläche.</span>
             </div>
           </li>
           <li class="case-study-guide-step">
             <span class="case-study-guide-step-index">4</span>
             <div>
-              <strong>Set status and save</strong>
-              <span>Use `Draft` while editing. Switch to `Published` and click `Save Story` when ready.</span>
+              <strong>Status setzen und speichern</strong>
+              <span>Nutze `Entwurf`, solange du bearbeitest. Wechsle auf `Veröffentlicht` und klicke auf `Story speichern`, wenn alles fertig ist.</span>
             </div>
           </li>
           <li class="case-study-guide-step">
             <span class="case-study-guide-step-index">5</span>
             <div>
-              <strong>Preview and verify</strong>
-              <span>Use `Open Preview` to confirm layout, image order, and the URL `/?story=your-slug`.</span>
+              <strong>Vorschau prüfen</strong>
+              <span>Nutze `Vorschau öffnen`, um Layout, Bildreihenfolge und die URL `/?story=dein-slug` zu kontrollieren.</span>
             </div>
           </li>
         </ol>
@@ -859,10 +906,10 @@
       <div class="split-grid">
         <div>
           <div class="case-study-actions">
-            <button id="new-case-study-btn" class="btn btn-primary" type="button">New Story</button>
-            <button id="import-case-study-btn" class="btn btn-secondary" type="button">Import from Photos</button>
-            <button id="delete-case-study-btn" class="btn btn-danger" type="button">Delete Story</button>
-            <a id="preview-case-study-link" class="btn btn-secondary" href="/" target="_blank" rel="noopener">Open Preview</a>
+            <button id="new-case-study-btn" class="btn btn-primary" type="button">Neue Story</button>
+            <button id="import-case-study-btn" class="btn btn-secondary" type="button">Aus Fotos erzeugen</button>
+            <button id="delete-case-study-btn" class="btn btn-danger" type="button">Story löschen</button>
+            <a id="preview-case-study-link" class="btn btn-secondary" href="/" target="_blank" rel="noopener">Vorschau öffnen</a>
           </div>
           <div id="case-study-list" class="case-study-list"></div>
         </div>
@@ -870,7 +917,7 @@
           <form id="case-study-form">
             <div class="case-study-form-grid">
               <div class="form-group">
-                <label>Title</label>
+                <label>Titel</label>
                 <input type="text" id="case-study-title">
               </div>
               <div class="form-group">
@@ -878,14 +925,14 @@
                 <input type="text" id="case-study-slug" placeholder="editorial-paris-story">
               </div>
               <div class="form-group">
-                <label>Category Label</label>
+                <label>Kategorie</label>
                 <input type="text" id="case-study-category">
               </div>
               <div class="form-group">
                 <label>Status</label>
                 <select id="case-study-status">
-                  <option value="published">Published</option>
-                  <option value="draft">Draft</option>
+                  <option value="published">Veröffentlicht</option>
+                  <option value="draft">Entwurf</option>
                 </select>
               </div>
               <div class="form-group full-span">
@@ -897,64 +944,64 @@
                 <textarea id="case-study-story" rows="5" class="control-field"></textarea>
               </div>
               <div class="form-group full-span">
-                <label>Metrics</label>
+                <label>Metriken</label>
                 <div class="metric-inputs">
-                  <input type="text" id="case-study-metric-1" placeholder="12 selected frames">
+                  <input type="text" id="case-study-metric-1" placeholder="12 ausgewählte Bilder">
                   <input type="text" id="case-study-metric-2" placeholder="2026 / Berlin">
                   <input type="text" id="case-study-metric-3" placeholder="Kodak Portra 400">
                 </div>
               </div>
               <div class="form-group">
-                <label>SEO Title</label>
+                <label>SEO-Titel</label>
                 <input type="text" id="case-study-seo-title">
               </div>
               <div class="form-group">
-                <label>SEO Description</label>
+                <label>SEO-Beschreibung</label>
                 <input type="text" id="case-study-seo-description">
               </div>
             </div>
             <div class="form-group">
-              <label>Featured Photo</label>
+              <label>Titelbild</label>
               <select id="case-study-featured-photo"></select>
             </div>
             <div class="form-group">
-              <label>Story Photos</label>
-              <p class="selection-summary" id="case-study-selection-summary">No photos selected.</p>
+              <label>Story-Bilder</label>
+              <p class="selection-summary" id="case-study-selection-summary">Keine Bilder ausgewählt.</p>
               <div id="case-study-photo-picker" class="photo-picker-grid"></div>
             </div>
-            <button type="submit" class="btn btn-primary">Save Story</button>
+            <button type="submit" class="btn btn-primary">Story speichern</button>
           </form>
         </div>
       </div>
     </div>
 
     <div class="admin-section">
-      <h2>All Photos</h2>
+      <h2>Alle Fotos</h2>
       <div id="photos-grid" class="photos-grid"></div>
     </div>
 
     <div class="admin-section">
-      <h2>Edit About</h2>
+      <h2>Über-mich-Bereich bearbeiten</h2>
       <form id="about-form">
         <div class="form-group">
-          <label>About Text</label>
+          <label>Über-mich-Text</label>
           <textarea id="about-text" rows="4" class="control-field"></textarea>
         </div>
         <div class="form-group">
-          <label>Email</label>
+          <label>E-Mail</label>
           <input type="email" id="about-email">
         </div>
         <div class="form-group">
           <label>Instagram</label>
           <input type="text" id="about-instagram">
         </div>
-        <button type="submit" class="btn btn-primary">Save About</button>
+        <button type="submit" class="btn btn-primary">Über mich speichern</button>
       </form>
     </div>
   </div>
 
   <div id="photo-preview-modal" class="photo-preview-modal hidden" aria-hidden="true">
-    <img id="photo-preview-image" class="photo-preview-image" alt="Photo preview">
+    <img id="photo-preview-image" class="photo-preview-image" alt="Fotovorschau">
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -971,8 +1018,8 @@
     ];
     const BACKGROUND_COLORS = [...LIGHT_COLORS, ...DARK_COLORS];
     const BACKGROUND_COLOR_GROUPS = [
-      { title: 'Light Colors', colors: LIGHT_COLORS },
-      { title: 'Dark Colors', colors: DARK_COLORS }
+      { title: 'Helle Farben', colors: LIGHT_COLORS },
+      { title: 'Dunkle Farben', colors: DARK_COLORS }
     ];
     const DEFAULT_CATEGORIES = [
       { id: 'portraits', name: 'Portraits' },
@@ -1001,6 +1048,13 @@
       maxImageHeight: 2400,
       maxFileSize: 8_000_000
     });
+    const IMAGE_RIGHTS_NOTICE = 'Urheberrechtlich geschuetzt. Nutzung und Veroeffentlichung nur mit ausdruecklicher Genehmigung von Emma Weber.';
+    const IMAGE_CONTACT_EMAIL = 'emma-sophie.weber@web.de';
+    const IMAGE_UPLOAD_TAGS = ['emma-knipst', 'copyright-protected', 'license-required'];
+
+    function getUploadProtectionContext() {
+      return `alt=${IMAGE_RIGHTS_NOTICE}|caption=${IMAGE_RIGHTS_NOTICE}|copyright=© Emma Weber|creator=Emma Weber|credit=Emma Weber|contact=${IMAGE_CONTACT_EMAIL}|usage_terms=${IMAGE_RIGHTS_NOTICE}`;
+    }
 
     const loginScreen = document.getElementById('login-screen');
     const adminApp = document.getElementById('admin-app');
@@ -1047,8 +1101,8 @@
       return {
         id: `case-study-${Date.now()}`,
         slug: `story-${nextIndex}`,
-        title: `New Story ${nextIndex}`,
-        category: 'Case Study',
+        title: `Neue Story ${nextIndex}`,
+        category: 'Story',
         intro: '',
         story: '',
         metrics: [],
@@ -1064,6 +1118,36 @@
       return (data?.caseStudies || []).find(study => study.id === activeCaseStudyId) || null;
     }
 
+    function syncActiveCaseStudyForm() {
+      const active = getActiveCaseStudy();
+      if (!active) return;
+      active.title = document.getElementById('case-study-title').value.trim();
+      active.slug = slugify(document.getElementById('case-study-slug').value.trim() || active.title);
+      active.category = document.getElementById('case-study-category').value.trim();
+      active.status = document.getElementById('case-study-status').value === 'draft' ? 'draft' : 'published';
+      active.intro = document.getElementById('case-study-intro').value.trim();
+      active.story = document.getElementById('case-study-story').value.trim();
+      active.metrics = [
+        document.getElementById('case-study-metric-1').value.trim(),
+        document.getElementById('case-study-metric-2').value.trim(),
+        document.getElementById('case-study-metric-3').value.trim()
+      ].filter(Boolean);
+      active.seoTitle = document.getElementById('case-study-seo-title').value.trim();
+      active.seoDescription = document.getElementById('case-study-seo-description').value.trim();
+      active.featuredPhotoId = String(caseStudyFeaturedPhoto.value || active.photoIds?.[0] || '');
+    }
+
+    async function moveCaseStudy(caseStudyId, direction) {
+      syncActiveCaseStudyForm();
+      const studies = data?.caseStudies || [];
+      const index = studies.findIndex((study) => study.id === caseStudyId);
+      if (index === -1) return;
+      const nextIndex = index + direction;
+      if (nextIndex < 0 || nextIndex >= studies.length) return;
+      [studies[index], studies[nextIndex]] = [studies[nextIndex], studies[index]];
+      await saveData();
+    }
+
     function updatePreviewLink(study) {
       previewCaseStudyLink.href = study?.slug ? `/?story=${encodeURIComponent(study.slug)}` : '/';
     }
@@ -1073,7 +1157,7 @@
       const nextHidden = !caseStudyGuide.hidden;
       caseStudyGuide.hidden = nextHidden;
       caseStudyGuideToggleBtn.setAttribute('aria-expanded', String(!nextHidden));
-      caseStudyGuideToggleBtn.textContent = nextHidden ? 'How to add a story' : 'Hide story guide';
+      caseStudyGuideToggleBtn.textContent = nextHidden ? 'So legst du eine Story an' : 'Story-Anleitung ausblenden';
     }
 
     function ensureCloudinaryAutoOptimization(transform = '') {
@@ -1281,11 +1365,11 @@
       currentThemeMode = mode;
       document.documentElement.setAttribute('data-theme', 'light');
       applyAdminBackground(mode === 'color' ? selectedBackgroundColor : null);
-      const label = mode === 'color' ? 'Light' : 'Color';
+      const label = mode === 'color' ? 'Hell' : 'Farbe';
       [themeToggleLogin, themeToggleAdmin].forEach(toggle => {
         if (!toggle) return;
         toggle.textContent = label;
-        toggle.setAttribute('aria-label', mode === 'color' ? 'Switch to light mode' : 'Switch to color mode');
+        toggle.setAttribute('aria-label', mode === 'color' ? 'Zum hellen Modus wechseln' : 'Zum Farbmodus wechseln');
       });
     }
 
@@ -1371,7 +1455,7 @@
         loadData();
       } else {
         console.error('Login failed:', error);
-        alert('Login failed. Check email/password.');
+        alert('Anmeldung fehlgeschlagen. Prüfe E-Mail und Passwort.');
       }
     });
 
@@ -1487,8 +1571,8 @@
           caseStudies: parsedCaseStudies.map((study, index) => ({
             id: study.id || `case-study-${index + 1}`,
             slug: slugify(study.slug || study.title || `case-study-${index + 1}`),
-            title: study.title || `Case Study ${index + 1}`,
-            category: study.category || 'Case Study',
+            title: study.title || `Story ${index + 1}`,
+            category: study.category || 'Story',
             intro: study.intro || '',
             story: study.story || '',
             metrics: Array.isArray(study.metrics) ? study.metrics.filter(Boolean).slice(0, 3) : [],
@@ -1639,16 +1723,24 @@
     function renderCaseStudiesAdmin() {
       const studies = data.caseStudies || [];
       caseStudyList.innerHTML = studies.length
-        ? studies.map(study => `
-          <button type="button" class="case-study-list-item ${study.id === activeCaseStudyId ? 'active' : ''}" data-case-study-id="${study.id}">
-            <h3>${study.title || 'Untitled story'}</h3>
-            <p>${study.slug || 'missing-slug'} • ${study.status || 'published'}</p>
-          </button>
+        ? studies.map((study, index) => `
+          <div class="case-study-list-item ${study.id === activeCaseStudyId ? 'active' : ''}">
+            <div class="case-study-list-item-row">
+              <button type="button" class="case-study-list-item-copy" data-case-study-id="${study.id}">
+                <h3>${study.title || 'Unbenannte Story'}</h3>
+                <p>${study.slug || 'fehlender-slug'} • ${study.status === 'draft' ? 'Entwurf' : 'Veröffentlicht'}</p>
+              </button>
+              <span class="case-study-order-controls">
+                <button type="button" class="case-study-order-btn" data-move-case-study="${study.id}" data-direction="-1" aria-label="Story nach oben verschieben" ${index === 0 ? 'disabled' : ''}>↑</button>
+                <button type="button" class="case-study-order-btn" data-move-case-study="${study.id}" data-direction="1" aria-label="Story nach unten verschieben" ${index === studies.length - 1 ? 'disabled' : ''}>↓</button>
+              </span>
+            </div>
+          </div>
         `).join('')
-        : '<p class="section-note">No case studies yet. Create the first story.</p>';
+        : '<p class="section-note">Noch keine Stories vorhanden. Lege die erste Story an.</p>';
 
-      caseStudyFeaturedPhoto.innerHTML = '<option value="">Select featured photo</option>' + data.photos.map(photo => `
-        <option value="${photo.id}">${photo.title || `Photo ${photo.id}`}</option>
+      caseStudyFeaturedPhoto.innerHTML = '<option value="">Titelbild auswählen</option>' + data.photos.map(photo => `
+        <option value="${photo.id}">${photo.title || `Foto ${photo.id}`}</option>
       `).join('');
 
       const active = getActiveCaseStudy();
@@ -1670,13 +1762,13 @@
       caseStudyPhotoPicker.innerHTML = data.photos.map(photo => `
         <button type="button" class="photo-picker-card ${selectedPhotoIds.has(String(photo.id)) ? 'selected' : ''}" data-photo-id="${photo.id}">
           <img src="${photo.cloudinary ? buildCloudinaryAssetUrl(photo.cloudinary, CLOUDINARY_TRANSFORMS.thumb) : withCloudinaryTransform(photo.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="${photo.title}">
-          <div class="photo-picker-meta">${photo.title || 'Untitled'}<br>${photo.category || ''}</div>
+          <div class="photo-picker-meta">${photo.title || 'Ohne Titel'}<br>${photo.category || ''}</div>
         </button>
       `).join('');
 
       caseStudySelectionSummary.textContent = selectedPhotoIds.size
-        ? `${selectedPhotoIds.size} photo(s) selected for this story.`
-        : 'No photos selected.';
+        ? `${selectedPhotoIds.size} Bild(er) für diese Story ausgewählt.`
+        : 'Keine Bilder ausgewählt.';
       updatePreviewLink(active);
       deleteCaseStudyBtn.disabled = !active;
     }
@@ -1694,7 +1786,7 @@
           <span class="stat-rank">${i + 1}.</span>
           <img class="stat-thumb" src="${p.cloudinary ? buildCloudinaryAssetUrl(p.cloudinary, CLOUDINARY_TRANSFORMS.thumb) : withCloudinaryTransform(p.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="${p.title}">
           <span class="stat-name">${p.title}</span>
-          <span class="stat-value">${p.views || 0} views</span>
+          <span class="stat-value">${p.views || 0} Aufrufe</span>
         </div>
       `).join('');
       
@@ -1737,7 +1829,7 @@
 
       const emptyOption = document.createElement('option');
       emptyOption.value = '';
-      emptyOption.textContent = 'No film selected';
+      emptyOption.textContent = 'Kein Film ausgewählt';
       cloudinaryFilmSelect.appendChild(emptyOption);
 
       (data.films || []).forEach(film => {
@@ -1773,7 +1865,7 @@
         const card = document.createElement('div');
         card.className = 'photo-card';
         card.dataset.photoSrc = photo.src;
-        card.dataset.photoTitle = photo.title || 'Photo preview';
+        card.dataset.photoTitle = photo.title || 'Fotovorschau';
         card.innerHTML = `
           <img src="${photo.cloudinary ? buildCloudinaryAssetUrl(photo.cloudinary, CLOUDINARY_TRANSFORMS.thumb) : withCloudinaryTransform(photo.src, CLOUDINARY_TRANSFORMS.thumb)}" alt="${photo.title}">
           <button class="delete-btn" onclick="deletePhoto('${photo.id}')">&times;</button>
@@ -1783,20 +1875,20 @@
               type="text"
               value="${(photo.title || '').replace(/"/g, '&quot;')}"
               data-photo-id="${photo.id}"
-              aria-label="Display text"
+              aria-label="Anzeigetext"
             >
-            <select class="photo-category-select" data-photo-id="${photo.id}" aria-label="Category">
+            <select class="photo-category-select" data-photo-id="${photo.id}" aria-label="Kategorie">
               ${categoryOptions}
             </select>
             <select class="photo-film-select" data-photo-id="${photo.id}" aria-label="Film">
-              <option value="">No film selected</option>
+              <option value="">Kein Film ausgewählt</option>
               ${filmOptions}
             </select>
-            <select class="photo-year-select" data-photo-id="${photo.id}" aria-label="Year shot">
-              <option value="">No year selected</option>
+            <select class="photo-year-select" data-photo-id="${photo.id}" aria-label="Aufnahmejahr">
+              <option value="">Kein Jahr ausgewählt</option>
               ${yearOptions}
             </select>
-            <button class="save-photo-btn" data-photo-id="${photo.id}">Save</button>
+            <button class="save-photo-btn" data-photo-id="${photo.id}">Speichern</button>
           </div>
         `;
         const categorySelect = card.querySelector(`.photo-category-select[data-photo-id="${photo.id}"]`);
@@ -1842,14 +1934,14 @@
       data.photographer.instagram = instagram;
       localStorage.setItem('emma_photos', JSON.stringify(data));
       
-      alert('About saved to cloud!');
+      alert('Über-mich-Bereich gespeichert.');
     });
 
     saveBackgroundBtn.addEventListener('click', async () => {
       await saveSetting('background_color', selectedBackgroundColor);
       data.photographer.backgroundColor = selectedBackgroundColor;
       localStorage.setItem('emma_photos', JSON.stringify(data));
-      alert('Background color saved!');
+      alert('Hintergrundfarbe gespeichert.');
     });
 
     addCategoryForm.addEventListener('submit', async (e) => {
@@ -1888,11 +1980,16 @@
     importCaseStudyBtn.addEventListener('click', async () => {
       const photos = data?.photos || [];
       if (!photos.length) {
-        alert('No photos to generate case studies from.');
+        alert('Es sind keine Fotos vorhanden, aus denen Stories erzeugt werden können.');
         return;
       }
 
-      if (!confirm('Import auto-generated case studies from photos? This will replace existing case studies.')) {
+      if ((data.caseStudies || []).length) {
+        alert('Stories wurden bereits angelegt. Diese Funktion ist nur verfügbar, solange noch keine Stories existieren.');
+        return;
+      }
+
+      if (!confirm('Stories automatisch aus den aktuellen Fotos erzeugen?')) {
         return;
       }
 
@@ -1911,20 +2008,20 @@
           const years = [...new Set(group.map((photo) => photo.year).filter(Boolean))].sort().reverse();
           const films = [...new Set(group.map((photo) => photo.film).filter(Boolean))]
             .map((filmId) => data.films?.find((film) => film.id === filmId)?.name || filmId);
-          const categoryName = data.categories?.find((c) => c.id === categoryId)?.name || categoryId || 'Series';
+          const categoryName = data.categories?.find((c) => c.id === categoryId)?.name || categoryId || 'Serie';
           const imageCount = group.length;
-          const yearLabel = years.length ? years.join(' / ') : 'Current work';
-          const filmLabel = films.length ? films.slice(0, 2).join(' + ') : 'Digital and mixed light';
+          const yearLabel = years.length ? years.join(' / ') : 'Aktuelle Arbeiten';
+          const filmLabel = films.length ? films.slice(0, 2).join(' + ') : 'Digital und Mischlicht';
 
           return {
             id: `case-${slugify(categoryId)}`,
             slug: slugify(categoryId),
-            title: `${categoryName} Case Study`,
+            title: `${categoryName} Story`,
             category: categoryName,
-            intro: `${imageCount} images shaped as a cohesive ${categoryName.toLowerCase()} series with a clear visual rhythm and stronger narrative sequencing.`,
+            intro: `${imageCount} Bilder als zusammenhängende ${categoryName.toLowerCase()}-Serie mit klarem Rhythmus und stärkerer Erzählstruktur.`,
             story: '',
             metrics: [
-              `${imageCount} selected frames`,
+              `${imageCount} ausgewählte Bilder`,
               yearLabel,
               filmLabel
             ],
@@ -1944,7 +2041,7 @@
         .slice(0, 3);
 
       if (!generated.length) {
-        alert('Could not generate any case studies. Make sure photos have categories.');
+        alert('Es konnten keine Stories erzeugt werden. Prüfe, ob die Fotos Kategorien haben.');
         return;
       }
 
@@ -1952,21 +2049,27 @@
       activeCaseStudyId = generated[0]?.id || '';
       await saveData();
       renderCaseStudiesAdmin();
-      alert(`Imported ${generated.length} case studies from photos.`);
+      alert(`${generated.length} Stories wurden aus Fotos erzeugt.`);
     });
 
     deleteCaseStudyBtn.addEventListener('click', async () => {
       const active = getActiveCaseStudy();
       if (!active) return;
-      if (!confirm(`Delete "${active.title}"?`)) return;
+      if (!confirm(`"${active.title}" löschen?`)) return;
       data.caseStudies = (data.caseStudies || []).filter(study => study.id !== active.id);
       activeCaseStudyId = data.caseStudies[0]?.id || '';
       await saveData();
     });
 
-    caseStudyList.addEventListener('click', (event) => {
+    caseStudyList.addEventListener('click', async (event) => {
+      const moveButton = event.target.closest('[data-move-case-study]');
+      if (moveButton) {
+        await moveCaseStudy(moveButton.dataset.moveCaseStudy, Number(moveButton.dataset.direction || 0));
+        return;
+      }
       const item = event.target.closest('[data-case-study-id]');
       if (!item) return;
+      syncActiveCaseStudyForm();
       activeCaseStudyId = item.dataset.caseStudyId;
       renderCaseStudiesAdmin();
     });
@@ -2029,16 +2132,16 @@
       active.photoIds = (active.photoIds || []).map(String);
 
       if (!active.title || !active.slug) {
-        alert('Title and slug are required.');
+        alert('Titel und Slug sind erforderlich.');
         return;
       }
       if (!active.photoIds.length) {
-        alert('Select at least one photo for the story.');
+        alert('Wähle mindestens ein Bild für die Story aus.');
         return;
       }
 
       await saveData();
-      alert('Case study saved.');
+      alert('Story gespeichert.');
     });
 
     if (caseStudyGuideToggleBtn) {
@@ -2046,7 +2149,7 @@
     }
 
     window.deletePhoto = async (id) => {
-      if (confirm('Delete this photo?')) {
+      if (confirm('Dieses Foto löschen?')) {
         const photo = data.photos.find(p => String(p.id) === String(id));
         if (photo) {
           if (!data.photoFilms) data.photoFilms = {};
@@ -2061,14 +2164,14 @@
     };
 
     window.deleteCategory = async (id) => {
-      if (confirm('Delete this category? Photos will need a new category.')) {
+      if (confirm('Diese Kategorie löschen? Betroffene Fotos brauchen danach eine neue Kategorie.')) {
         data.categories = data.categories.filter(c => c.id !== id);
         await saveData();
       }
     };
 
     window.deleteFilm = async (id) => {
-      if (confirm('Delete this film? It will be removed from assigned photos.')) {
+      if (confirm('Diesen Film löschen? Er wird aus allen zugewiesenen Fotos entfernt.')) {
         data.films = data.films.filter(f => f.id !== id);
         Object.keys(data.photoFilms || {}).forEach(photoId => {
           if (data.photoFilms[photoId] === id) {
@@ -2088,7 +2191,7 @@
       const photoCard = event.target.closest('.photo-card');
       if (photoCard && !nonPreviewTarget) {
         photoPreviewImage.src = photoCard.dataset.photoSrc || '';
-        photoPreviewImage.alt = photoCard.dataset.photoTitle || 'Photo preview';
+        photoPreviewImage.alt = photoCard.dataset.photoTitle || 'Fotovorschau';
         photoPreviewModal.classList.remove('hidden');
         photoPreviewModal.setAttribute('aria-hidden', 'false');
         return;
@@ -2107,11 +2210,11 @@
       const nextFilm = filmSelect.value;
       const nextYear = yearSelect.value;
       if (!nextTitle) {
-        alert('Display text cannot be empty.');
+        alert('Der Anzeigetext darf nicht leer sein.');
         return;
       }
       if (!nextCategory) {
-        alert('Please select a category.');
+        alert('Bitte wähle eine Kategorie aus.');
         return;
       }
       await updatePhotoMeta(id, nextTitle, nextCategory, nextFilm, nextYear);
@@ -2130,11 +2233,11 @@
       const nextFilm = filmSelect ? filmSelect.value : '';
       const nextYear = yearSelect ? yearSelect.value : '';
       if (!nextTitle) {
-        alert('Display text cannot be empty.');
+        alert('Der Anzeigetext darf nicht leer sein.');
         return;
       }
       if (!nextCategory) {
-        alert('Please select a category.');
+        alert('Bitte wähle eine Kategorie aus.');
         return;
       }
       await updatePhotoMeta(id, nextTitle, nextCategory, nextFilm, nextYear);
@@ -2174,7 +2277,7 @@
         await loadData();
       } catch (error) {
         console.error('Update photo metadata error:', error);
-        alert('Failed to update photo. Check console for details.');
+        alert('Foto konnte nicht aktualisiert werden. Sieh in die Konsole für Details.');
       }
     }
 
@@ -2213,7 +2316,7 @@
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText || 'Failed to generate Cloudinary upload signature.');
+        throw new Error(errorText || 'Cloudinary-Upload-Signatur konnte nicht erzeugt werden.');
       }
 
       return response.json();
@@ -2221,7 +2324,7 @@
 
     function openCloudinaryWidget() {
       if (typeof cloudinary === 'undefined') {
-        alert('Cloudinary widget not loaded. Check console (F12) for errors.');
+        alert('Das Cloudinary-Widget wurde nicht geladen. Prüfe die Konsole (F12) auf Fehler.');
         return;
       }
 
@@ -2230,7 +2333,7 @@
         CLOUDINARY_UPLOAD_PRESET.includes('%') ||
         CLOUDINARY_API_KEY.includes('%')
       ) {
-        alert('Please configure Cloudinary in admin.html. See instructions in CLOUDINARY_SETUP.md');
+        alert('Bitte konfiguriere Cloudinary in admin.html. Hinweise stehen in CLOUDINARY_SETUP.md');
         return;
       }
 
@@ -2247,12 +2350,19 @@
         maxFileSize: CLOUDINARY_UPLOAD_LIMITS.maxFileSize,
         prepareUploadParams: async (cb, params) => {
           try {
-            const signed = await getSignedUploadParams(params);
+            const context = getUploadProtectionContext();
+            const signed = await getSignedUploadParams({
+              ...params,
+              context,
+              tags: IMAGE_UPLOAD_TAGS
+            });
             cb({
               apiKey: CLOUDINARY_API_KEY,
+              context,
               folder: signed.folder,
               publicId: signed.publicId,
               signature: signed.signature,
+              tags: IMAGE_UPLOAD_TAGS,
               uploadPreset: signed.uploadPreset,
               uploadSignatureTimestamp: signed.timestamp,
               useFilename: false,
@@ -2261,13 +2371,13 @@
           } catch (error) {
             console.error('Cloudinary signature error:', error);
             cb({ cancel: true });
-            alert('Signed upload could not be prepared. Check function logs and Cloudinary env vars.');
+            alert('Der signierte Upload konnte nicht vorbereitet werden. Prüfe die Function-Logs und die Cloudinary-Umgebungsvariablen.');
           }
         }
       }, (error, result) => {
         if (error) {
           console.error('Cloudinary error:', error);
-          alert('Upload failed. Check console for details.');
+          alert('Upload fehlgeschlagen. Prüfe die Konsole für Details.');
           return;
         }
         if (result && result.event === 'success') {
@@ -2281,25 +2391,25 @@
           };
           cloudinaryUploadedItems.push({
             cloudinary: cloudinaryMeta,
-            originalFilename: result.info.original_filename || 'Untitled',
+            originalFilename: result.info.original_filename || 'Ohne Titel',
             src: buildCloudinaryAssetUrl(cloudinaryMeta, CLOUDINARY_TRANSFORMS.thumb)
           });
         }
         if (result && result.event === 'queues-end') {
           if (!cloudinaryUploadedItems.length) return;
           const previewHtml = cloudinaryUploadedItems.slice(0, 6).map(item =>
-            `<img src="${item.src}" alt="Uploaded preview" class="upload-preview">`
+            `<img src="${item.src}" alt="Upload-Vorschau" class="upload-preview">`
           ).join('');
           document.getElementById('cloudinary-uploads').innerHTML = `
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.5rem;">${previewHtml}</div>
-            <p class="upload-success">${cloudinaryUploadedItems.length} image(s) uploaded successfully.</p>
+            <p class="upload-success">${cloudinaryUploadedItems.length} Bild(er) erfolgreich hochgeladen.</p>
           `;
           cloudinaryForm.style.display = 'block';
         }
       });
       } catch (e) {
         console.error('Widget error:', e);
-        alert('Error opening widget: ' + e.message);
+        alert('Fehler beim Öffnen des Widgets: ' + e.message);
       }
     }
 
