@@ -62,6 +62,7 @@
         <li><a href="#case-studies" data-link="case-studies">Stories</a></li>
         <li><a href="#gallery" data-link="gallery">Galerie</a></li>
         <li><a href="#about" data-link="about">Über mich</a></li>
+        <li><a href="#booking" data-link="booking">Shooting buchen</a></li>
         <li><button id="theme-toggle" class="theme-toggle" type="button" aria-label="Zum hellen Modus wechseln">Hell</button></li>
         <li><a href="https://www.instagram.com/emmaknipst/" target="_blank" rel="noopener" aria-label="Instagram">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
@@ -117,9 +118,67 @@
     </section>
 
     <section id="about" class="about-section">
-      <h2 class="about-heading">Über mich</h2>
+      <div class="about-heading-wrap">
+        <p class="section-kicker">Portrait</p>
+        <h2 class="about-title">Über mich</h2>
+      </div>
       <div class="about-text" id="about-text"></div>
       <a href="mailto:emma-sophie.weber@web.de" class="email-link" id="contact-email"></a>
+    </section>
+
+    <section id="booking" class="booking-section">
+      <div class="booking-grid">
+        <div class="booking-copy">
+          <p class="section-kicker">Termin anfragen</p>
+          <h2 class="booking-title">Shooting buchen</h2>
+          <p class="booking-intro">Erzähl mir kurz von deinem Projekt und wähl ein Wunschdatum. Ich melde mich mit Terminvorschlägen zurück.</p>
+          <ul class="booking-points">
+            <li><span aria-hidden="true"></span>Wunschdatum direkt im Kalender auswählen</li>
+            <li><span aria-hidden="true"></span>Keine Vorkasse, unverbindliche Anfrage</li>
+            <li><span aria-hidden="true"></span>Antwort in der Regel innerhalb von 24&nbsp;Stunden</li>
+          </ul>
+        </div>
+        <form class="booking-form" id="booking-form">
+          <div class="booking-field">
+            <label for="booking-name">Name</label>
+            <input id="booking-name" name="name" type="text" placeholder="Dein Name" autocomplete="name" required>
+          </div>
+          <div class="booking-field">
+            <label for="booking-email">E-Mail</label>
+            <input id="booking-email" name="email" type="email" placeholder="du@beispiel.de" autocomplete="email" required>
+          </div>
+          <div class="booking-field">
+            <label for="booking-date">Wunschdatum &amp; Uhrzeit</label>
+            <div class="booking-datetime">
+              <div class="booking-date-wrap">
+                <input id="booking-date" name="date" type="date" required>
+              </div>
+              <select id="booking-time" name="time" aria-label="Uhrzeit">
+                <option value="">Uhrzeit</option>
+              </select>
+            </div>
+          </div>
+          <div class="booking-field">
+            <label for="booking-date-alt">Ausweichtermin <span class="booking-optional">(optional)</span></label>
+            <div class="booking-datetime">
+              <div class="booking-date-wrap">
+                <input id="booking-date-alt" name="dateAlt" type="date">
+              </div>
+              <select id="booking-time-alt" name="timeAlt" aria-label="Uhrzeit Ausweichtermin">
+                <option value="">Uhrzeit</option>
+              </select>
+            </div>
+          </div>
+          <div class="booking-field booking-field-full">
+            <label for="booking-message">Worum geht's?</label>
+            <textarea id="booking-message" name="message" rows="4" placeholder="Art des Shootings, Ort, Dauer, Ideen …"></textarea>
+          </div>
+          <div class="booking-summary" id="booking-summary" hidden></div>
+          <p class="booking-status" id="booking-status" role="status" aria-live="polite" hidden></p>
+          <button class="booking-submit" id="booking-submit" type="submit">Anfrage senden</button>
+          <p class="booking-hint">Deine Anfrage wird direkt als E-Mail an mich gesendet.</p>
+        </form>
+      </div>
     </section>
   </main>
 

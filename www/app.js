@@ -553,6 +553,7 @@ function init() {
   renderGallery(portfolioData.photos);
   renderAbout();
   renderContact();
+  setupBooking();
   setupLightbox();
   setupGalleryLoadMore();
   setupNavigation();
@@ -1112,6 +1113,171 @@ function renderAbout() {
 }
 
 function renderContact() {
+}
+
+function formatBookingDate(value) {
+  if (!value) return '';
+  const parts = String(value).split('-').map(Number);
+  if (parts.length !== 3 || parts.some(Number.isNaN)) return value;
+  const date = new Date(parts[0], parts[1] - 1, parts[2]);
+  if (Number.isNaN(date.getTime())) return value;
+  try {
+    return new Intl.DateTimeFormat('de-DE', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }).format(date);
+  } catch (error) {
+    return value;
+  }
+}
+
+function formatBookingTime(value) {
+  const match = String(value || '').trim().match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) return '';
+  const hour = Number(match[1]);
+  if (Number.isNaN(hour) || hour < 0 || hour > 23) return '';
+  return `${String(hour).padStart(2, '0')}:${match[2]} Uhr`;
+}
+
+const BOOKING_HOURS = Array.from({ length: 15 }, (_, i) => {
+  const hour = 8 + i;
+  const label = `${String(hour).padStart(2, '0')}:00`;
+  return { value: label, label: `${label} Uhr` };
+});
+
+function populateBookingTimes() {
+  document.querySelectorAll('#booking-form .booking-datetime select').forEach((select) => {
+    const current = select.value;
+    const options = BOOKING_HOURS.map((entry) =>
+      `<option value="${entry.value}">${entry.label}</option>`
+    ).join('');
+    select.innerHTML = `${select.dataset.placeholder || `<option value="">Uhrzeit</option>`}${options}`;
+    if (current) select.value = current;
+  });
+}
+
+function setupBooking() {
+  const form = document.getElementById('booking-form');
+  if (!form) return;
+
+  populateBookingTimes();
+
+  const dateInput = document.getElementById('booking-date');
+  const dateAltInput = document.getElementById('booking-date-alt');
+  const timeInput = document.getElementById('booking-time');
+  const timeAltInput = document.getElementById('booking-time-alt');
+  const summary = document.getElementById('booking-summary');
+
+  const describeSlot = (dateValue, timeValue) => {
+    const date = formatBookingDate(dateValue);
+    if (!date) return '';
+    return `${date}${timeValue ? `, ${formatBookingTime(timeValue)}` : ''}`;
+  };
+
+  const updateSummary = () => {
+    const slot = dateInput?.value ? describeSlot(dateInput.value, timeInput?.value || '') : '';
+    const slotAlt = dateAltInput?.value ? describeSlot(dateAltInput.value, timeAltInput?.value || '') : '';
+    if (!slot && !slotAlt) {
+      if (summary) {
+        summary.hidden = true;
+        summary.innerHTML = '';
+      }
+      return;
+    }
+
+    const parts = [];
+    if (slot) parts.push(`<strong>Wunschdatum:</strong> ${escapeHtml(slot)}`);
+    if (slotAlt) parts.push(`<strong>Ausweichtermin:</strong> ${escapeHtml(slotAlt)}`);
+    if (summary) {
+      summary.innerHTML = parts.join(' &nbsp;·&nbsp; ');
+      summary.hidden = false;
+    }
+  };
+
+  if (dateInput) dateInput.addEventListener('change', updateSummary);
+  if (dateAltInput) dateAltInput.addEventListener('change', updateSummary);
+  if (timeInput) timeInput.addEventListener('change', updateSummary);
+  if (timeAltInput) timeAltInput.addEventListener('change', updateSummary);
+
+  const recipient = portfolioData.photographer.email || 'emma-sophie.weber@web.de';
+  const buildMailto = (data) => {
+    const subject = `Shooting-Anfrage von ${data.name}`;
+    const lines = [
+      `Name: ${data.name}`,
+      `E-Mail: ${data.email}`,
+      '',
+      `Wunschtermin: ${formatBookingDate(data.date) || data.date}${data.time ? `, ${formatBookingTime(data.time)}` : ''}`
+    ];
+    if (data.dateAlt) lines.push(`Ausweichtermin: ${formatBookingDate(data.dateAlt) || data.dateAlt}${data.timeAlt ? `, ${formatBookingTime(data.timeAlt)}` : ''}`);
+    if (data.message) lines.push('', 'Nachricht:', data.message);
+    return `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
+  };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    const data = {
+      name: form.elements.name.value.trim(),
+      email: form.elements.email.value.trim(),
+      date: form.elements.date.value,
+      time: form.elements.time.value,
+      dateAlt: form.elements.dateAlt.value,
+      timeAlt: form.elements.timeAlt.value,
+      message: form.elements.message.value.trim()
+    };
+
+    const submitBtn = document.getElementById('booking-submit');
+    const status = document.getElementById('booking-status');
+
+    const setStatus = (state, text) => {
+      if (!status) return;
+      status.textContent = text;
+      status.dataset.state = state;
+      status.hidden = false;
+    };
+
+    if (status) {
+      status.hidden = true;
+      status.textContent = '';
+    }
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Wird gesendet …';
+    }
+
+    try {
+      const response = await fetch('/.netlify/functions/send-booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload.error || 'Etwas ist schiefgelaufen.');
+      }
+
+      setStatus('success', 'Danke! Deine Anfrage wurde gesendet. Ich melde mich in Kürze bei dir.');
+      form.reset();
+      if (summary) {
+        summary.hidden = true;
+        summary.innerHTML = '';
+      }
+    } catch (error) {
+      window.location.href = buildMailto(data);
+      setStatus('error', 'Direktversand nicht möglich – dein E-Mail-Programm wurde geöffnet.');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Anfrage senden';
+      }
+    }
+  });
 }
 
 function setupLightbox() {

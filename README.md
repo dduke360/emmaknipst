@@ -23,6 +23,12 @@ Pflicht-Variablen:
 - `CLOUDINARY_API_KEY`
 - `CLOUDINARY_API_SECRET`
 
+Booking-E-Mail (Direktversand über Resend):
+- `RESEND_API_KEY` – API-Key von https://resend.com
+- `RESEND_FROM` – verifizierte Absender-Adresse (z.B. `emmaknipst <booking@emmaknipst.de>`)
+- Optional `RESEND_TO_EMAIL` – Überschreibt die Empfänger-Adresse aus den Supabase-Settings.
+  Ohne `RESEND_TO_EMAIL` wird die E-Mail aus `settings.email` (Admin → Über mich) verwendet.
+
 Hinweis:
 - Werte sind als Platzhalter im Source (`admin.html`, `supabase.js`) hinterlegt.
 - Build injiziert Variablen nur in den generierten Output (`www/`), nicht in Source-Dateien.
